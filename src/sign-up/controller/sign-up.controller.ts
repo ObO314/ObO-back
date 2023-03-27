@@ -1,4 +1,12 @@
-import { Controller, Post, Get, Inject, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Inject,
+  Body,
+  Query,
+  Param,
+} from '@nestjs/common';
 import {
   SIGN_UP_INBOUND_PORT,
   SignUpInboundPortInputDto,
@@ -12,9 +20,9 @@ export class signUpController {
     private readonly SignUpInboundPort: SignUpInboundPort,
   ) {}
 
-  @Post('/post')
+  @Get('/search')
   async signUp(
-    @Body()
+    @Query()
     signUpInboundPortInput: SignUpInboundPortInputDto,
   ) {
     return this.SignUpInboundPort.execute(signUpInboundPortInput);

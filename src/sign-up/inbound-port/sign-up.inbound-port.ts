@@ -1,12 +1,6 @@
-export type SignUpInboundPortInputDto = {
-  id: string;
-  pw: string;
-  name: string;
-  nickName: string;
-  email: string;
-};
+export type SignUpInboundPortInputDto = { userId: string };
 
-export type SignUpInboundPortOutputDto = Promise<{ message: string }>;
+export type SignUpInboundPortOutputDto = string;
 
 export const SIGN_UP_INBOUND_PORT = 'SIGN_UP_INBOUND_PORT' as const;
 
