@@ -9,7 +9,10 @@ import { DataBaseModule } from 'src/database/database.module';
 import { Users } from 'src/database/entities/Users';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Users])],
+  imports: [
+    //MikroOrmModule.forFeature([Users])
+    DataBaseModule,
+  ],
   controllers: [signUpController],
   providers: [
     {
