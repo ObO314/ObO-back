@@ -6,6 +6,8 @@ import {
 } from '../outbound-port/sign-up.outbound-port';
 import { Users } from '../../database/entities/Users';
 import { EntityRepository } from '@mikro-orm/postgresql';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 export class SignUpRepository implements SignUpOutboundPort {
   constructor(
@@ -16,11 +18,24 @@ export class SignUpRepository implements SignUpOutboundPort {
   async execute(
     params: SignUpOutboundPortInputDto,
   ): Promise<SignUpOutboundPortOutputDto> {
-    const members = await this.usersRepository.findOne({
-      userId: params.userId,
+    const exisitedMember = await this.usersRepository.findOne({
+      email: params.email,
     });
-    console.log(params);
-    console.log(members);
-    return members.nickname;
+
+    if (exisitedMember) {
+      throw new HttpException(
+        '이미 존재하는 이메일 입니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const bcryptedPW = await bcrypt.hash(params.password, 10);
+    this.usersRepository.create({
+      email: params.email,
+      password: bcryptedPW,
+      nickname: params.nickname,
+    });
+
+    const newUser = await this.usersRepository.findOne({ email: params.email });
+    return newUser;
   }
 }
