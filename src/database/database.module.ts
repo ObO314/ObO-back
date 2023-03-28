@@ -6,5 +6,6 @@ import { Users } from 'src/database/entities/Users';
   imports: [MikroOrmModule.forFeature([Users])],
   controllers: [],
   providers: [],
+  exports: [MikroOrmModule],
 })
 export class DataBaseModule {}
