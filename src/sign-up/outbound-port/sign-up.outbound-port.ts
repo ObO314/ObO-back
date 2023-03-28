@@ -1,6 +1,15 @@
-export type SignUpOutboundPortInputDto = { userId: string };
+export type SignUpOutboundPortInputDto = {
+  email: string;
+  password: string;
+  nickname: string;
+};
 
-export type SignUpOutboundPortOutputDto = string;
+export type SignUpOutboundPortOutputDto = {
+  userId: string;
+  email: string;
+  password: string;
+  nickname: string;
+};
 
 export const SIGN_UP_OUTBOUND_PORT = 'SIGN_UP_OUTBOUND_PORT' as const;
 
