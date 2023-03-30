@@ -13,12 +13,15 @@ import { UserSignUpService } from './service/user.sign-up.service';
 import { UserController } from './controller/user.controller';
 import { UserAuthorizeService } from './service/user.authorize.service';
 import { USER_AUTHORIZE_INBOUND_PORT } from './inbound-port/user.authorize.inbound-port';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     MikroOrmModule.forFeature([Users]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: process.env.JWT_SECRETKEY ?? 'OBO_SECRET_KEY_314',
+      secret: 'OBO_SECRET_KEY_314',
+      //process.env.JWT_SECRETKEY ??
       signOptions: { expiresIn: '3600s' },
     }),
   ],
@@ -49,5 +52,7 @@ import { USER_AUTHORIZE_INBOUND_PORT } from './inbound-port/user.authorize.inbou
       useClass: UserRepository,
     },
   ],
+  exports: [USER_AUTHORIZE_INBOUND_PORT, PassportModule],
+  //PassportModule 을 사용해서 UserAuthorizeService 를 구성했으므로 둘 다 같이 추출해야함.
 })
 export class UserModule {}

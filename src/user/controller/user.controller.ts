@@ -1,29 +1,28 @@
-import { UserAuthorizeInboundPort } from './../inbound-port/user.authorize.inbound-port';
-import {
-  UserLoginInboundPort,
-  UserLoginInboundPortInputDto,
-} from './../inbound-port/user.login-inbound-port';
 import {
   Controller,
   Inject,
   Body,
+  Headers,
   Post,
   Res,
-  Head,
-  Headers,
   Get,
   UseGuards,
   Req,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 import {
+  USER_LOGIN_INBOUND_PORT,
+  UserLoginInboundPort,
+  UserLoginInboundPortInputDto,
+} from '../inbound-port/user.login-inbound-port';
+import {
+  USER_SIGN_UP_INBOUND_PORT,
   UserSignUpInboundPort,
   UserSignUpInboundPortInputDto,
 } from './../inbound-port/user.sign-up.inbound-port';
-import { USER_SIGN_UP_INBOUND_PORT } from '../inbound-port/user.sign-up.inbound-port';
-import { USER_LOGIN_INBOUND_PORT } from '../inbound-port/user.login-inbound-port';
-import { AuthGuard } from '@nestjs/passport';
 import {
+  UserAuthorizeInboundPort,
   UserAuthorizeInboundPortInputDto,
   USER_AUTHORIZE_INBOUND_PORT,
 } from '../inbound-port/user.authorize.inbound-port';
@@ -63,14 +62,18 @@ export class UserController {
     return res.json(jwt);
   }
 
-  @Get('authorize')
-  @UseGuards(AuthGuard)
-  async authorize(
-    @Req()
-    userAuthorizeInboundPortInput: UserAuthorizeInboundPortInputDto,
+  @Post('authorize')
+  @UseGuards(AuthGuard())
+  async validate(
+    //@Req()
+    @Headers()
+    headers,
   ) {
-    const user = userAuthorizeInboundPortInput.userId;
-    return this.usersAuthorizeInboundPort.authorize(
+    const userAuthorizeInboundPortInput: UserAuthorizeInboundPortInputDto = {
+      userId: String(headers.user_id),
+    };
+    console.log(userAuthorizeInboundPortInput);
+    return this.usersAuthorizeInboundPort.validate(
       userAuthorizeInboundPortInput,
     );
   }

@@ -72,10 +72,12 @@ export class UserRepository
     }
   }
 
-  async authorize(
+  async validate(
     params: UserAuthorizeOutboundPortInputDto,
   ): Promise<UserAuthorizeOutboundPortOutputDto> {
-    // 유저를 확인하는 로직
-    return;
+    const findUser = await this.usersRepository.findOne({
+      userId: params.userId,
+    });
+    return findUser;
   }
 }
