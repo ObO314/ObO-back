@@ -9,7 +9,6 @@ import {
   UserLoginOutboundPortOutputDto,
 } from './../outbound-port/user.login.outbound-port';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Users } from '../../database/entities/Users';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   HttpException,
@@ -22,6 +21,7 @@ import {
   UserSignUpOutboundPortOutputDto,
   UserSignUpOutboundPort,
 } from '../outbound-port/user.sign-up.outbound-port';
+import { Users } from 'src/database/entities/Users';
 
 export class UserRepository
   implements

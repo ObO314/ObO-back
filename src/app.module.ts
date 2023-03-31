@@ -3,12 +3,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { UserModule } from './user/user.module';
+import { TodoModule } from './todo/todo.module';
 
 @Module({
   imports: [
     //...Repositories,
     MikroOrmModule.forRoot(),
     UserModule,
+    TodoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

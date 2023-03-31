@@ -62,7 +62,7 @@ export class UserController {
     return res.json(jwt);
   }
 
-  @Post('authorize')
+  @Post('validate')
   @UseGuards(AuthGuard())
   async validate(
     //@Req()
@@ -72,7 +72,6 @@ export class UserController {
     const userAuthorizeInboundPortInput: UserAuthorizeInboundPortInputDto = {
       userId: String(headers.user_id),
     };
-    console.log(userAuthorizeInboundPortInput);
     return this.usersAuthorizeInboundPort.validate(
       userAuthorizeInboundPortInput,
     );
