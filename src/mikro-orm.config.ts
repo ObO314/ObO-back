@@ -1,8 +1,9 @@
+import { Todos } from 'src/database/entities/Todos';
 import { Options } from '@mikro-orm/core';
 import { Users } from './database/entities/Users';
 
 const config: Options = {
-  entities: [Users],
+  entities: [Users, Todos],
   //autoLoadEntities : true, //이거 키면 entities 에 있는 배열이 비어야 함.
   dbName: 'OBO_DB',
   user: 'postgres',

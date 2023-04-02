@@ -1,9 +1,14 @@
-import { Entity, ManyToOne, OptionalProps, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Entity,
+  ManyToOne,
+  OptionalProps,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 import { Users } from './Users';
 
 @Entity()
-export class Todo {
-
+export class Todos {
   [OptionalProps]?: 'completed';
 
   @PrimaryKey({ columnType: 'int8' })
@@ -15,9 +20,6 @@ export class Todo {
   @Property({ length: 50 })
   name!: string;
 
-  @Property({ columnType: 'date' })
-  date!: string;
-
   @Property({ length: 6, nullable: true })
   startTime?: Date;
 
@@ -26,5 +28,4 @@ export class Todo {
 
   @Property({ default: false })
   completed: boolean = false;
-
 }
