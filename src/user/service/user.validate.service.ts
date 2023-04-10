@@ -2,13 +2,13 @@ import { JwtService } from '@nestjs/jwt';
 import { Inject, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy as StrategyJwt } from 'passport-jwt';
-import { UserAuthorizeInboundPort } from '../inbound-port/user.authorize.inbound-port';
+import { UserAuthorizeInboundPort } from '../inbound-port/user.validate.inbound-port';
 import {
   UserAuthorizeOutboundPort,
   UserAuthorizeOutboundPortInputDto,
   UserAuthorizeOutboundPortOutputDto,
   USER_AUTHORIZE_OUTBOUND_PORT,
-} from '../outbound-port/user.authorize.outbound-port';
+} from '../outbound-port/user.validate.outbound-port';
 
 export class UserAuthorizeService
   extends PassportStrategy(StrategyJwt) //JWT전략을 시용하는 검증 로직입니다.

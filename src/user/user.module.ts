@@ -1,4 +1,4 @@
-import { USER_AUTHORIZE_OUTBOUND_PORT } from './outbound-port/user.authorize.outbound-port';
+import { USER_AUTHORIZE_OUTBOUND_PORT } from './outbound-port/user.validate.outbound-port';
 import { USER_LOGIN_OUTBOUND_PORT } from './outbound-port/user.login.outbound-port';
 import { UserLoginService } from './service/user.login.service';
 import { USER_LOGIN_INBOUND_PORT } from './inbound-port/user.login-inbound-port';
@@ -11,8 +11,8 @@ import { Module } from '@nestjs/common';
 import { Users } from 'src/database/entities/Users';
 import { UserSignUpService } from './service/user.sign-up.service';
 import { UserController } from './controller/user.controller';
-import { UserAuthorizeService } from './service/user.authorize.service';
-import { USER_AUTHORIZE_INBOUND_PORT } from './inbound-port/user.authorize.inbound-port';
+import { UserAuthorizeService } from './service/user.validate.service';
+import { USER_AUTHORIZE_INBOUND_PORT } from './inbound-port/user.validate.inbound-port';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({

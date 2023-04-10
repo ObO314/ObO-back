@@ -2,7 +2,7 @@ import {
   UserAuthorizeOutboundPort,
   UserAuthorizeOutboundPortInputDto,
   UserAuthorizeOutboundPortOutputDto,
-} from './../outbound-port/user.authorize.outbound-port';
+} from '../outbound-port/user.validate.outbound-port';
 import {
   UserLoginOutboundPort,
   UserLoginOutboundPortInputDto,
