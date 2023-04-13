@@ -1,3 +1,4 @@
+import { TodoUpdateOutboundPortOutputDto } from './../outbound-port/todo.update.outbound-port';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/core';
 
@@ -12,25 +13,30 @@ import {
   TodoDeleteOutboundPortOutputDto,
 } from '../outbound-port/todo.delete.outbound-port';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { TodoUpdateOutboundPortInputDto } from '../outbound-port/todo.update.outbound-port';
+import { Users } from 'src/database/entities/Users';
 
 export class TodoRepository implements TodoCreateOutboundPort {
   constructor(
     @InjectRepository(Todos)
     private readonly todoRepository: EntityRepository<Todos>,
+    @InjectRepository(Users)
+    private readonly userRepository: EntityRepository<Users>,
   ) {}
 
   async create(
     params: TodoCreateOutboundPortInputDto,
   ): Promise<TodoCreateOutboundPortOutputDto> {
-    const newTodo = {
-      userId: params.userId,
+    const thisTodo = this.todoRepository.create({
+      userId: await this.userRepository.findOne({ userId: params.userId }),
       name: params.name,
       startTime: params.startTime,
       endTime: params.endTime,
       completed: params.completed,
-    };
-    const thisTodo = this.todoRepository.create(newTodo);
+    });
+
     await this.todoRepository.persistAndFlush(thisTodo);
+
     return {
       userId: thisTodo.userId.userId,
       name: thisTodo.name,
@@ -44,27 +50,35 @@ export class TodoRepository implements TodoCreateOutboundPort {
   async delete(
     params: TodoDeleteOutboundPortInputDto,
   ): Promise<TodoDeleteOutboundPortOutputDto> {
-    // 투두와 유저 정보를 받아와서
-    // 투두의 유저가 받아온 유저정보랑 일치하는지 확인
-    // 맞으면 삭제, 아니면 권한 없음
-    const user = params.userId;
-    const todo = params.todoId;
-    const findTodo = await this.todoRepository.findOne({ todoId: todo });
-
-    if (user != findTodo.userId.userId) {
-      throw new HttpException(
-        '해당 데이터에 대한 접근권한이 없습니다.',
-        HttpStatus.FORBIDDEN,
-      );
-    }
+    const findTodo = await this.matchTodoAndUser(params.userId, params.todoId);
     await this.todoRepository.removeAndFlush(findTodo);
-    return {
-      userId: findTodo.userId.userId,
-      name: findTodo.name,
-      startTime: findTodo.startTime,
-      endTime: findTodo.endTime,
-      completed: findTodo.completed,
-      todoId: findTodo.todoId,
-    };
+    return { ...findTodo, userId: findTodo.userId.userId };
+  }
+
+  async update(
+    params: TodoUpdateOutboundPortInputDto,
+  ): Promise<TodoUpdateOutboundPortOutputDto> {
+    const findTodo = await this.matchTodoAndUser(params.userId, params.todoId);
+    await this.todoRepository.upsert({
+      ...params,
+      userId: findTodo.userId,
+    });
+    return { ...findTodo, userId: findTodo.userId.userId };
+  }
+
+  async matchTodoAndUser(user: string, todo: string) {
+    const findUser = await this.userRepository.findOne({ userId: user });
+    const findTodo = await this.todoRepository.findOne({ todoId: todo });
+    console.log(findUser);
+    console.log(findTodo);
+    if (findUser == findTodo.userId) return findTodo;
+    else this.throwForbiddenError();
+  }
+
+  throwForbiddenError() {
+    throw new HttpException(
+      '해당 데이터에 대한 접근권한이 없습니다.',
+      HttpStatus.FORBIDDEN,
+    );
   }
 }

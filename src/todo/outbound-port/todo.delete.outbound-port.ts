@@ -1,15 +1,10 @@
 export type TodoDeleteOutboundPortInputDto = {
   userId: string;
-
   todoId: string;
 };
 
 export type TodoDeleteOutboundPortOutputDto = {
   userId: string;
-  name: string;
-  startTime: Date;
-  endTime: Date;
-  completed: boolean;
   todoId: string;
 };
 

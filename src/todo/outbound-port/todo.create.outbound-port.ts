@@ -1,9 +1,5 @@
-type Users = {
-  userId: string;
-};
-
 export type TodoCreateOutboundPortInputDto = {
-  userId: Users;
+  userId: string;
 
   name: string;
 
