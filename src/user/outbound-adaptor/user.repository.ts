@@ -64,6 +64,12 @@ export class UserRepository
     const findUser = await this.usersRepository.findOne({
       email: params.email,
     });
+    if (!findUser) {
+      throw new HttpException(
+        '이메일을 잘못 입력했습니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const checkPw = bcrypt.compare(params.password, findUser.password);
     if (!checkPw) {
       throw new UnauthorizedException();

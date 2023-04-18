@@ -16,6 +16,9 @@ import { CommunityQuestion } from './database/entities/CommunityQuestion';
 import { CommunityQuestionComments } from './database/entities/CommunityQuestionComments';
 import { CommunityRecuitment } from './database/entities/CommunityRecuitment';
 import { CommunityRecuitmentComments } from './database/entities/CommunityRecuitmentComments';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const config: Options = {
   entities: [
@@ -37,22 +40,13 @@ const config: Options = {
     Routines,
     RoutinesCompleted,
   ],
-  //autoLoadEntities : true, //이거 키면 entities 에 있는 배열이 비어야 함.
-  dbName: 'OBO_DB',
-  user: 'postgres',
-  password: 'obo314!!',
+  dbName: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
   type: 'postgresql',
-  host: 'obo-db.czd3iqgn9cwr.ap-northeast-2.rds.amazonaws.com',
+  host: process.env.DB_HOST,
   port: 5432,
-
   //autoLoadEntities : true, //이거 키면 entities 에 있는 배열이 비어야 함.
-  //   dbName: process.env.DB_NAME,
-  //   user: process.env.DB_USER,
-  //   password: process.env.DB_PASSWORD,
-  //   type: 'postgresql',
-  //   host: process.env.DB_HOST,
-  //   port: 5432
-
   //synchronize : true,
 };
 
