@@ -1,16 +1,21 @@
-import { Collection, Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  ManyToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 import { Circles } from './Circles';
 
 @Entity()
 export class Users {
-
   @PrimaryKey({ columnType: 'int8' })
   userId!: string;
 
   @Property({ length: 50 })
   email!: string;
 
-  @Property({ length: 20 })
+  @Property({ length: 100 })
   password!: string;
 
   @Property({ length: 20 })
@@ -31,10 +36,18 @@ export class Users {
   @Property({ columnType: 'float4', nullable: true })
   progressWork?: number;
 
-  @ManyToMany({ entity: () => Circles, pivotTable: 'circle_application', joinColumn: 'user_id', inverseJoinColumn: 'circle_id' })
+  @ManyToMany({
+    entity: () => Circles,
+    pivotTable: 'circle_application',
+    joinColumn: 'user_id',
+    inverseJoinColumn: 'circle_id',
+  })
   circleApplication = new Collection<Circles>(this);
 
-  @ManyToMany({ entity: () => Circles, joinColumn: 'user_id', inverseJoinColumn: 'circle_id' })
+  @ManyToMany({
+    entity: () => Circles,
+    joinColumn: 'user_id',
+    inverseJoinColumn: 'circle_id',
+  })
   circles = new Collection<Circles>(this);
-
 }

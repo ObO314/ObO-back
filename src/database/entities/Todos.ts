@@ -21,10 +21,10 @@ export class Todos {
   name!: string;
 
   @Property({ length: 6, nullable: true })
-  startTime?: Date;
+  startTime!: Date;
 
   @Property({ length: 6, nullable: true })
-  endTime?: Date;
+  endTime!: Date;
 
   @Property({ default: false })
   completed: boolean = false;

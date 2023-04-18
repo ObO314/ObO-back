@@ -25,7 +25,7 @@ import {
   UserAuthorizeInboundPort,
   UserAuthorizeInboundPortInputDto,
   USER_AUTHORIZE_INBOUND_PORT,
-} from '../inbound-port/user.authorize.inbound-port';
+} from '../inbound-port/user.validate.inbound-port';
 
 @Controller('user')
 export class UserController {

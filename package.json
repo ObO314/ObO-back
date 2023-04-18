@@ -18,11 +18,13 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "generate-entities": "mikro-orm generate-entities --save --path=./database/entities"
+    "generate-entities": "mikro-orm generate-entities --save --path=./database/entities",
+    "create-schema": "mikro-orm schema:create --run"
   },
   "dependencies": {
     "@fxts/core": "^0.14.0",
     "@mikro-orm/core": "^5.6.15",
+    "@mikro-orm/knex": "^5.6.15",
     "@mikro-orm/nestjs": "^5.1.7",
     "@mikro-orm/postgresql": "^5.6.15",
     "@nestjs/common": "^9.0.0",

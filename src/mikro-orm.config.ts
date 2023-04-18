@@ -1,15 +1,48 @@
-import { Todos } from 'src/database/entities/Todos';
 import { Options } from '@mikro-orm/core';
 import { Users } from './database/entities/Users';
+import { Todos } from './database/entities/Todos';
+import { Routines } from './database/entities/Routines';
+import { RoutinesCompleted } from './database/entities/RoutinesCompleted';
+import { Circles } from './database/entities/Circles';
+import { UsersCircles } from './database/entities/UsersCircles';
+import { Works } from './database/entities/Works';
+import { DailyWorks } from './database/entities/DailyWorks';
+import { BlogPost } from './database/entities/BlogPost';
+import { BlogPostComments } from './database/entities/BlogPostComments';
+import { Hashtags } from './database/entities/Hashtags';
+import { CommunityAnonymous } from './database/entities/CommunityAnonymous';
+import { CommunityAnonymousComments } from './database/entities/CommunityAnonymousComments';
+import { CommunityQuestion } from './database/entities/CommunityQuestion';
+import { CommunityQuestionComments } from './database/entities/CommunityQuestionComments';
+import { CommunityRecuitment } from './database/entities/CommunityRecuitment';
+import { CommunityRecuitmentComments } from './database/entities/CommunityRecuitmentComments';
 
 const config: Options = {
-  entities: [Users, Todos],
+  entities: [
+    Users,
+    UsersCircles,
+    Todos,
+    BlogPost,
+    BlogPostComments,
+    Circles,
+    Works,
+    CommunityAnonymous,
+    CommunityAnonymousComments,
+    CommunityQuestion,
+    CommunityQuestionComments,
+    CommunityRecuitment,
+    CommunityRecuitmentComments,
+    DailyWorks,
+    Hashtags,
+    Routines,
+    RoutinesCompleted,
+  ],
   //autoLoadEntities : true, //이거 키면 entities 에 있는 배열이 비어야 함.
   dbName: 'OBO_DB',
   user: 'postgres',
   password: 'obo314!!',
   type: 'postgresql',
-  host: 'obo-postgre-instance-1.cxyyl9dcd6t0.ap-northeast-2.rds.amazonaws.com',
+  host: 'obo-db.czd3iqgn9cwr.ap-northeast-2.rds.amazonaws.com',
   port: 5432,
 
   //autoLoadEntities : true, //이거 키면 entities 에 있는 배열이 비어야 함.
