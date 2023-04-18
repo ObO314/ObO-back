@@ -15,6 +15,9 @@ import { TodoUpdateService } from './service/todo.update.service';
 import { TODO_UPDATE_INBOUND_PORT } from './inbound-port/todo.update.inbound-port';
 import { TODO_UPDATE_OUTBOUND_PORT } from './outbound-port/todo.update.outbound-port';
 import { Users } from 'src/database/entities/Users';
+import { TODO_READ_INBOUND_PORT } from './inbound-port/todo.read.inbound-port';
+import { TodoReadService } from './service/todo.read.service';
+import { TODO_READ_OUTBOUND_PORT } from './outbound-port/todo.read.outbound-port';
 
 @Module({
   imports: [MikroOrmModule.forFeature([Todos, Users]), UserModule],
@@ -44,6 +47,14 @@ import { Users } from 'src/database/entities/Users';
     },
     {
       provide: TODO_UPDATE_OUTBOUND_PORT,
+      useClass: TodoRepository,
+    },
+    {
+      provide: TODO_READ_INBOUND_PORT,
+      useClass: TodoReadService,
+    },
+    {
+      provide: TODO_READ_OUTBOUND_PORT,
       useClass: TodoRepository,
     },
   ],

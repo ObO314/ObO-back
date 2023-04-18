@@ -1,6 +1,7 @@
 import { TodoUpdateOutboundPortOutputDto } from './../outbound-port/todo.update.outbound-port';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/core';
+// import { EntityRepository } from '@mikro-orm/core';
+import { EntityRepository } from '@mikro-orm/knex';
 
 import {
   TodoCreateOutboundPort,
@@ -15,6 +16,10 @@ import {
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { TodoUpdateOutboundPortInputDto } from '../outbound-port/todo.update.outbound-port';
 import { Users } from 'src/database/entities/Users';
+import {
+  TodoReadOutboundPortInputDto,
+  TodoReadOutboundPortOutputDto,
+} from '../outbound-port/todo.read.outbound-port';
 
 export class TodoRepository implements TodoCreateOutboundPort {
   constructor(
@@ -23,6 +28,23 @@ export class TodoRepository implements TodoCreateOutboundPort {
     @InjectRepository(Users)
     private readonly userRepository: EntityRepository<Users>,
   ) {}
+
+  async read(
+    params: TodoReadOutboundPortInputDto,
+  ): Promise<TodoReadOutboundPortOutputDto> {
+    // 불러올 날짜의 시작지점, 끝지점을 받아서 그 사이에 있는 투두를 모두 받아옴
+    const userId = await this.userRepository.findOne({ userId: params.userId });
+    const todos = await this.todoRepository
+      .createQueryBuilder()
+      .where({
+        userId: userId,
+        startTime: { $gte: params.startDate, $lte: params.endDate },
+        endTime: { $gte: params.startDate, $lte: params.endDate },
+      })
+      .getResultList();
+
+    return todos;
+  }
 
   async create(
     params: TodoCreateOutboundPortInputDto,
@@ -69,8 +91,6 @@ export class TodoRepository implements TodoCreateOutboundPort {
   async matchTodoAndUser(user: string, todo: string) {
     const findUser = await this.userRepository.findOne({ userId: user });
     const findTodo = await this.todoRepository.findOne({ todoId: todo });
-    console.log(findUser);
-    console.log(findTodo);
     if (findUser == findTodo.userId) return findTodo;
     else this.throwForbiddenError();
   }

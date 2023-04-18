@@ -28,6 +28,11 @@ import {
   TodoDeleteInboundPortInputDto,
 } from '../inbound-port/todo.delete.inbound-port';
 import { TodoUpdateInboundPortInputDto } from '../inbound-port/todo.update.inbound-port';
+import {
+  TODO_READ_INBOUND_PORT,
+  TodoReadInboundPort,
+  TodoReadInboundPortInputDto,
+} from '../inbound-port/todo.read.inbound-port';
 
 @Controller('todo')
 @UseGuards(AuthGuard())
@@ -38,8 +43,18 @@ export class TodoController {
     @Inject(TODO_DELETE_INBOUND_PORT)
     private readonly todoDeleteInboundPort: TodoDeleteINboundPort,
     @Inject(TODO_UPDATE_INBOUND_PORT)
-    private readonly TodoUpdateInboundPort: TodoUpdateInboundPort,
+    private readonly todoUpdateInboundPort: TodoUpdateInboundPort,
+    @Inject(TODO_READ_INBOUND_PORT)
+    private readonly todoReadInboundPort: TodoReadInboundPort,
   ) {}
+
+  @Get('read')
+  async read(
+    @Body()
+    todoReadInboundPortInputDto: TodoReadInboundPortInputDto,
+  ) {
+    return this.todoReadInboundPort.read(todoReadInboundPortInputDto);
+  }
 
   @Post('create')
   async create(
@@ -54,7 +69,7 @@ export class TodoController {
     @Body()
     todoUpdateInboundPortInputDto: TodoUpdateInboundPortInputDto,
   ) {
-    return this.TodoUpdateInboundPort.update(todoUpdateInboundPortInputDto);
+    return this.todoUpdateInboundPort.update(todoUpdateInboundPortInputDto);
   }
 
   @Delete('delete')
