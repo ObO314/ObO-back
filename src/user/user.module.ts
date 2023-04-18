@@ -14,14 +14,16 @@ import { UserController } from './controller/user.controller';
 import { UserAuthorizeService } from './service/user.validate.service';
 import { USER_AUTHORIZE_INBOUND_PORT } from './inbound-port/user.validate.inbound-port';
 import { PassportModule } from '@nestjs/passport';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Module({
   imports: [
     MikroOrmModule.forFeature([Users]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: 'OBO_SECRET_KEY_314',
-      //process.env.JWT_SECRETKEY ??
+      secret: process.env.JWT_SECRETKEY,
       signOptions: { expiresIn: '3600s' },
     }),
   ],
