@@ -20,11 +20,11 @@ import {
   USER_SIGN_UP_INBOUND_PORT,
   UserSignUpInboundPort,
   UserSignUpInboundPortInputDto,
-} from './../inbound-port/user.sign-up.inbound-port';
+} from '../inbound-port/user.sign-up.inbound-port';
 import {
-  UserAuthorizeInboundPort,
-  UserAuthorizeInboundPortInputDto,
-  USER_AUTHORIZE_INBOUND_PORT,
+  UserValidateInboundPort,
+  UserValidateInboundPortInputDto,
+  USER_VALIDATE_INBOUND_PORT,
 } from '../inbound-port/user.validate.inbound-port';
 
 @Controller('user')
@@ -36,8 +36,8 @@ export class UserController {
     @Inject(USER_LOGIN_INBOUND_PORT)
     private readonly userLoginInboundPort: UserLoginInboundPort,
 
-    @Inject(USER_AUTHORIZE_INBOUND_PORT)
-    private readonly usersAuthorizeInboundPort: UserAuthorizeInboundPort,
+    @Inject(USER_VALIDATE_INBOUND_PORT)
+    private readonly userValidateInboundPort: UserValidateInboundPort,
   ) {}
 
   @Post('signUp')
@@ -69,11 +69,9 @@ export class UserController {
     @Headers()
     headers,
   ) {
-    const userAuthorizeInboundPortInput: UserAuthorizeInboundPortInputDto = {
+    const userAuthorizeInboundPortInput: UserValidateInboundPortInputDto = {
       userId: String(headers.user_id),
     };
-    return this.usersAuthorizeInboundPort.validate(
-      userAuthorizeInboundPortInput,
-    );
+    return this.userValidateInboundPort.validate(userAuthorizeInboundPortInput);
   }
 }

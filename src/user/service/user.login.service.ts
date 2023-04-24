@@ -9,19 +9,24 @@ import {
   USER_LOGIN_OUTBOUND_PORT,
 } from './../outbound-port/user.login.outbound-port';
 import { Inject } from '@nestjs/common';
+import {
+  USER_JWT_SERVICE_OUTBOUND_PORT,
+  UserJwtServiceOutboundPort,
+} from '../outbound-port/user.jwt-service.outbound-port';
 
 export class UserLoginService implements UserLoginInboundPort {
   constructor(
     @Inject(USER_LOGIN_OUTBOUND_PORT)
     private readonly userLoginOutboundPort: UserLoginOutboundPort,
-    private readonly jwtService: JwtService,
+    @Inject(USER_JWT_SERVICE_OUTBOUND_PORT)
+    private readonly userJwtServiceOutbondPort: UserJwtServiceOutboundPort,
   ) {}
 
   async execute(
     params: UserLoginInboundPortInputDto,
   ): Promise<UserLoginInboundPortOutputDto> {
     const loginUser = await this.userLoginOutboundPort.login(params);
-    const payload = { id: loginUser.userId };
-    return { accessToken: this.jwtService.sign(payload) };
+    const payload = { userId: loginUser.userId };
+    return this.userJwtServiceOutbondPort.sign(payload);
   }
 }

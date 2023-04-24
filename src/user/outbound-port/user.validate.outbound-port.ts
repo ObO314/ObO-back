@@ -1,14 +1,14 @@
-export type UserAuthorizeOutboundPortInputDto = {
+export type UserValidateOutboundPortInputDto = {
   userId: string;
 };
 
-export type UserAuthorizeOutboundPortOutputDto = {};
+export type UserValidateOutboundPortOutputDto = {};
 
-export const USER_AUTHORIZE_OUTBOUND_PORT =
-  'USER_AUTHORIZE_OUTBOUND_PORT' as const;
+export const USER_VALIDATE_OUTBOUND_PORT =
+  'USER_VALIDATE_OUTBOUND_PORT' as const;
 
-export interface UserAuthorizeOutboundPort {
+export interface UserValidateOutboundPort {
   validate(
-    params: UserAuthorizeOutboundPortInputDto,
-  ): Promise<UserAuthorizeOutboundPortOutputDto>;
+    params: UserValidateOutboundPortInputDto,
+  ): Promise<UserValidateOutboundPortOutputDto>;
 }

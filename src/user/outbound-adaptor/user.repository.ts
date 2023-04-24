@@ -1,7 +1,7 @@
 import {
-  UserAuthorizeOutboundPort,
-  UserAuthorizeOutboundPortInputDto,
-  UserAuthorizeOutboundPortOutputDto,
+  UserValidateOutboundPort,
+  UserValidateOutboundPortInputDto,
+  UserValidateOutboundPortOutputDto,
 } from '../outbound-port/user.validate.outbound-port';
 import {
   UserLoginOutboundPort,
@@ -27,7 +27,7 @@ export class UserRepository
   implements
     UserSignUpOutboundPort,
     UserLoginOutboundPort,
-    UserAuthorizeOutboundPort
+    UserValidateOutboundPort
 {
   constructor(
     @InjectRepository(Users)
@@ -79,8 +79,8 @@ export class UserRepository
   }
 
   async validate(
-    params: UserAuthorizeOutboundPortInputDto,
-  ): Promise<UserAuthorizeOutboundPortOutputDto> {
+    params: UserValidateOutboundPortInputDto,
+  ): Promise<UserValidateOutboundPortOutputDto> {
     const findUser = await this.usersRepository.findOne({
       userId: params.userId,
     });
