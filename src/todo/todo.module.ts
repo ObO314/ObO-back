@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { UserModule } from './../user/user.module';
 import { Todos } from 'src/database/entities/Todos';
 import { TodoController } from './controller/todo.controller';
-import { TodoRepository } from './outbound-adaptor/todo.repository';
+import { TodoRepository } from './outbound-adapter/todo.repository';
 import { TodoCreateService } from './service/todo.create.service';
 import { TODO_CREATE_INBOUND_PORT } from './inbound-port/todo.create.inbound-port';
 import { TODO_CREATE_OUTBOUND_PORT } from './outbound-port/todo.create.outbound-port';

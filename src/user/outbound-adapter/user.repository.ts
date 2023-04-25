@@ -1,13 +1,8 @@
 import {
-  UserValidateOutboundPort,
-  UserValidateOutboundPortInputDto,
-  UserValidateOutboundPortOutputDto,
-} from '../outbound-port/user.validate.outbound-port';
-import {
   UserLoginOutboundPort,
   UserLoginOutboundPortInputDto,
   UserLoginOutboundPortOutputDto,
-} from './../outbound-port/user.login.outbound-port';
+} from '../outbound-port/user.login.outbound-port';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
@@ -24,10 +19,7 @@ import {
 import { Users } from 'src/database/entities/Users';
 
 export class UserRepository
-  implements
-    UserSignUpOutboundPort,
-    UserLoginOutboundPort,
-    UserValidateOutboundPort
+  implements UserSignUpOutboundPort, UserLoginOutboundPort
 {
   constructor(
     @InjectRepository(Users)
@@ -76,14 +68,5 @@ export class UserRepository
     } else {
       return findUser;
     }
-  }
-
-  async validate(
-    params: UserValidateOutboundPortInputDto,
-  ): Promise<UserValidateOutboundPortOutputDto> {
-    const findUser = await this.usersRepository.findOne({
-      userId: params.userId,
-    });
-    return findUser;
   }
 }

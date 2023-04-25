@@ -46,6 +46,7 @@ const config: Options = {
   type: 'postgresql',
   host: process.env.DB_HOST,
   port: 5432,
+
   //autoLoadEntities : true, //이거 키면 entities 에 있는 배열이 비어야 함.
   //synchronize : true,
 };

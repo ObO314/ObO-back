@@ -1,4 +1,4 @@
-import { JwtService } from '@nestjs/jwt';
+import { AUTH_JWT_INBOUND_PORT } from 'src/auth/jwt/inbound-port/auth.jwt.inbound-port';
 import {
   UserLoginInboundPort,
   UserLoginInboundPortInputDto,
@@ -9,24 +9,23 @@ import {
   USER_LOGIN_OUTBOUND_PORT,
 } from './../outbound-port/user.login.outbound-port';
 import { Inject } from '@nestjs/common';
-import {
-  USER_JWT_SERVICE_OUTBOUND_PORT,
-  UserJwtServiceOutboundPort,
-} from '../outbound-port/user.jwt-service.outbound-port';
+import { JwtStrategy } from 'src/auth/jwt/strategy/auth.jwt.strategy';
 
 export class UserLoginService implements UserLoginInboundPort {
   constructor(
     @Inject(USER_LOGIN_OUTBOUND_PORT)
     private readonly userLoginOutboundPort: UserLoginOutboundPort,
-    @Inject(USER_JWT_SERVICE_OUTBOUND_PORT)
-    private readonly userJwtServiceOutbondPort: UserJwtServiceOutboundPort,
+    @Inject(AUTH_JWT_INBOUND_PORT)
+    private readonly jwtStrategy: JwtStrategy,
   ) {}
 
   async execute(
     params: UserLoginInboundPortInputDto,
   ): Promise<UserLoginInboundPortOutputDto> {
     const loginUser = await this.userLoginOutboundPort.login(params);
-    const payload = { userId: loginUser.userId };
-    return this.userJwtServiceOutbondPort.sign(payload);
+    const validatedUser = loginUser.userId;
+
+    const accessToken = this.jwtStrategy.login(validatedUser);
+    return accessToken;
   }
 }

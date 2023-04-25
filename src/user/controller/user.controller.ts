@@ -21,11 +21,7 @@ import {
   UserSignUpInboundPort,
   UserSignUpInboundPortInputDto,
 } from '../inbound-port/user.sign-up.inbound-port';
-import {
-  UserValidateInboundPort,
-  UserValidateInboundPortInputDto,
-  USER_VALIDATE_INBOUND_PORT,
-} from '../inbound-port/user.validate.inbound-port';
+import { LocalAuthGuard } from 'src/auth/local/guard/auth.local.guard';
 
 @Controller('user')
 export class UserController {
@@ -35,9 +31,6 @@ export class UserController {
 
     @Inject(USER_LOGIN_INBOUND_PORT)
     private readonly userLoginInboundPort: UserLoginInboundPort,
-
-    @Inject(USER_VALIDATE_INBOUND_PORT)
-    private readonly userValidateInboundPort: UserValidateInboundPort,
   ) {}
 
   @Post('signUp')
@@ -48,6 +41,7 @@ export class UserController {
     return this.userSignUpInboundPort.signUp(userSignUpInboundPortInput);
   }
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
     @Body()
@@ -60,18 +54,5 @@ export class UserController {
     );
     res.setHeader('Authorization', 'Bearer ' + jwt.accessToken);
     return res.json(jwt);
-  }
-
-  @Post('validate')
-  @UseGuards(AuthGuard())
-  async validate(
-    //@Req()
-    @Headers()
-    headers,
-  ) {
-    const userAuthorizeInboundPortInput: UserValidateInboundPortInputDto = {
-      userId: String(headers.user_id),
-    };
-    return this.userValidateInboundPort.validate(userAuthorizeInboundPortInput);
   }
 }
