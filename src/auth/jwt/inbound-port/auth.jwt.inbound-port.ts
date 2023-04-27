@@ -1,16 +1,24 @@
-export type AuthJwtInboundPortInputDto = {
+export type AuthJwtValidateInboundPortInputDto = {};
+
+export type AuthJwtValidateInboundPortOutputDto = {};
+
+export type AuthJwtLoginInboundPortInputDto = {
   email: string;
   password: string;
 };
 
-export type AuthJwtInboundPortOutputDto = {
+export type AuthJwtLoginInboundPortOutputDto = {
   accessToken: string;
 };
 
 export const AUTH_JWT_INBOUND_PORT = 'AUTH_JWT_INBOUND_PORT' as const;
 
-export interface UserLoginInboundPort {
-  execute(
-    params: AuthJwtInboundPortInputDto,
-  ): Promise<AuthJwtInboundPortOutputDto>;
+export interface AuthJwtInboundPort {
+  validate(
+    payload: AuthJwtValidateInboundPortInputDto,
+  ): Promise<AuthJwtValidateInboundPortOutputDto>;
+
+  createToken(
+    userId: AuthJwtLoginInboundPortInputDto,
+  ): AuthJwtLoginInboundPortOutputDto;
 }

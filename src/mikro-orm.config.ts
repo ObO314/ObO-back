@@ -16,9 +16,6 @@ import { CommunityQuestion } from './database/entities/CommunityQuestion';
 import { CommunityQuestionComments } from './database/entities/CommunityQuestionComments';
 import { CommunityRecuitment } from './database/entities/CommunityRecuitment';
 import { CommunityRecuitmentComments } from './database/entities/CommunityRecuitmentComments';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 const config: Options = {
   entities: [

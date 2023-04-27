@@ -9,23 +9,13 @@ import { Module } from '@nestjs/common';
 import { Users } from 'src/database/entities/Users';
 import { UserSignUpService } from './service/user.sign-up.service';
 import { UserController } from './controller/user.controller';
-import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from 'src/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+import { JwtStrategy } from 'src/auth/jwt/strategy/auth.jwt.strategy';
+import { AUTH_JWT_INBOUND_PORT } from 'src/auth/jwt/inbound-port/auth.jwt.inbound-port';
 
 @Module({
-  imports: [
-    MikroOrmModule.forFeature([Users]),
-    AuthModule,
-    PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRETKEY,
-      signOptions: { expiresIn: '3600s' },
-    }),
-  ],
+  imports: [MikroOrmModule.forFeature([Users]), AuthModule],
   controllers: [UserController],
   providers: [
     {
@@ -42,7 +32,7 @@ dotenv.config();
     },
     {
       provide: USER_LOGIN_OUTBOUND_PORT,
-      useClass: UserRepository,
+      useClass: JwtStrategy,
     },
   ],
 })

@@ -18,14 +18,13 @@ import {
 } from '../outbound-port/user.sign-up.outbound-port';
 import { Users } from 'src/database/entities/Users';
 
-export class UserRepository
-  implements UserSignUpOutboundPort, UserLoginOutboundPort
-{
+export class UserRepository implements UserSignUpOutboundPort {
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: EntityRepository<Users>,
   ) {}
 
+  //create
   async signUp(
     params: UserSignUpOutboundPortInputDto,
   ): Promise<UserSignUpOutboundPortOutputDto> {
@@ -48,25 +47,5 @@ export class UserRepository
 
     const newUser = await this.usersRepository.findOne({ email: params.email });
     return newUser;
-  }
-
-  async login(
-    params: UserLoginOutboundPortInputDto,
-  ): Promise<UserLoginOutboundPortOutputDto> {
-    const findUser = await this.usersRepository.findOne({
-      email: params.email,
-    });
-    if (!findUser) {
-      throw new HttpException(
-        '이메일을 잘못 입력했습니다.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const checkPw = bcrypt.compare(params.password, findUser.password);
-    if (!checkPw) {
-      throw new UnauthorizedException();
-    } else {
-      return findUser;
-    }
   }
 }

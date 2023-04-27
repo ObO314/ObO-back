@@ -1,17 +1,15 @@
 export type UserLoginOutboundPortInputDto = {
-  email: string;
-  password: string;
+  userId: string;
 };
 
 export type UserLoginOutboundPortOutputDto = {
-  userId: string;
-  nickname: string;
+  accessToken: string;
 };
 
 export const USER_LOGIN_OUTBOUND_PORT = 'USER_LOGIN_OUTBOUND_PORT' as const;
 
 export interface UserLoginOutboundPort {
-  login(
+  createToken(
     params: UserLoginOutboundPortInputDto,
   ): Promise<UserLoginOutboundPortOutputDto>;
 }

@@ -1,12 +1,21 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy as StrategyJWT } from 'passport-jwt';
-import * as dotenv from 'dotenv';
 import { JwtService } from '@nestjs/jwt';
+import { Injectable } from '@nestjs/common';
+import {
+  AuthJwtInboundPort,
+  AuthJwtLoginInboundPortInputDto,
+  AuthJwtLoginInboundPortOutputDto,
+  AuthJwtValidateInboundPortInputDto,
+  AuthJwtValidateInboundPortOutputDto,
+} from '../inbound-port/auth.jwt.inbound-port';
 
-dotenv.config();
-
-export class JwtStrategy extends PassportStrategy(StrategyJWT) {
-  constructor(private readonly jwtService: JwtService) {
+@Injectable()
+export class JwtStrategy
+  extends PassportStrategy(StrategyJWT)
+  implements AuthJwtInboundPort
+{
+  constructor(private jwtService: JwtService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: true,
@@ -14,11 +23,16 @@ export class JwtStrategy extends PassportStrategy(StrategyJWT) {
     });
   }
 
-  async validate(payload: any) {
-    return { userId: payload.userId };
+  async validate(
+    payload: AuthJwtValidateInboundPortInputDto,
+  ): Promise<AuthJwtValidateInboundPortOutputDto> {
+    return {};
   }
 
-  async login(userId: string) {
-    return { accessToken: this.jwtService.sign(userId) };
+  createToken(
+    userId: AuthJwtLoginInboundPortInputDto,
+  ): AuthJwtLoginInboundPortOutputDto {
+    console.log(this.jwtService.sign({ userId: userId }));
+    return { accessToken: this.jwtService.sign({ userId: userId }) };
   }
 }

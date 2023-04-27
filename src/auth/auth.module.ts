@@ -8,40 +8,19 @@ import { AUTH_LOCAL_INBOUND_PORT } from './local/inbound-port/auth.local.inbound
 import { JwtAuthGuard } from './jwt/guard/auth.jwt.guard';
 import { AUTH_JWT_INBOUND_PORT } from './jwt/inbound-port/auth.jwt.inbound-port';
 import { JwtModule } from '@nestjs/jwt';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+import { LocalStrategy } from './local/strategy/auth.local.strategy';
+import { JwtStrategy } from './jwt/strategy/auth.jwt.strategy';
 
 @Module({
   imports: [
     MikroOrmModule.forFeature([Users]),
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRETKEY,
+      secret: process.env.JWT_SECRETKEY || 'OBO_SECRET_KEY_314',
       signOptions: { expiresIn: '3600s' },
     }),
   ],
-  providers: [
-    {
-      provide: AUTH_LOCAL_INBOUND_PORT,
-      useClass: LocalAuthGuard,
-    },
-    {
-      provide: AUTH_JWT_INBOUND_PORT,
-      useClass: JwtAuthGuard,
-    },
-  ],
-  exports: [
-    PassportModule,
-    JwtModule,
-    {
-      provide: AUTH_LOCAL_INBOUND_PORT,
-      useClass: LocalAuthGuard,
-    },
-    {
-      provide: AUTH_JWT_INBOUND_PORT,
-      useClass: JwtAuthGuard,
-    },
-  ],
+  providers: [JwtStrategy, LocalStrategy],
+  exports: [PassportModule, JwtModule, JwtStrategy, LocalStrategy],
 })
 export class AuthModule {}

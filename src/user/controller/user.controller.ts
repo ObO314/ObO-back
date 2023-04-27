@@ -2,24 +2,24 @@ import {
   Controller,
   Inject,
   Body,
-  Headers,
   Post,
   Res,
-  Get,
   UseGuards,
-  Req,
+  Request,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import {
   USER_LOGIN_INBOUND_PORT,
   UserLoginInboundPort,
   UserLoginInboundPortInputDto,
+  UserLoginInboundPortOutputDto,
 } from '../inbound-port/user.login-inbound-port';
 import {
   USER_SIGN_UP_INBOUND_PORT,
   UserSignUpInboundPort,
   UserSignUpInboundPortInputDto,
+  UserSignUpInboundPortOutputDto,
 } from '../inbound-port/user.sign-up.inbound-port';
 import { LocalAuthGuard } from 'src/auth/local/guard/auth.local.guard';
 
@@ -33,26 +33,25 @@ export class UserController {
     private readonly userLoginInboundPort: UserLoginInboundPort,
   ) {}
 
-  @Post('signUp')
+  @Post('signUp') // 얘는 반환값어디감???? type 적용하기
   async signUp(
     @Body()
     userSignUpInboundPortInput: UserSignUpInboundPortInputDto,
-  ) {
+  ): Promise<UserSignUpInboundPortOutputDto> {
     return this.userSignUpInboundPort.signUp(userSignUpInboundPortInput);
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
-    @Body()
-    userLoginInboundPortInput: UserLoginInboundPortInputDto,
-    @Res()
-    res: Response,
-  ) {
-    const jwt = await this.userLoginInboundPort.execute(
+    @Request() userLoginInboundPortInput: UserLoginInboundPortInputDto,
+    @Res() res: Response, // 얘는 반환값어디감???? type 적용하기
+  ): Promise<UserLoginInboundPortOutputDto> {
+    const jwt = await this.userLoginInboundPort.login(
       userLoginInboundPortInput,
     );
     res.setHeader('Authorization', 'Bearer ' + jwt.accessToken);
-    return res.json(jwt);
+    res.json(jwt.accessToken);
+    return { accessToken: jwt.accessToken };
   }
 }
