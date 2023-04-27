@@ -16,9 +16,6 @@ import { CommunityQuestion } from './database/entities/CommunityQuestion';
 import { CommunityQuestionComments } from './database/entities/CommunityQuestionComments';
 import { CommunityRecuitment } from './database/entities/CommunityRecuitment';
 import { CommunityRecuitmentComments } from './database/entities/CommunityRecuitmentComments';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 const config: Options = {
   entities: [
@@ -46,6 +43,7 @@ const config: Options = {
   type: 'postgresql',
   host: process.env.DB_HOST,
   port: 5432,
+
   //autoLoadEntities : true, //이거 키면 entities 에 있는 배열이 비어야 함.
   //synchronize : true,
 };

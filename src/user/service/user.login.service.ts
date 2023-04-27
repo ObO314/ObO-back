@@ -1,4 +1,4 @@
-import { JwtService } from '@nestjs/jwt';
+import { AUTH_JWT_INBOUND_PORT } from 'src/auth/jwt/inbound-port/auth.jwt.inbound-port';
 import {
   UserLoginInboundPort,
   UserLoginInboundPortInputDto,
@@ -12,16 +12,17 @@ import { Inject } from '@nestjs/common';
 
 export class UserLoginService implements UserLoginInboundPort {
   constructor(
-    @Inject(USER_LOGIN_OUTBOUND_PORT)
+    @Inject(USER_LOGIN_OUTBOUND_PORT) // 얘는 OUTboundPort로
     private readonly userLoginOutboundPort: UserLoginOutboundPort,
-    private readonly jwtService: JwtService,
   ) {}
 
-  async execute(
+  async login(
     params: UserLoginInboundPortInputDto,
   ): Promise<UserLoginInboundPortOutputDto> {
-    const loginUser = await this.userLoginOutboundPort.login(params);
-    const payload = { id: loginUser.userId };
-    return { accessToken: this.jwtService.sign(payload) };
+    const validatedUser = params.userId;
+    const accessToken = await this.userLoginOutboundPort.createToken({
+      userId: validatedUser,
+    });
+    return accessToken;
   }
 }
