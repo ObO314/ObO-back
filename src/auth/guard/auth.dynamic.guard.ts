@@ -1,11 +1,14 @@
-import { LocalAuthGuard } from './local/guard/auth.local.guard';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { GoogleAuthGuard } from './google/guard/auth.google.guard';
+import { LocalAuthGuard } from './auth.local.guard';
+import { GoogleAuthGuard } from './auth.google.guard';
 
 @Injectable()
 export class DynamicAuthGuard implements CanActivate {
-  constructor() {}
+  constructor(
+    private localAuthGuard: LocalAuthGuard,
+    private googleAuthGuard: GoogleAuthGuard,
+  ) {}
 
   canActivate(
     context: ExecutionContext,
@@ -19,9 +22,9 @@ export class DynamicAuthGuard implements CanActivate {
 
     switch (request.path.split('/').pop()) {
       case 'local':
-        return new LocalAuthGuard();
+        return this.localAuthGuard;
       case 'google':
-        return new GoogleAuthGuard();
+        return this.googleAuthGuard;
       default:
         return null;
     }

@@ -32,7 +32,7 @@ import {
   TodoReadInboundPort,
   TodoReadInboundPortInputDto,
 } from '../inbound-port/todo.read.inbound-port';
-import { JwtAuthGuard } from 'src/auth/jwt/guard/auth.jwt.guard';
+import { JwtAuthGuard } from 'src/auth/guard/auth.jwt.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('todo')

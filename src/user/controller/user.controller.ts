@@ -20,8 +20,8 @@ import {
   UserSignUpInboundPortInputDto,
   UserSignUpInboundPortOutputDto,
 } from '../inbound-port/user.sign-up.inbound-port';
-import { LocalAuthGuard } from 'src/auth/local/guard/auth.local.guard';
-import { DynamicAuthGuard } from 'src/auth/dynamicAuthGuard';
+import { LocalAuthGuard } from 'src/auth/guard/auth.local.guard';
+import { DynamicAuthGuard } from 'src/auth/guard/auth.dynamic.guard';
 
 @Controller('user')
 export class UserController {
