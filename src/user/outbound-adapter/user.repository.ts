@@ -1,8 +1,3 @@
-import {
-  UserLoginOutboundPort,
-  UserLoginOutboundPortInputDto,
-  UserLoginOutboundPortOutputDto,
-} from '../outbound-port/user.login.outbound-port';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
@@ -12,13 +7,20 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {
-  UserSignUpOutboundPortInputDto,
-  UserSignUpOutboundPortOutputDto,
-  UserSignUpOutboundPort,
-} from '../outbound-port/user.sign-up.outbound-port';
+  UserSignUpOutboundRepositoryPort,
+  UserSignUpOutboundRepositoryPortInputDto,
+  UserSignUpOutboundRepositoryPortOutputDto,
+} from '../outbound-port/user.sign-up.outbound-repository-port';
 import { Users } from 'src/database/entities/Users';
+import {
+  UserLoginOutboundRepositoryPort,
+  UserLoginOutboundRepositoryPortInputDto,
+  UserLoginOutboundRepositoryPortOutputDto,
+} from '../outbound-port/user.login.outbound-repository-port';
 
-export class UserRepository implements UserSignUpOutboundPort {
+export class UserRepository
+  implements UserSignUpOutboundRepositoryPort, UserLoginOutboundRepositoryPort
+{
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: EntityRepository<Users>,
@@ -26,8 +28,8 @@ export class UserRepository implements UserSignUpOutboundPort {
 
   //create
   async signUp(
-    params: UserSignUpOutboundPortInputDto,
-  ): Promise<UserSignUpOutboundPortOutputDto> {
+    params: UserSignUpOutboundRepositoryPortInputDto,
+  ): Promise<UserSignUpOutboundRepositoryPortOutputDto> {
     const exisitedMember = await this.usersRepository.findOne({
       email: params.email,
     });
@@ -43,9 +45,18 @@ export class UserRepository implements UserSignUpOutboundPort {
       email: params.email,
       password: bcryptedPW,
       nickname: params.nickname,
+      authMethod: params.authMethod,
     });
 
     const newUser = await this.usersRepository.findOne({ email: params.email });
     return newUser;
+  }
+
+  async findUserId(
+    params: UserLoginOutboundRepositoryPortInputDto,
+  ): Promise<UserLoginOutboundRepositoryPortOutputDto> {
+    const userId = (await this.usersRepository.findOne({ email: params.email }))
+      .userId;
+    return { userId: userId };
   }
 }

@@ -36,7 +36,7 @@ export class LocalStrategy
     const findUser = await this.usersRepository.findOne({
       email: email,
     });
-    if (!findUser) {
+    if (!findUser || findUser.authMethod != 'local') {
       throw new HttpException(
         '걔정이 존재하지 않습니다.',
         HttpStatus.BAD_REQUEST,
@@ -46,7 +46,7 @@ export class LocalStrategy
     if (!checkPw) {
       throw new HttpException('비밀번호가 틀렸습니다.', HttpStatus.BAD_REQUEST);
     } else {
-      return findUser;
+      return findUser.email;
     }
   }
 }

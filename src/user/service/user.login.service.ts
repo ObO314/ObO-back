@@ -1,26 +1,36 @@
-import { AUTH_JWT_INBOUND_PORT } from 'src/auth/jwt/inbound-port/auth.jwt.inbound-port';
+import {
+  USER_LOGIN_OUTBOUND_REPOSITORY_PORT,
+  UserLoginOutboundRepositoryPort,
+  UserLoginOutboundRepositoryPortInputDto,
+  UserLoginOutboundRepositoryPortOutputDto,
+} from './../outbound-port/user.login.outbound-repository-port';
+import {
+  USER_LOGIN_OUTBOUND_TOKEN_PORT,
+  UserLoginOutboundTokenPort,
+} from '../outbound-port/user.login.outbound-token-port';
+import { Inject } from '@nestjs/common';
 import {
   UserLoginInboundPort,
   UserLoginInboundPortInputDto,
   UserLoginInboundPortOutputDto,
-} from './../inbound-port/user.login-inbound-port';
-import {
-  UserLoginOutboundPort,
-  USER_LOGIN_OUTBOUND_PORT,
-} from './../outbound-port/user.login.outbound-port';
-import { Inject } from '@nestjs/common';
+} from '../inbound-port/user.login.inbound-port';
 
 export class UserLoginService implements UserLoginInboundPort {
   constructor(
-    @Inject(USER_LOGIN_OUTBOUND_PORT) // 얘는 OUTboundPort로
-    private readonly userLoginOutboundPort: UserLoginOutboundPort,
+    @Inject(USER_LOGIN_OUTBOUND_REPOSITORY_PORT)
+    private readonly userLoginOutboundRepositoryPort: UserLoginOutboundRepositoryPort,
+    @Inject(USER_LOGIN_OUTBOUND_TOKEN_PORT)
+    private readonly userLoginOutTokenPort: UserLoginOutboundTokenPort,
   ) {}
 
   async login(
     params: UserLoginInboundPortInputDto,
   ): Promise<UserLoginInboundPortOutputDto> {
-    const validatedUser = params.userId;
-    const accessToken = await this.userLoginOutboundPort.createToken({
+    const findUser = await this.userLoginOutboundRepositoryPort.findUserId({
+      email: params.email,
+    });
+    const validatedUser = findUser.userId;
+    const accessToken = await this.userLoginOutTokenPort.createToken({
       userId: validatedUser,
     });
     return accessToken;

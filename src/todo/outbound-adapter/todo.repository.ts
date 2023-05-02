@@ -1,4 +1,7 @@
-import { TodoUpdateOutboundPortOutputDto } from '../outbound-port/todo.update.outbound-port';
+import {
+  TodoUpdateOutboundPort,
+  TodoUpdateOutboundPortOutputDto,
+} from '../outbound-port/todo.update.outbound-port';
 import { InjectRepository } from '@mikro-orm/nestjs';
 // import { EntityRepository } from '@mikro-orm/core';
 import { EntityRepository } from '@mikro-orm/knex';
@@ -10,6 +13,7 @@ import {
 } from '../outbound-port/todo.create.outbound-port';
 import { Todos } from 'src/database/entities/Todos';
 import {
+  TodoDeleteOutboundPort,
   TodoDeleteOutboundPortInputDto,
   TodoDeleteOutboundPortOutputDto,
 } from '../outbound-port/todo.delete.outbound-port';
@@ -17,11 +21,18 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { TodoUpdateOutboundPortInputDto } from '../outbound-port/todo.update.outbound-port';
 import { Users } from 'src/database/entities/Users';
 import {
+  TodoReadOutboundPort,
   TodoReadOutboundPortInputDto,
   TodoReadOutboundPortOutputDto,
 } from '../outbound-port/todo.read.outbound-port';
 
-export class TodoRepository implements TodoCreateOutboundPort {
+export class TodoRepository
+  implements
+    TodoCreateOutboundPort,
+    TodoDeleteOutboundPort,
+    TodoUpdateOutboundPort,
+    TodoReadOutboundPort
+{
   constructor(
     @InjectRepository(Todos)
     private readonly todoRepository: EntityRepository<Todos>,
