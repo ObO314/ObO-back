@@ -12,6 +12,9 @@ export class Users {
   @PrimaryKey({ columnType: 'int8' })
   userId!: string;
 
+  @Property({ length: 100 })
+  authMethod!: string;
+
   @Property({ length: 50 })
   email!: string;
 
