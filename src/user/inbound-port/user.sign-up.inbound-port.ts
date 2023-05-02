@@ -2,6 +2,7 @@ export type UserSignUpInboundPortInputDto = {
   email: string;
   password: string;
   nickname: string;
+  authMethod: string;
 };
 
 export type UserSignUpInboundPortOutputDto = {

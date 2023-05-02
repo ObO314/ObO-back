@@ -10,6 +10,8 @@ import { AUTH_JWT_INBOUND_PORT } from './jwt/inbound-port/auth.jwt.inbound-port'
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './local/strategy/auth.local.strategy';
 import { JwtStrategy } from './jwt/strategy/auth.jwt.strategy';
+// import { DynamicAuthGuard } from './dynamicAuthGuard';
+import { GoogleStrategy } from './google/auth.google.strategy';
 
 @Module({
   imports: [
@@ -20,7 +22,13 @@ import { JwtStrategy } from './jwt/strategy/auth.jwt.strategy';
       signOptions: { expiresIn: '3600s' },
     }),
   ],
-  providers: [JwtStrategy, LocalStrategy],
-  exports: [PassportModule, JwtModule, JwtStrategy, LocalStrategy],
+  providers: [JwtStrategy, LocalStrategy, GoogleStrategy],
+  exports: [
+    PassportModule,
+    JwtModule,
+    JwtStrategy,
+    GoogleStrategy,
+    LocalStrategy,
+  ],
 })
 export class AuthModule {}

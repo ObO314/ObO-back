@@ -32,7 +32,6 @@ export class JwtStrategy
   createToken(
     userId: AuthJwtLoginInboundPortInputDto,
   ): AuthJwtLoginInboundPortOutputDto {
-    console.log(this.jwtService.sign({ userId: userId }));
     return { accessToken: this.jwtService.sign({ userId: userId }) };
   }
 }
