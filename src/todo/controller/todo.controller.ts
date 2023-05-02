@@ -21,7 +21,6 @@ import {
   Put,
   Patch,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
   TODO_DELETE_INBOUND_PORT,
   TodoDeleteINboundPort,
@@ -33,9 +32,10 @@ import {
   TodoReadInboundPort,
   TodoReadInboundPortInputDto,
 } from '../inbound-port/todo.read.inbound-port';
+import { JwtAuthGuard } from 'src/auth/guard/auth.jwt.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('todo')
-@UseGuards(AuthGuard())
 export class TodoController {
   constructor(
     @Inject(TODO_CREATE_INBOUND_PORT)

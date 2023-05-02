@@ -1,0 +1,96 @@
+├── .env
+├── .eslintrc.js
+├── .gitignore
+├── .prettierrc
+├── nest-cli.json
+├── new.tree
+├── package-lock.json
+├── package.json
+├── README.md
+├── src
+│  ├── app.controller.spec.ts
+│  ├── app.controller.ts
+│  ├── app.module.ts
+│  ├── app.service.ts
+│  ├── auth
+│  │  ├── auth.module.ts
+│  │  ├── jwt
+│  │  │  ├── guard
+│  │  │  │  └── auth.jwt.guard.ts
+│  │  │  ├── inbound-port
+│  │  │  │  └── auth.jwt.inbound-port.ts
+│  │  │  └── strategy
+│  │  │    └── auth.jwt.strategy.ts
+│  │  └── local
+│  │    ├── guard
+│  │    │  └── auth.local.guard.ts
+│  │    ├── inbound-port
+│  │    │  └── auth.local.inbound-port.ts
+│  │    └── strategy
+│  │      └── auth.local.strategy.ts
+│  ├── blog
+│  ├── circle
+│  ├── community
+│  ├── database
+│  │  └── entities
+│  │    ├── BlogPost.ts
+│  │    ├── BlogPostComments.ts
+│  │    ├── Circles.ts
+│  │    ├── CommunityAnonymous.ts
+│  │    ├── CommunityAnonymousComments.ts
+│  │    ├── CommunityQuestion.ts
+│  │    ├── CommunityQuestionComments.ts
+│  │    ├── CommunityRecuitment.ts
+│  │    ├── CommunityRecuitmentComments.ts
+│  │    ├── DailyWorks.ts
+│  │    ├── Hashtags.ts
+│  │    ├── Routines.ts
+│  │    ├── RoutinesCompleted.ts
+│  │    ├── Todos.ts
+│  │    ├── Users.ts
+│  │    ├── UsersCircles.ts
+│  │    └── Works.ts
+│  ├── main.ts
+│  ├── mikro-orm.config.ts
+│  ├── routine
+│  ├── todo
+│  │  ├── controller
+│  │  │  └── todo.controller.ts
+│  │  ├── inbound-port
+│  │  │  ├── todo.create.inbound-port.ts
+│  │  │  ├── todo.delete.inbound-port.ts
+│  │  │  ├── todo.read.inbound-port.ts
+│  │  │  └── todo.update.inbound-port.ts
+│  │  ├── outbound-adapter
+│  │  │  └── todo.repository.ts
+│  │  ├── outbound-port
+│  │  │  ├── todo.create.outbound-port.ts
+│  │  │  ├── todo.delete.outbound-port.ts
+│  │  │  ├── todo.read.outbound-port.ts
+│  │  │  └── todo.update.outbound-port.ts
+│  │  ├── service
+│  │  │  ├── todo.create.service.ts
+│  │  │  ├── todo.delete.service.ts
+│  │  │  ├── todo.read.service.ts
+│  │  │  └── todo.update.service.ts
+│  │  └── todo.module.ts
+│  └── user
+│    ├── controller
+│    │  └── user.controller.ts
+│    ├── inbound-port
+│    │  ├── user.login-inbound-port.ts
+│    │  └── user.sign-up.inbound-port.ts
+│    ├── outbound-adapter
+│    │  └── user.repository.ts
+│    ├── outbound-port
+│    │  ├── user.login.outbound-port.ts
+│    │  └── user.sign-up.outbound-port.ts
+│    ├── service
+│    │  ├── user.login.service.ts
+│    │  └── user.sign-up.service.ts
+│    └── user.module.ts
+├── test
+│  ├── app.e2e-spec.ts
+│  └── jest-e2e.json
+├── tsconfig.build.json
+└── tsconfig.json

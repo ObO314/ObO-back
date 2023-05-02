@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { UserModule } from './../user/user.module';
 import { Todos } from 'src/database/entities/Todos';
 import { TodoController } from './controller/todo.controller';
-import { TodoRepository } from './outbound-adaptor/todo.repository';
+import { TodoRepository } from './outbound-adapter/todo.repository';
 import { TodoCreateService } from './service/todo.create.service';
 import { TODO_CREATE_INBOUND_PORT } from './inbound-port/todo.create.inbound-port';
 import { TODO_CREATE_OUTBOUND_PORT } from './outbound-port/todo.create.outbound-port';
@@ -20,11 +20,13 @@ import { TodoReadService } from './service/todo.read.service';
 import { TODO_READ_OUTBOUND_PORT } from './outbound-port/todo.read.outbound-port';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Todos, Users]), UserModule],
-  controllers: [TodoController],
-  providers: [
+  imports: [
+    MikroOrmModule.forFeature([Todos, Users]),
     UserModule,
     PassportModule,
+  ],
+  controllers: [TodoController],
+  providers: [
     {
       provide: TODO_CREATE_INBOUND_PORT,
       useClass: TodoCreateService,
