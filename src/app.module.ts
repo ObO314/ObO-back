@@ -10,7 +10,7 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // 이 설정은 모든 모듈에서 ConfigService를 사용할 수 있도록 합니다.
+      isGlobal: true,
     }),
     MikroOrmModule.forRoot(),
     AuthModule,
@@ -21,7 +21,3 @@ import { AuthModule } from './auth/auth.module';
   providers: [AppService],
 })
 export class AppModule {}
-
-// 엔티티 작성
-// 레포지토리 작성해서 엔티티 임포트
-// 엔티티 post 하는 로직 해서 테스트

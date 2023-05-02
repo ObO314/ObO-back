@@ -19,7 +19,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class LocalStrategy
-  extends PassportStrategy(StrategyLOCAL, 'local')
+  extends PassportStrategy(StrategyLOCAL)
   implements AuthLocalInboundPort
 {
   constructor(

@@ -1,7 +1,7 @@
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy as StrategyJWT } from 'passport-jwt';
 import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
+import { ExtractJwt, Strategy as StrategyJWT } from 'passport-jwt';
+import { PassportStrategy } from '@nestjs/passport';
 import {
   AuthJwtInboundPort,
   AuthJwtLoginInboundPortInputDto,

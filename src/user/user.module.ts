@@ -9,20 +9,13 @@ import { Users } from 'src/database/entities/Users';
 import { UserSignUpService } from './service/user.sign-up.service';
 import { UserController } from './controller/user.controller';
 import { AuthModule } from 'src/auth/auth.module';
-import { JwtStrategy } from 'src/auth/jwt/strategy/auth.jwt.strategy';
+import { JwtStrategy } from 'src/auth/strategy/auth.jwt.strategy';
 import { USER_LOGIN_OUTBOUND_REPOSITORY_PORT } from './outbound-port/user.login.outbound-repository-port';
 import { USER_LOGIN_OUTBOUND_TOKEN_PORT } from './outbound-port/user.login.outbound-token-port';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [
-    MikroOrmModule.forFeature([Users]),
-    JwtModule.register({
-      secret: process.env.JWT_SECRETKEY || 'OBO_SECRET_KEY_314',
-      signOptions: { expiresIn: '3600s' },
-    }),
-    AuthModule,
-  ],
+  imports: [MikroOrmModule.forFeature([Users]), AuthModule],
   controllers: [UserController],
   providers: [
     {

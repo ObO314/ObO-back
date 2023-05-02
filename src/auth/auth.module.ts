@@ -2,16 +2,13 @@ import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { PassportModule } from '@nestjs/passport';
 import { Users } from 'src/database/entities/Users';
-import { UserModule } from './../user/user.module';
-import { LocalAuthGuard } from './local/guard/auth.local.guard';
-import { AUTH_LOCAL_INBOUND_PORT } from './local/inbound-port/auth.local.inbound-port';
-import { JwtAuthGuard } from './jwt/guard/auth.jwt.guard';
-import { AUTH_JWT_INBOUND_PORT } from './jwt/inbound-port/auth.jwt.inbound-port';
+import { LocalAuthGuard } from './guard/auth.local.guard';
 import { JwtModule } from '@nestjs/jwt';
-import { LocalStrategy } from './local/strategy/auth.local.strategy';
-import { JwtStrategy } from './jwt/strategy/auth.jwt.strategy';
-// import { DynamicAuthGuard } from './dynamicAuthGuard';
-import { GoogleStrategy } from './google/auth.google.strategy';
+import { JwtStrategy } from './strategy/auth.jwt.strategy';
+import { DynamicAuthGuard } from './guard/auth.dynamic.guard';
+import { GoogleAuthGuard } from './guard/auth.google.guard';
+import { LocalStrategy } from './strategy/auth.local.strategy';
+import { GoogleStrategy } from './strategy/auth.google.strategy';
 
 @Module({
   imports: [
@@ -22,13 +19,23 @@ import { GoogleStrategy } from './google/auth.google.strategy';
       signOptions: { expiresIn: '3600s' },
     }),
   ],
-  providers: [JwtStrategy, LocalStrategy, GoogleStrategy],
+  providers: [
+    JwtStrategy,
+    DynamicAuthGuard,
+    LocalStrategy,
+    LocalAuthGuard,
+    GoogleStrategy,
+    GoogleAuthGuard,
+  ],
   exports: [
     PassportModule,
     JwtModule,
     JwtStrategy,
-    GoogleStrategy,
+    DynamicAuthGuard,
     LocalStrategy,
+    LocalAuthGuard,
+    GoogleStrategy,
+    GoogleAuthGuard,
   ],
 })
 export class AuthModule {}
