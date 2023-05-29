@@ -47,7 +47,8 @@ export class UserController {
   async localLogin(
     @Body()
     userlocalLoginInboundPortInput: UserLoginInboundPortInputDto,
-    @Res() res: Response,
+    @Res()
+    res: Response,
   ): Promise<UserLoginInboundPortOutputDto> {
     pipe(
       userlocalLoginInboundPortInput,
@@ -71,12 +72,3 @@ export class UserController {
 // return;
 
 // 함수형으로 변경
-// pipe(
-//   accessToken,
-//   tap((accessToken) =>
-//     res.setHeader('Authorization', 'Bearer ' + accessToken),
-//   ),
-//   tap(res.json),
-//   tap(console.log),
-// );
-// return;
