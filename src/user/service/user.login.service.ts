@@ -3,36 +3,67 @@ import {
   UserLoginOutboundRepositoryPort,
   UserLoginOutboundRepositoryPortInputDto,
   UserLoginOutboundRepositoryPortOutputDto,
-} from './../outbound-port/user.login.outbound-repository-port';
+} from '../outbound-port/user.login.outbound-repository-port';
 import {
   USER_LOGIN_OUTBOUND_TOKEN_PORT,
   UserLoginOutboundTokenPort,
 } from '../outbound-port/user.login.outbound-token-port';
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import {
   UserLoginInboundPort,
   UserLoginInboundPortInputDto,
   UserLoginInboundPortOutputDto,
 } from '../inbound-port/user.login.inbound-port';
+import {
+  UserSignUpInboundPort,
+  UserSignUpInboundPortInputDto,
+  UserSignUpInboundPortOutputDto,
+} from '../inbound-port/user.sign-up.inbound-port';
+import { USER_SIGN_UP_OUTBOUND_REPOSITORY_PORT } from '../outbound-port/user.sign-up.outbound-repository-port';
+import { pipe, take } from '@fxts/core';
 
-export class UserLoginService implements UserLoginInboundPort {
+export class UserService implements UserLoginInboundPort {
   constructor(
     @Inject(USER_LOGIN_OUTBOUND_REPOSITORY_PORT)
     private readonly userLoginOutboundRepositoryPort: UserLoginOutboundRepositoryPort,
     @Inject(USER_LOGIN_OUTBOUND_TOKEN_PORT)
-    private readonly userLoginOutTokenPort: UserLoginOutboundTokenPort,
+    private readonly userLoginOutboundTokenPort: UserLoginOutboundTokenPort,
   ) {}
 
   async login(
     params: UserLoginInboundPortInputDto,
   ): Promise<UserLoginInboundPortOutputDto> {
-    const findUser = await this.userLoginOutboundRepositoryPort.findUserId({
-      email: params.email,
-    });
-    const validatedUser = findUser.userId;
-    const accessToken = await this.userLoginOutTokenPort.createToken({
-      userId: validatedUser,
-    });
-    return accessToken;
+    // const findUser = await this.userLoginOutboundRepositoryPort.findUserId({
+    //   email: params.email,
+    // });
+    // if (!findUser) {
+    //   new BadRequestException('가입되지 않은 아이디 입니다. 가입하시겠습니까?');
+    // } else {
+    //   const validatedUser = findUser.userId;
+    //   const accessToken = await this.userLoginOutboundTokenPort.createToken({
+    //     userId: validatedUser,
+    //   });
+    try {
+      return pipe(
+        params,
+        ({ email }) =>
+          this.userLoginOutboundRepositoryPort.findUserId({ email: email }),
+        ({ userId }) =>
+          this.userLoginOutboundTokenPort.createToken({ userId: userId }),
+      );
+    } catch (e) {
+      // if (e) {
+      //   new BadRequestException(
+      //     '가입되지 않은 아이디 입니다. 가입하시겠습니까?',
+      //   );
+      // }
+    }
+
+    // return accessToken;
   }
 }
+
+// 유저찾아서
+// 유저 아이디 뽑아서
+// 액세스 토큰받아서
+// 발급한다.
