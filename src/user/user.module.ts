@@ -11,7 +11,8 @@ import { JwtStrategy } from 'src/auth/strategy/auth.jwt.strategy';
 import { USER_LOGIN_OUTBOUND_REPOSITORY_PORT } from './outbound-port/user.login.outbound-repository-port';
 import { USER_LOGIN_OUTBOUND_TOKEN_PORT } from './outbound-port/user.login.outbound-token-port';
 import { JwtModule } from '@nestjs/jwt';
-import { UserService } from './service/user.login.service';
+import { UserLoginService } from './service/user.login.service';
+import { UserSignUpService } from './service/user.sign-up.service';
 
 @Module({
   imports: [MikroOrmModule.forFeature([Users]), AuthModule],
@@ -19,7 +20,7 @@ import { UserService } from './service/user.login.service';
   providers: [
     {
       provide: USER_SIGN_UP_INBOUND_PORT,
-      useClass: UserService,
+      useClass: UserSignUpService,
     },
     {
       provide: USER_SIGN_UP_OUTBOUND_REPOSITORY_PORT,
@@ -27,7 +28,7 @@ import { UserService } from './service/user.login.service';
     },
     {
       provide: USER_LOGIN_INBOUND_PORT,
-      useClass: UserService,
+      useClass: UserLoginService,
     },
     {
       provide: USER_LOGIN_OUTBOUND_REPOSITORY_PORT,

@@ -22,7 +22,7 @@ import {
 import { USER_SIGN_UP_OUTBOUND_REPOSITORY_PORT } from '../outbound-port/user.sign-up.outbound-repository-port';
 import { pipe, take } from '@fxts/core';
 
-export class UserService implements UserLoginInboundPort {
+export class UserLoginService implements UserLoginInboundPort {
   constructor(
     @Inject(USER_LOGIN_OUTBOUND_REPOSITORY_PORT)
     private readonly userLoginOutboundRepositoryPort: UserLoginOutboundRepositoryPort,
@@ -33,37 +33,12 @@ export class UserService implements UserLoginInboundPort {
   async login(
     params: UserLoginInboundPortInputDto,
   ): Promise<UserLoginInboundPortOutputDto> {
-    // const findUser = await this.userLoginOutboundRepositoryPort.findUserId({
-    //   email: params.email,
-    // });
-    // if (!findUser) {
-    //   new BadRequestException('가입되지 않은 아이디 입니다. 가입하시겠습니까?');
-    // } else {
-    //   const validatedUser = findUser.userId;
-    //   const accessToken = await this.userLoginOutboundTokenPort.createToken({
-    //     userId: validatedUser,
-    //   });
-    try {
-      return pipe(
-        params,
-        ({ email }) =>
-          this.userLoginOutboundRepositoryPort.findUserId({ email: email }),
-        ({ userId }) =>
-          this.userLoginOutboundTokenPort.createToken({ userId: userId }),
-      );
-    } catch (e) {
-      // if (e) {
-      //   new BadRequestException(
-      //     '가입되지 않은 아이디 입니다. 가입하시겠습니까?',
-      //   );
-      // }
-    }
-
-    // return accessToken;
+    return await pipe(
+      params,
+      ({ email }) =>
+        this.userLoginOutboundRepositoryPort.findUserId({ email: email }),
+      ({ userId }) =>
+        this.userLoginOutboundTokenPort.createToken({ userId: userId }),
+    );
   }
 }
-
-// 유저찾아서
-// 유저 아이디 뽑아서
-// 액세스 토큰받아서
-// 발급한다.
