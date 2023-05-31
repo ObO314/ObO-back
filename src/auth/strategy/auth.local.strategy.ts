@@ -16,7 +16,9 @@ import {
   AuthLocalInboundPortOutputDto,
 } from '../inbound-port/auth.local.inbound-port';
 import * as bcrypt from 'bcrypt';
-import { filter, map, pipe, toArray, toAsync } from '@fxts/core';
+import { curry, filter, map, pipe, toArray, toAsync } from '@fxts/core';
+import { findInRepository } from 'src/utilities/findInRepository';
+import { executeOrThrowHttpError } from 'src/utilities/executeOrThrowError';
 
 @Injectable()
 export class LocalStrategy
@@ -34,46 +36,23 @@ export class LocalStrategy
     email: AuthLocalInboundPortInputEmailDto,
     password: AuthLocalInboundPortInputPasswordDto,
   ): Promise<AuthLocalInboundPortOutputDto> {
-    const findUser = await this.usersRepository.findOne({
-      email: email,
-    });
-    // if (!findUser || findUser.authMethod != 'local') {
-    //   throw new HttpException(
-    //     '계정이 존재하지 않습니다.',
-    //     HttpStatus.BAD_REQUEST,
-    //   );
-    // }
-    // const checkPw = bcrypt.compare(password, findUser.password);
-    // if (!checkPw) {
-    //   throw new HttpException('비밀번호가 틀렸습니다.', HttpStatus.BAD_REQUEST);
-    // } else {
-    //   return findUser.email;
-    // }
-
-    // return pipe(
-    //   email,
-    //   async (email) => await this.usersRepository.findOne({ email }),
-    //   (findUser) =>
-    //     findUser && findUser.authMethod == 'local'
-    //       ? findUser
-    //       : new Error('계정이 존재하지 않습니다.'),
-    //   async (findUser) => {
-    //     if (findUser)
-    //       return (await bcrypt.compare(password, findUser.password))
-    //         ? true
-    //         : new Error('비밀번호가 틀렸습니다.');
-    //   },
-    // );
+    //
+    const findUserOrError = executeOrThrowHttpError(
+      findInRepository(this.usersRepository),
+      '계정이 존재하지 않습니다.',
+      'email',
+    );
+    const checkPasswordOrError = executeOrThrowHttpError(
+      bcrypt.compare,
+      '비밀번호가 틀렸습니다.',
+      password,
+    );
 
     return pipe(
-      [email],
-      toAsync,
-      map(async (email) => await this.usersRepository.findOne({ email })),
-      filter((findUser) => findUser && findUser.authMethod == 'local'),
-      filter(
-        async (findUser) => await bcrypt.compare(password, findUser.password),
-      ),
-      toArray,
+      email,
+      findUserOrError,
+      (user) => user.password,
+      checkPasswordOrError,
     );
   }
 }

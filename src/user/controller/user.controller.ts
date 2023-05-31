@@ -61,14 +61,3 @@ export class UserController {
     return;
   }
 }
-
-// 기존 선언형
-// // // 구글이나 로컬에서 사용자가 DB에 있음을 확인 후, 해당 email의 Userid를 가져온다.
-// const jwt = await this.userLoginInboundPort.login(
-//   userlocalLoginInboundPortInput,
-// );
-// res.setHeader('Authorization', 'Bearer ' + accessToken);
-// res.json(accessToken);
-// return;
-
-// 함수형으로 변경

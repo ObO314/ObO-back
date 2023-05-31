@@ -1,5 +1,6 @@
 export type UserLoginInboundPortInputDto = {
   email: string;
+  password: string;
 };
 
 export type UserLoginInboundPortOutputDto = {

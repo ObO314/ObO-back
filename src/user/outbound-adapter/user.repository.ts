@@ -17,6 +17,12 @@ import {
   UserLoginOutboundRepositoryPortInputDto,
   UserLoginOutboundRepositoryPortOutputDto,
 } from '../outbound-port/user.login.outbound-repository-port';
+import { pipe, tap } from '@fxts/core';
+import {
+  executeAndThrowHttpError,
+  executeOrThrowHttpError,
+} from 'src/utilities/executeOrThrowError';
+import { findInRepository } from 'src/utilities/findInRepository';
 
 export class UserRepository
   implements UserSignUpOutboundRepositoryPort, UserLoginOutboundRepositoryPort
@@ -30,33 +36,36 @@ export class UserRepository
   async signUp(
     params: UserSignUpOutboundRepositoryPortInputDto,
   ): Promise<UserSignUpOutboundRepositoryPortOutputDto> {
-    const exisitedMember = await this.usersRepository.findOne({
-      email: params.email,
-    });
+    const findUserOrError = executeAndThrowHttpError(
+      findInRepository(this.usersRepository),
+      '이미 가입된 이메일입니다.',
+      'email',
+    );
 
-    if (exisitedMember) {
-      throw new HttpException(
-        '이미 존재하는 이메일 입니다.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const bcryptedPW = await bcrypt.hash(params.password, 10);
-    this.usersRepository.create({
-      email: params.email,
-      password: bcryptedPW,
-      nickname: params.nickname,
-      authMethod: params.authMethod,
-    });
-
-    const newUser = await this.usersRepository.findOne({ email: params.email });
-    return newUser;
+    console.log('here');
+    return pipe(
+      params,
+      tap(({ email }) => findUserOrError(email)),
+      tap(async (params) => {
+        params.password = await bcrypt.hash(params.password, 10);
+      }),
+      tap((user) => {
+        this.usersRepository.create(user, { persist: true });
+      }),
+      (params) => this.usersRepository.findOne({ email: params.email }),
+    );
   }
 
+  //read
   async findUserId(
     params: UserLoginOutboundRepositoryPortInputDto,
   ): Promise<UserLoginOutboundRepositoryPortOutputDto> {
-    const userId = (await this.usersRepository.findOne({ email: params.email }))
-      .userId;
-    return { userId: userId };
+    return pipe(
+      params,
+      async ({ email }) => await this.usersRepository.findOne({ email: email }),
+      (user) => {
+        return { userId: user.userId };
+      },
+    );
   }
 }
