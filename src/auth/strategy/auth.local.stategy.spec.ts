@@ -5,21 +5,24 @@ import {
   AuthLocalStrategyOutboundPortOutputDto,
 } from '../outbound-port/auth.local.strategy.outbound-port';
 import { AuthLocalStrategy } from './auth.local.strategy';
-import { rejects } from 'assert';
 
 class MockAuthLocalStrategyOutboundPort
   implements AuthLocalStrategyOutboundPort
 {
-  private readonly user: AuthLocalStrategyOutboundPortOutputDto;
+  private readonly user: AuthLocalStrategyOutboundPortOutputDto | Error;
 
-  constructor(user: AuthLocalStrategyOutboundPortOutputDto) {
+  constructor(user: AuthLocalStrategyOutboundPortOutputDto | Error) {
     this.user = user;
   }
 
   async findUser(
     params: AuthLocalStrategyOutboundPortInputDto,
   ): Promise<AuthLocalStrategyOutboundPortOutputDto> {
-    return this.user;
+    if (this.user instanceof Error) {
+      throw this.user;
+    } else {
+      return this.user;
+    }
   }
 }
 
@@ -35,8 +38,6 @@ describe('AuthLocalStrategy Spec', () => {
         email: 'backend@obo.com',
         password:
           '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
-        nickname: '테스트입니다.',
-        authMethod: 'local',
       }),
     );
 
@@ -45,7 +46,7 @@ describe('AuthLocalStrategy Spec', () => {
       '1q2w3e4r',
     );
 
-    expect(result).toStrictEqual(true);
+    expect(result).toStrictEqual({ userId: '1' });
   });
 
   //----------------------------------------------------------------
@@ -57,8 +58,6 @@ describe('AuthLocalStrategy Spec', () => {
         email: 'backend@obo.com',
         password:
           '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
-        nickname: '테스트입니다.',
-        authMethod: 'local',
       }),
     );
 
@@ -73,7 +72,9 @@ describe('AuthLocalStrategy Spec', () => {
 
   test('로컬 로그인 : 존재하지 않는 이메일', async () => {
     const authLocalStrategy = new AuthLocalStrategy(
-      new MockAuthLocalStrategyOutboundPort(undefined),
+      new MockAuthLocalStrategyOutboundPort(
+        new Error('계정이 존재하지 않습니다.'),
+      ),
     );
 
     await expect(() =>

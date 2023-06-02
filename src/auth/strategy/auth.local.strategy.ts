@@ -30,7 +30,7 @@ import {
   AuthLocalStrategyOutboundPort,
   AuthLocalStrategyOutboundPortInputDto,
 } from '../outbound-port/auth.local.strategy.outbound-port';
-import { executeOrThrowError } from 'src/utilities/executeThrowError';
+import { executeOrThrowError } from '../../utilities/executeThrowError';
 
 @Injectable()
 export class AuthLocalStrategy
@@ -53,23 +53,23 @@ export class AuthLocalStrategy
       bcrypt.compare,
       '비밀번호가 틀렸습니다.',
     );
-
+    const LOCAL = 'LOCAL' as const;
     //
     try {
-      return (
+      const user = { email: email, authMethod: LOCAL };
+      const userId = (
         await pipe(
-          [email],
+          [user],
           toAsync,
-          map((email) =>
-            this.authLocalStrategyOutboundPort.findUser({ email }),
-          ),
+          map((user) => this.authLocalStrategyOutboundPort.findUser(user)),
           filter(
             async (user) => await checkPasswordOrError(password, user.password),
           ),
           take(1),
           toArray,
         )
-      )[0];
+      )[0].userId;
+      return { userId: userId };
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     }

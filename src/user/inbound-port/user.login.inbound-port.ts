@@ -1,9 +1,5 @@
 export type UserLoginInboundPortInputDto = {
   userId: string;
-  email: string;
-  password: string;
-  nickname: string;
-  authMethod: string;
 };
 
 export type UserLoginInboundPortOutputDto = {

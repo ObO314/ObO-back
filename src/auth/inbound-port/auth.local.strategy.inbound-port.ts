@@ -3,10 +3,6 @@ export type AuthLocalStrategyInboundPortInputPasswordDto = string;
 
 export type AuthLocalStrategyInboundPortOutputDto = {
   userId: string;
-  email: string;
-  password: string;
-  nickname: string;
-  authMethod: string;
 };
 
 export const AUTH_LOCAL_STRATEGY_INBOUND_PORT =

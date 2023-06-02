@@ -8,7 +8,7 @@ import {
   AuthJwtLoginInboundPortOutputDto,
   AuthJwtValidateInboundPortInputDto,
   AuthJwtValidateInboundPortOutputDto,
-} from '../inbound-port/auth.jwt.inbound-port';
+} from '../inbound-port/auth.jwt.strategy.inbound-port';
 
 @Injectable()
 export class JwtStrategy
