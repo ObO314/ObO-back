@@ -24,21 +24,13 @@ import { pipe, take } from '@fxts/core';
 
 export class UserLoginService implements UserLoginInboundPort {
   constructor(
-    @Inject(USER_LOGIN_OUTBOUND_REPOSITORY_PORT)
-    private readonly userLoginOutboundRepositoryPort: UserLoginOutboundRepositoryPort,
     @Inject(USER_LOGIN_OUTBOUND_TOKEN_PORT)
     private readonly userLoginOutboundTokenPort: UserLoginOutboundTokenPort,
   ) {}
 
-  async login(
-    params: UserLoginInboundPortInputDto,
-  ): Promise<UserLoginInboundPortOutputDto> {
-    return await pipe(
-      params,
-      ({ email }) =>
-        this.userLoginOutboundRepositoryPort.findUserId({ email: email }),
-      ({ userId }) =>
-        this.userLoginOutboundTokenPort.createToken({ userId: userId }),
-    );
+  login(params: UserLoginInboundPortInputDto): UserLoginInboundPortOutputDto {
+    return this.userLoginOutboundTokenPort.createToken({
+      userId: params.userId,
+    });
   }
 }
