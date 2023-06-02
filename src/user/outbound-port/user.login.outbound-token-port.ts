@@ -12,5 +12,5 @@ export const USER_LOGIN_OUTBOUND_TOKEN_PORT =
 export interface UserLoginOutboundTokenPort {
   createToken(
     params: UserLoginOutboundTokenPortInputDto,
-  ): Promise<UserLoginOutboundTokenPortOutputDto>;
+  ): UserLoginOutboundTokenPortOutputDto;
 }

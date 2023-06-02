@@ -18,11 +18,7 @@ import {
   UserLoginOutboundRepositoryPortOutputDto,
 } from '../outbound-port/user.login.outbound-repository-port';
 import { pipe, tap } from '@fxts/core';
-import {
-  executeAndThrowHttpError,
-  executeOrThrowHttpError,
-} from 'src/utilities/executeOrThrowError';
-import { findInRepository } from 'src/utilities/findInRepository';
+import { executeAndThrowError } from 'src/utilities/executeThrowError';
 
 export class UserRepository
   implements UserSignUpOutboundRepositoryPort, UserLoginOutboundRepositoryPort
@@ -36,14 +32,13 @@ export class UserRepository
   async signUp(
     params: UserSignUpOutboundRepositoryPortInputDto,
   ): Promise<UserSignUpOutboundRepositoryPortOutputDto> {
-    const findUserOrError = executeAndThrowHttpError(
-      findInRepository(this.usersRepository),
+    //
+    const findUserOrError = executeAndThrowError(
+      (email) => this.usersRepository.findOne({ email }),
       '이미 가입된 이메일입니다.',
-      'email',
     );
 
-    console.log('here');
-    return pipe(
+    return await pipe(
       params,
       tap(({ email }) => findUserOrError(email)),
       tap(async (params) => {
@@ -62,7 +57,7 @@ export class UserRepository
   ): Promise<UserLoginOutboundRepositoryPortOutputDto> {
     return pipe(
       params,
-      async ({ email }) => await this.usersRepository.findOne({ email: email }),
+      async ({ email }) => await this.usersRepository.findOne({ email }),
       (user) => {
         return { userId: user.userId };
       },

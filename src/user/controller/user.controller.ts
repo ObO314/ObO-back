@@ -6,9 +6,9 @@ import {
   Post,
   Res,
   UseGuards,
-  Request,
+  Req,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import {
   USER_LOGIN_INBOUND_PORT,
   UserLoginInboundPort,
@@ -21,7 +21,7 @@ import {
   UserSignUpInboundPortInputDto,
   UserSignUpInboundPortOutputDto,
 } from '../inbound-port/user.sign-up.inbound-port';
-import { LocalAuthGuard } from 'src/auth/guard/auth.local.guard';
+import { AuthLocalGuard } from 'src/auth/guard/auth.local.guard';
 import { DynamicAuthGuard } from 'src/auth/guard/auth.dynamic.guard';
 
 @Controller('user')
@@ -45,11 +45,16 @@ export class UserController {
   @UseGuards(DynamicAuthGuard)
   @Post('login/:method')
   async localLogin(
-    @Body()
-    userlocalLoginInboundPortInput: UserLoginInboundPortInputDto,
+    // @Body()
+    // userlocalLoginInboundPortInput: UserLoginInboundPortInputDto,
+    @Req()
+    req: Request,
     @Res()
     res: Response,
   ): Promise<UserLoginInboundPortOutputDto> {
+    const userlocalLoginInboundPortInput: UserLoginInboundPortInputDto =
+      req.user as UserLoginInboundPortInputDto;
+
     pipe(
       userlocalLoginInboundPortInput,
       (input) => this.userLoginInboundPort.login(input),
