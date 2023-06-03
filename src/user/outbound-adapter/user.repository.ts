@@ -1,5 +1,5 @@
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, MikroORM } from '@mikro-orm/postgresql';
 import {
   HttpException,
   HttpStatus,
@@ -23,10 +23,7 @@ import { executeAndThrowError } from 'src/utilities/executeThrowError';
 export class UserRepository
   implements UserSignUpOutboundRepositoryPort, UserLoginOutboundRepositoryPort
 {
-  constructor(
-    @InjectRepository(Users)
-    private readonly usersRepository: EntityRepository<Users>,
-  ) {}
+  constructor(private readonly em: EntityManager) {}
 
   //create
   async signUp(
@@ -34,7 +31,7 @@ export class UserRepository
   ): Promise<UserSignUpOutboundRepositoryPortOutputDto> {
     //
     const findUserOrError = executeAndThrowError(
-      (email) => this.usersRepository.findOne({ email }),
+      (email) => this.em.findOne(Users, { email }),
       '이미 가입된 이메일입니다.',
     );
 
@@ -45,9 +42,9 @@ export class UserRepository
         params.password = await bcrypt.hash(params.password, 10);
       }),
       tap((user) => {
-        this.usersRepository.create(user, { persist: true });
+        this.em.create(Users, user);
       }),
-      (params) => this.usersRepository.findOne({ email: params.email }),
+      (params) => this.em.findOne(Users, { email: params.email }),
     );
   }
 
@@ -57,7 +54,7 @@ export class UserRepository
   ): Promise<UserLoginOutboundRepositoryPortOutputDto> {
     return pipe(
       params,
-      async ({ email }) => await this.usersRepository.findOne({ email }),
+      async ({ email }) => await this.em.findOne(Users, { email }),
       (user) => {
         return { userId: user.userId };
       },
