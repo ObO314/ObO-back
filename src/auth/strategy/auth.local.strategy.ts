@@ -1,8 +1,7 @@
-import { EntityRepository } from '@mikro-orm/knex';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import {
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -10,49 +9,69 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy as StrategyLOCAL } from 'passport-local';
 import { Users } from 'src/database/entities/Users';
 import {
-  AuthLocalInboundPort,
-  AuthLocalInboundPortInputEmailDto,
-  AuthLocalInboundPortInputPasswordDto,
-  AuthLocalInboundPortOutputDto,
-} from '../inbound-port/auth.local.inbound-port';
+  AuthLocalStrategyInboundPort,
+  AuthLocalStrategyInboundPortInputEmailDto,
+  AuthLocalStrategyInboundPortInputPasswordDto,
+  AuthLocalStrategyInboundPortOutputDto,
+} from '../inbound-port/auth.local.strategy.inbound-port';
 import * as bcrypt from 'bcrypt';
-import { curry, filter, map, pipe, toArray, toAsync } from '@fxts/core';
-import { findInRepository } from 'src/utilities/findInRepository';
-import { executeOrThrowHttpError } from 'src/utilities/executeOrThrowError';
+import {
+  filter,
+  flatMap,
+  map,
+  pipe,
+  take,
+  tap,
+  toArray,
+  toAsync,
+} from '@fxts/core';
+import {
+  AUTH_LOCAL_STRATEGY_OUTBOUND_PORT,
+  AuthLocalStrategyOutboundPort,
+  AuthLocalStrategyOutboundPortInputDto,
+} from '../outbound-port/auth.local.strategy.outbound-port';
+import { executeOrThrowError } from '../../utilities/executeThrowError';
 
 @Injectable()
-export class LocalStrategy
+export class AuthLocalStrategy
   extends PassportStrategy(StrategyLOCAL)
-  implements AuthLocalInboundPort
+  implements AuthLocalStrategyInboundPort
 {
   constructor(
-    @InjectRepository(Users)
-    private readonly usersRepository: EntityRepository<Users>,
+    @Inject(AUTH_LOCAL_STRATEGY_OUTBOUND_PORT)
+    private readonly authLocalStrategyOutboundPort: AuthLocalStrategyOutboundPort,
   ) {
     super({ usernameField: 'email', passwordField: 'password' });
   }
 
   async validate(
-    email: AuthLocalInboundPortInputEmailDto,
-    password: AuthLocalInboundPortInputPasswordDto,
-  ): Promise<AuthLocalInboundPortOutputDto> {
+    email: AuthLocalStrategyInboundPortInputEmailDto,
+    password: AuthLocalStrategyInboundPortInputPasswordDto,
+  ): Promise<AuthLocalStrategyInboundPortOutputDto> {
     //
-    const findUserOrError = executeOrThrowHttpError(
-      findInRepository(this.usersRepository),
-      '계정이 존재하지 않습니다.',
-      'email',
-    );
-    const checkPasswordOrError = executeOrThrowHttpError(
+    const checkPasswordOrError = executeOrThrowError(
       bcrypt.compare,
       '비밀번호가 틀렸습니다.',
-      password,
     );
-
-    return pipe(
-      email,
-      findUserOrError,
-      (user) => user.password,
-      checkPasswordOrError,
-    );
+    const LOCAL = 'LOCAL' as const;
+    //
+    try {
+      const user = { email: email, authMethod: LOCAL };
+      const userId = (
+        await pipe(
+          [user],
+          toAsync,
+          map((user) => this.authLocalStrategyOutboundPort.findUser(user)),
+          filter(
+            async (user) => await checkPasswordOrError(password, user.password),
+          ),
+          take(1),
+          toArray,
+        )
+      )[0].userId;
+      return { userId: userId };
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }

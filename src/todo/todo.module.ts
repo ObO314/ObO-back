@@ -20,11 +20,7 @@ import { TodoReadService } from './service/todo.read.service';
 import { TODO_READ_OUTBOUND_PORT } from './outbound-port/todo.read.outbound-port';
 
 @Module({
-  imports: [
-    MikroOrmModule.forFeature([Todos, Users]),
-    UserModule,
-    PassportModule,
-  ],
+  imports: [UserModule, PassportModule],
   controllers: [TodoController],
   providers: [
     {

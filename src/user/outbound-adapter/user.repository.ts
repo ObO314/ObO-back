@@ -1,5 +1,5 @@
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, MikroORM } from '@mikro-orm/postgresql';
 import {
   HttpException,
   HttpStatus,
@@ -18,41 +18,33 @@ import {
   UserLoginOutboundRepositoryPortOutputDto,
 } from '../outbound-port/user.login.outbound-repository-port';
 import { pipe, tap } from '@fxts/core';
-import {
-  executeAndThrowHttpError,
-  executeOrThrowHttpError,
-} from 'src/utilities/executeOrThrowError';
-import { findInRepository } from 'src/utilities/findInRepository';
+import { executeAndThrowError } from 'src/utilities/executeThrowError';
 
 export class UserRepository
   implements UserSignUpOutboundRepositoryPort, UserLoginOutboundRepositoryPort
 {
-  constructor(
-    @InjectRepository(Users)
-    private readonly usersRepository: EntityRepository<Users>,
-  ) {}
+  constructor(private readonly em: EntityManager) {}
 
   //create
   async signUp(
     params: UserSignUpOutboundRepositoryPortInputDto,
   ): Promise<UserSignUpOutboundRepositoryPortOutputDto> {
-    const findUserOrError = executeAndThrowHttpError(
-      findInRepository(this.usersRepository),
+    //
+    const findUserOrError = executeAndThrowError(
+      (email) => this.em.findOne(Users, { email }),
       '이미 가입된 이메일입니다.',
-      'email',
     );
 
-    console.log('here');
-    return pipe(
+    return await pipe(
       params,
       tap(({ email }) => findUserOrError(email)),
       tap(async (params) => {
         params.password = await bcrypt.hash(params.password, 10);
       }),
       tap((user) => {
-        this.usersRepository.create(user, { persist: true });
+        this.em.create(Users, user);
       }),
-      (params) => this.usersRepository.findOne({ email: params.email }),
+      (params) => this.em.findOne(Users, { email: params.email }),
     );
   }
 
@@ -62,7 +54,7 @@ export class UserRepository
   ): Promise<UserLoginOutboundRepositoryPortOutputDto> {
     return pipe(
       params,
-      async ({ email }) => await this.usersRepository.findOne({ email: email }),
+      async ({ email }) => await this.em.findOne(Users, { email }),
       (user) => {
         return { userId: user.userId };
       },

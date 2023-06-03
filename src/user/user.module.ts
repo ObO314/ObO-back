@@ -15,7 +15,7 @@ import { UserLoginService } from './service/user.login.service';
 import { UserSignUpService } from './service/user.sign-up.service';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Users]), AuthModule],
+  imports: [AuthModule],
   controllers: [UserController],
   providers: [
     {

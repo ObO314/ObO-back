@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import {
   USER_SIGN_UP_OUTBOUND_REPOSITORY_PORT,
   UserSignUpOutboundRepositoryPort,
@@ -18,6 +18,11 @@ export class UserSignUpService implements UserSignUpInboundPort {
   async signUp(
     params: UserSignUpInboundPortInputDto,
   ): Promise<UserSignUpInboundPortOutputDto> {
-    return this.userSignUpOutboundRepositoryPort.signUp(params);
+    try {
+      return await this.userSignUpOutboundRepositoryPort.signUp(params);
+    } catch (e) {
+      const msg = e.message;
+      throw new HttpException(msg, HttpStatus.BAD_REQUEST);
+    }
   }
 }
