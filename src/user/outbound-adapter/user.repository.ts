@@ -54,7 +54,6 @@ export class UserRepository
   async findUserId(
     params: UserLoginOutboundRepositoryPortInputDto,
   ): Promise<UserLoginOutboundRepositoryPortOutputDto> {
-    console.log(params);
     return pipe(
       params,
       async ({ email }) => await this.em.findOne(Users, { email }),

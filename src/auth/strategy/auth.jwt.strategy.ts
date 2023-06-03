@@ -30,13 +30,12 @@ export class JwtStrategy
   async validate(
     payload: AuthJwtValidateInboundPortInputDto,
   ): Promise<AuthJwtValidateInboundPortOutputDto> {
-    console.log(payload);
-    return {};
+    return payload.userId;
   }
 
   createToken(
     userId: AuthJwtLoginInboundPortInputDto,
   ): AuthJwtLoginInboundPortOutputDto {
-    return { accessToken: this.jwtService.sign({ userId }) };
+    return { accessToken: this.jwtService.sign(userId) };
   }
 }

@@ -1,4 +1,4 @@
-export type AuthJwtValidateInboundPortInputDto = {};
+export type AuthJwtValidateInboundPortInputDto = { userId: string };
 
 export type AuthJwtValidateInboundPortOutputDto = {};
 

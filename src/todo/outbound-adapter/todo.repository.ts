@@ -17,21 +17,26 @@ import {
   TodoDeleteOutboundPortInputDto,
   TodoDeleteOutboundPortOutputDto,
 } from '../outbound-port/todo.delete.outbound-port';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TodoUpdateOutboundPortInputDto } from '../outbound-port/todo.update.outbound-port';
 import { Users } from 'src/database/entities/Users';
 import {
-  TodoReadOutboundPort,
-  TodoReadOutboundPortInputDto,
-  TodoReadOutboundPortOutputDto,
-} from '../outbound-port/todo.read.outbound-port';
+  TodoReadByDateOutboundPort,
+  TodoReadByDateOutboundPortInputDto,
+  TodoReadByDateOutboundPortOutputDto,
+} from '../outbound-port/todo.read-by-date.outbound-port';
+import {
+  TodoReadByTodoIdOutboundPortInputDto,
+  TodoReadByTodoIdOutboundPortOutputDto,
+} from '../outbound-port/todo.read-by-todo-id.outbound-port';
 
+@Injectable()
 export class TodoRepository
   implements
     TodoCreateOutboundPort,
     TodoDeleteOutboundPort,
     TodoUpdateOutboundPort,
-    TodoReadOutboundPort
+    TodoReadByDateOutboundPort
 {
   constructor(private readonly em: EntityManager) {}
 
@@ -39,8 +44,9 @@ export class TodoRepository
   async create(
     params: TodoCreateOutboundPortInputDto,
   ): Promise<TodoCreateOutboundPortOutputDto> {
+    const reqUser = await this.em.findOne(Users, { userId: params.userId });
     const thisTodo = this.em.create(Todos, {
-      userId: await this.em.findOne(Users, { userId: params.userId }),
+      userId: reqUser,
       name: params.name,
       startTime: params.startTime,
       endTime: params.endTime,
@@ -60,9 +66,9 @@ export class TodoRepository
   }
 
   // 날짜를 받아 해당기간의 할일 모두 불러오기
-  async read(
-    params: TodoReadOutboundPortInputDto,
-  ): Promise<TodoReadOutboundPortOutputDto> {
+  async readByDate(
+    params: TodoReadByDateOutboundPortInputDto,
+  ): Promise<TodoReadByDateOutboundPortOutputDto> {
     // 불러올 날짜의 시작지점, 끝지점을 받아서 그 사이에 있는 투두를 모두 받아옴
     const userId = await this.em.findOne(Users, { userId: params.userId });
     const todos = await this.em.find(Todos, {
@@ -70,8 +76,18 @@ export class TodoRepository
       startTime: { $gte: params.startDate, $lte: params.endDate },
       endTime: { $gte: params.startDate, $lte: params.endDate },
     });
-
     return todos;
+  }
+
+  async readByTodoId(
+    params: TodoReadByTodoIdOutboundPortInputDto,
+  ): Promise<TodoReadByTodoIdOutboundPortOutputDto> {
+    const userId = await this.em.findOne(Users, { userId: params.userId });
+    const todo = await this.em.findOne(Todos, {
+      userId: userId,
+      todoId: params.todoId,
+    });
+    return todo;
   }
 
   // 유저와 할 일을 특정하여, 최신 정보를 업데이트 함
