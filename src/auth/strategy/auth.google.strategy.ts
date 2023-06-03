@@ -1,10 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { filter, map, pipe, take, toArray, toAsync } from '@fxts/core';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
+import {
+  AUTH_GOOGLE_STRATEGY_OUTBOUND_PORT,
+  AuthGoogleStrategyOutboundPort,
+} from '../outbound-port/auth.google.strategy.outbound-port';
 
 @Injectable()
 export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor() {
+  constructor(
+    @Inject(AUTH_GOOGLE_STRATEGY_OUTBOUND_PORT)
+    private readonly authGoogleStrategyOutboundPort: AuthGoogleStrategyOutboundPort,
+  ) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -20,11 +28,25 @@ export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: any,
   ) {
     //, name: profile.displayName
-    const { name, emails } = profile;
-    return {
-      name: name,
-      email: emails,
-      AuthMethod: 'google',
-    };
+    const GOOGLE = 'GOOGLE' as const;
+
+    // 아웃바운드인 레포지토리에서 유저를 찾음
+    try {
+      const user = { email: profile.emails[0].value, AuthMethod: GOOGLE };
+      const userId = (
+        await pipe(
+          [user],
+          toAsync,
+          map((email) =>
+            this.authGoogleStrategyOutboundPort.findUser({ email }),
+          ),
+          take(1),
+          toArray,
+        )
+      )[0].userId;
+      return done(null, { userId: userId, email: user.email });
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }

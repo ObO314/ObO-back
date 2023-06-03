@@ -4,7 +4,7 @@ import {
 } from '../outbound-port/todo.update.outbound-port';
 import { InjectRepository } from '@mikro-orm/nestjs';
 // import { EntityRepository } from '@mikro-orm/core';
-import { EntityRepository } from '@mikro-orm/knex';
+import { EntityManager, EntityRepository } from '@mikro-orm/knex';
 
 import {
   TodoCreateOutboundPort,
@@ -33,42 +33,21 @@ export class TodoRepository
     TodoUpdateOutboundPort,
     TodoReadOutboundPort
 {
-  constructor(
-    @InjectRepository(Todos)
-    private readonly todoRepository: EntityRepository<Todos>,
-    @InjectRepository(Users)
-    private readonly userRepository: EntityRepository<Users>,
-  ) {}
+  constructor(private readonly em: EntityManager) {}
 
-  async read(
-    params: TodoReadOutboundPortInputDto,
-  ): Promise<TodoReadOutboundPortOutputDto> {
-    // 불러올 날짜의 시작지점, 끝지점을 받아서 그 사이에 있는 투두를 모두 받아옴
-    const userId = await this.userRepository.findOne({ userId: params.userId });
-    const todos = await this.todoRepository
-      .createQueryBuilder()
-      .where({
-        userId: userId,
-        startTime: { $gte: params.startDate, $lte: params.endDate },
-        endTime: { $gte: params.startDate, $lte: params.endDate },
-      })
-      .getResultList();
-
-    return todos;
-  }
-
+  // 할 일 생성하기
   async create(
     params: TodoCreateOutboundPortInputDto,
   ): Promise<TodoCreateOutboundPortOutputDto> {
-    const thisTodo = this.todoRepository.create({
-      userId: await this.userRepository.findOne({ userId: params.userId }),
+    const thisTodo = this.em.create(Todos, {
+      userId: await this.em.findOne(Users, { userId: params.userId }),
       name: params.name,
       startTime: params.startTime,
       endTime: params.endTime,
       completed: params.completed,
     });
 
-    await this.todoRepository.persistAndFlush(thisTodo);
+    await this.em.persistAndFlush(thisTodo);
 
     return {
       userId: thisTodo.userId.userId,
@@ -80,28 +59,45 @@ export class TodoRepository
     };
   }
 
-  async delete(
-    params: TodoDeleteOutboundPortInputDto,
-  ): Promise<TodoDeleteOutboundPortOutputDto> {
-    const findTodo = await this.matchTodoAndUser(params.userId, params.todoId);
-    await this.todoRepository.removeAndFlush(findTodo);
-    return { ...findTodo, userId: findTodo.userId.userId };
+  // 날짜를 받아 해당기간의 할일 모두 불러오기
+  async read(
+    params: TodoReadOutboundPortInputDto,
+  ): Promise<TodoReadOutboundPortOutputDto> {
+    // 불러올 날짜의 시작지점, 끝지점을 받아서 그 사이에 있는 투두를 모두 받아옴
+    const userId = await this.em.findOne(Users, { userId: params.userId });
+    const todos = await this.em.find(Todos, {
+      userId: userId,
+      startTime: { $gte: params.startDate, $lte: params.endDate },
+      endTime: { $gte: params.startDate, $lte: params.endDate },
+    });
+
+    return todos;
   }
 
+  // 유저와 할 일을 특정하여, 최신 정보를 업데이트 함
   async update(
     params: TodoUpdateOutboundPortInputDto,
   ): Promise<TodoUpdateOutboundPortOutputDto> {
     const findTodo = await this.matchTodoAndUser(params.userId, params.todoId);
-    await this.todoRepository.upsert({
+    await this.em.upsert(Todos, {
       ...params,
       userId: findTodo.userId,
     });
     return { ...findTodo, userId: findTodo.userId.userId };
   }
 
+  // 유저와 할일을 특정하여 삭제함
+  async delete(
+    params: TodoDeleteOutboundPortInputDto,
+  ): Promise<TodoDeleteOutboundPortOutputDto> {
+    const findTodo = await this.matchTodoAndUser(params.userId, params.todoId);
+    await this.em.removeAndFlush(findTodo);
+    return { ...findTodo, userId: findTodo.userId.userId };
+  }
+
   async matchTodoAndUser(user: string, todo: string) {
-    const findUser = await this.userRepository.findOne({ userId: user });
-    const findTodo = await this.todoRepository.findOne({ todoId: todo });
+    const findUser = await this.em.findOne(Users, { userId: user });
+    const findTodo = await this.em.findOne(Todos, { todoId: todo });
     if (findUser == findTodo.userId) return findTodo;
     else this.throwForbiddenError();
   }

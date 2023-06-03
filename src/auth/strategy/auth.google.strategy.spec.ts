@@ -11,6 +11,7 @@ import {
   AuthGoogleStrategyOutboundPortInputDto,
   AuthGoogleStrategyOutboundPortOutputDto,
 } from '../outbound-port/auth.google.strategy.outbound-port';
+import { AuthGoogleStrategy } from './auth.google.strategy';
 
 class MockAuthGoogleStrategyOutboundPort
   implements AuthGoogleStrategyOutboundPort
@@ -21,7 +22,7 @@ class MockAuthGoogleStrategyOutboundPort
     this.user = user;
   }
 
-  async googleLogin(
+  async findUser(
     params: AuthGoogleStrategyOutboundPortInputDto,
   ): Promise<AuthGoogleStrategyOutboundPortOutputDto> {
     return this.user;
@@ -32,17 +33,19 @@ class MockAuthGoogleStrategyOutboundPort
 
 describe('AuthLocalStrategy Spec', () => {
   //----------------------------------------------------------------
-  //   test('로컬 로그인 : 존재하는 이메일, 일치하는 비밀번호', async () => {
-  //     const authLocalStrategy = new AuthLocalStrategy(
-  //       new MockAuthGoogleStrategyOutboundPort({
-  //         // 구글로그인 하면 주는거
-  //       }),
-  //     );
-  //     const result = await authLocalStrategy.validate(
-  //       'backend@obo.com',
-  //       '1q2w3e4r',
-  //     );
-  //     expect(result).toStrictEqual(true);
-  //   });
+  // test('구글 로그인 : OAUTH 2.0 로 유저 데이터 받아와 로그인', async () => {
+  //   const authLocalStrategy = new AuthGoogleStrategy(
+  //     new MockAuthGoogleStrategyOutboundPort({
+  //       userId: '1',
+  //       email: 'obobackend@gmail.com',
+  //     }),
+  //   );
+  //   const result = await authLocalStrategy.validate();
+  //   //accessToken: string,
+  //   //refreshToken: string,
+  //   //profile: any,
+  //   //done: any,
+  //   expect(result).toStrictEqual(true);
+  // });
   //----------------------------------------------------------------
 });

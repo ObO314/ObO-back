@@ -20,7 +20,6 @@ import {
   UserSignUpInboundPortOutputDto,
 } from '../inbound-port/user.sign-up.inbound-port';
 import { USER_SIGN_UP_OUTBOUND_REPOSITORY_PORT } from '../outbound-port/user.sign-up.outbound-repository-port';
-import { pipe, take } from '@fxts/core';
 
 export class UserLoginService implements UserLoginInboundPort {
   constructor(

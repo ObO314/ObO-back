@@ -38,10 +38,6 @@ describe('UserLoginService Spec', () => {
 
     const result = userLoginService.login({
       userId: '1',
-      email: 'testSignUp@obo.com',
-      password: '1q2w3e4r',
-      nickname: '테스트 로그인',
-      authMethod: 'local',
     });
 
     expect(result).toStrictEqual({

@@ -44,15 +44,14 @@ export class UserController {
 
   @UseGuards(DynamicAuthGuard)
   @Post('login/:method')
-  async localLogin(
-    // @Body()
-    // userlocalLoginInboundPortInput: UserLoginInboundPortInputDto,
-    @Req()
-    req: Request,
+  async login(
+    // 이 로그인 로직에서는 토큰만 발급. 검증은 가드에서 함.
+    @Req() // 가드를 통과하고 넘어오는 user 정보
+    req: Request, // user.userId만 추출하면 됨
     @Res()
     res: Response,
   ): Promise<UserLoginInboundPortOutputDto> {
-    const userlocalLoginInboundPortInput: UserLoginInboundPortInputDto =
+    const userlocalLoginInboundPortInput =
       req.user as UserLoginInboundPortInputDto;
 
     pipe(
