@@ -28,11 +28,17 @@ import {
 } from '../inbound-port/todo.delete.inbound-port';
 import { TodoUpdateInboundPortInputDto } from '../inbound-port/todo.update.inbound-port';
 import {
-  TODO_READ_INBOUND_PORT,
-  TodoReadInboundPort,
-  TodoReadInboundPortInputDto,
-} from '../inbound-port/todo.read.inbound-port';
+  TODO_READ_BY_DATE_INBOUND_PORT,
+  TodoReadByDateInboundPort,
+  TodoReadByDateInboundPortInputDto,
+} from '../inbound-port/todo.read-by-date.inbound-port';
 import { AuthJwtGuard } from 'src/auth/guard/auth.jwt.guard';
+import { Request } from 'express';
+import {
+  TODO_READ_BY_TODO_ID_INBOUND_PORT,
+  TodoReadByTodoIdInboundPort,
+  TodoReadByTodoIdInboundPortInputDto,
+} from '../inbound-port/todo.read-by-todoId.inbound-port';
 
 @UseGuards(AuthJwtGuard)
 @Controller('todo')
@@ -44,39 +50,54 @@ export class TodoController {
     private readonly todoDeleteInboundPort: TodoDeleteINboundPort,
     @Inject(TODO_UPDATE_INBOUND_PORT)
     private readonly todoUpdateInboundPort: TodoUpdateInboundPort,
-    @Inject(TODO_READ_INBOUND_PORT)
-    private readonly todoReadInboundPort: TodoReadInboundPort,
+    @Inject(TODO_READ_BY_DATE_INBOUND_PORT)
+    private readonly todoReadByDateInboundPort: TodoReadByDateInboundPort,
+    @Inject(TODO_READ_BY_TODO_ID_INBOUND_PORT)
+    private readonly todoReadByTodoIdInboundPort: TodoReadByTodoIdInboundPort,
   ) {}
 
-  @Get('read')
-  async read(
-    @Body()
-    todoReadInboundPortInputDto: TodoReadInboundPortInputDto,
-  ) {
-    return this.todoReadInboundPort.read(todoReadInboundPortInputDto);
+  @Post('create')
+  async create(@Req() req: Request, @Body() body: any) {
+    const params: TodoCreateInboundPortInputDto = {
+      userId: req.user,
+      ...body,
+    };
+    return this.todoCreateInboundPort.create(params);
   }
 
-  @Post('create')
-  async create(
-    @Body()
-    todoCreateInboundPortInputDto: TodoCreateInboundPortInputDto,
-  ) {
-    return this.todoCreateInboundPort.create(todoCreateInboundPortInputDto);
+  @Get('readByDate')
+  async readBydate(@Req() req: Request, @Body() body: any) {
+    const params: TodoReadByDateInboundPortInputDto = {
+      userId: req.user,
+      ...body,
+    };
+    return this.todoReadByDateInboundPort.readByDate(params);
+  }
+
+  @Get('readByTodoId')
+  async readByTodoId(@Req() req: Request, @Body() body: any) {
+    const params: TodoReadByTodoIdInboundPortInputDto = {
+      userId: req.user,
+      ...body,
+    };
+    return this.todoReadByTodoIdInboundPort.readByTodoId(params);
   }
 
   @Patch('update')
-  async update(
-    @Body()
-    todoUpdateInboundPortInputDto: TodoUpdateInboundPortInputDto,
-  ) {
-    return this.todoUpdateInboundPort.update(todoUpdateInboundPortInputDto);
+  async update(@Req() req: Request, @Body() body: any) {
+    const params: TodoUpdateInboundPortInputDto = {
+      userId: req.user,
+      ...body,
+    };
+    return this.todoUpdateInboundPort.update(params);
   }
 
   @Delete('delete')
-  async detete(
-    @Body()
-    todoDeleteInboundPortInputDto: TodoDeleteInboundPortInputDto,
-  ) {
-    return this.todoDeleteInboundPort.delete(todoDeleteInboundPortInputDto);
+  async detete(@Req() req: Request, @Body() body: any) {
+    const params: TodoDeleteInboundPortInputDto = {
+      userId: req.user,
+      ...body,
+    };
+    return this.todoDeleteInboundPort.delete(params);
   }
 }

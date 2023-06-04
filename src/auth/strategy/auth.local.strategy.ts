@@ -32,7 +32,6 @@ import {
 } from '../outbound-port/auth.local.strategy.outbound-port';
 import { executeOrThrowError } from '../../utilities/executeThrowError';
 
-@Injectable()
 export class AuthLocalStrategy
   extends PassportStrategy(StrategyLOCAL)
   implements AuthLocalStrategyInboundPort

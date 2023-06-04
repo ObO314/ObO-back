@@ -15,9 +15,12 @@ import { TodoUpdateService } from './service/todo.update.service';
 import { TODO_UPDATE_INBOUND_PORT } from './inbound-port/todo.update.inbound-port';
 import { TODO_UPDATE_OUTBOUND_PORT } from './outbound-port/todo.update.outbound-port';
 import { Users } from 'src/database/entities/Users';
-import { TODO_READ_INBOUND_PORT } from './inbound-port/todo.read.inbound-port';
-import { TodoReadService } from './service/todo.read.service';
-import { TODO_READ_OUTBOUND_PORT } from './outbound-port/todo.read.outbound-port';
+import { TODO_READ_BY_DATE_INBOUND_PORT } from './inbound-port/todo.read-by-date.inbound-port';
+import { TodoReadByDateService } from './service/todo.read-by-date.service';
+import { TODO_READ_BY_DATE_OUTBOUND_PORT } from './outbound-port/todo.read-by-date.outbound-port';
+import { TodoReadByTodoIdService } from './service/todo.read-by-todo-id.service';
+import { TODO_READ_BY_TODO_ID_INBOUND_PORT } from './inbound-port/todo.read-by-todoId.inbound-port';
+import { TODO_READ_BY_TODO_ID_OUTBOUND_PORT } from './outbound-port/todo.read-by-todo-id.outbound-port';
 
 @Module({
   imports: [UserModule, PassportModule],
@@ -48,11 +51,19 @@ import { TODO_READ_OUTBOUND_PORT } from './outbound-port/todo.read.outbound-port
       useClass: TodoRepository,
     },
     {
-      provide: TODO_READ_INBOUND_PORT,
-      useClass: TodoReadService,
+      provide: TODO_READ_BY_DATE_INBOUND_PORT,
+      useClass: TodoReadByDateService,
     },
     {
-      provide: TODO_READ_OUTBOUND_PORT,
+      provide: TODO_READ_BY_DATE_OUTBOUND_PORT,
+      useClass: TodoRepository,
+    },
+    {
+      provide: TODO_READ_BY_TODO_ID_INBOUND_PORT,
+      useClass: TodoReadByTodoIdService,
+    },
+    {
+      provide: TODO_READ_BY_TODO_ID_OUTBOUND_PORT,
       useClass: TodoRepository,
     },
   ],

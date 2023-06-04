@@ -8,12 +8,11 @@ export type TodoUpdateOutboundPortInputDto = {
 };
 
 export type TodoUpdateOutboundPortOutputDto = {
-  userId: string;
   todoId: string;
-  name?: string;
-  startTime?: Date;
-  endTime?: Date;
-  completed?: boolean;
+  name: string;
+  startTime: Date;
+  endTime: Date;
+  completed: boolean;
 };
 
 export const TODO_UPDATE_OUTBOUND_PORT = 'TODO_UPDATE_OUTBOUND_PORT' as const;

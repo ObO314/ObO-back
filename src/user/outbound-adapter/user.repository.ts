@@ -3,6 +3,7 @@ import { EntityManager, MikroORM } from '@mikro-orm/postgresql';
 import {
   HttpException,
   HttpStatus,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
@@ -20,6 +21,7 @@ import {
 import { pipe, tap } from '@fxts/core';
 import { executeAndThrowError } from 'src/utilities/executeThrowError';
 
+@Injectable()
 export class UserRepository
   implements UserSignUpOutboundRepositoryPort, UserLoginOutboundRepositoryPort
 {
