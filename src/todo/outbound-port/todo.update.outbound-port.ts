@@ -8,7 +8,6 @@ export type TodoUpdateOutboundPortInputDto = {
 };
 
 export type TodoUpdateOutboundPortOutputDto = {
-  userId: string;
   todoId: string;
   name?: string;
   startTime?: Date;

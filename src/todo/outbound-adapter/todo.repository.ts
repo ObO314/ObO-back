@@ -44,24 +44,20 @@ export class TodoRepository
   async create(
     params: TodoCreateOutboundPortInputDto,
   ): Promise<TodoCreateOutboundPortOutputDto> {
-    const reqUser = await this.em.findOne(Users, { userId: params.userId });
-    const thisTodo = this.em.create(Todos, {
-      userId: reqUser,
+    const userId = await this.em.findOne(Users, { userId: params.userId });
+    const todo = this.em.create(Todos, {
+      userId: userId,
       name: params.name,
       startTime: params.startTime,
       endTime: params.endTime,
       completed: params.completed,
     });
 
-    await this.em.persistAndFlush(thisTodo);
+    await this.em.persistAndFlush(todo);
 
     return {
-      userId: thisTodo.userId.userId,
-      name: thisTodo.name,
-      startTime: thisTodo.startTime,
-      endTime: thisTodo.endTime,
-      completed: thisTodo.completed,
-      todoId: thisTodo.todoId,
+      todoId: todo.todoId,
+      ...todo,
     };
   }
 
@@ -94,34 +90,31 @@ export class TodoRepository
   async update(
     params: TodoUpdateOutboundPortInputDto,
   ): Promise<TodoUpdateOutboundPortOutputDto> {
-    const findTodo = await this.matchTodoAndUser(params.userId, params.todoId);
+    const userId = await this.em.findOne(Users, { userId: params.userId });
+    const todo = {
+      todoId: params.todoId,
+      name: params.name,
+      startTime: params.startTime,
+      endTime: params.endTime,
+      completed: params.completed,
+    };
     await this.em.upsert(Todos, {
-      ...params,
-      userId: findTodo.userId,
+      userId: userId,
+      ...todo,
     });
-    return { ...findTodo, userId: findTodo.userId.userId };
+    return todo;
   }
 
   // 유저와 할일을 특정하여 삭제함
   async delete(
     params: TodoDeleteOutboundPortInputDto,
   ): Promise<TodoDeleteOutboundPortOutputDto> {
-    const findTodo = await this.matchTodoAndUser(params.userId, params.todoId);
-    await this.em.removeAndFlush(findTodo);
-    return { ...findTodo, userId: findTodo.userId.userId };
-  }
-
-  async matchTodoAndUser(user: string, todo: string) {
-    const findUser = await this.em.findOne(Users, { userId: user });
-    const findTodo = await this.em.findOne(Todos, { todoId: todo });
-    if (findUser == findTodo.userId) return findTodo;
-    else this.throwForbiddenError();
-  }
-
-  throwForbiddenError() {
-    throw new HttpException(
-      '해당 데이터에 대한 접근권한이 없습니다.',
-      HttpStatus.FORBIDDEN,
-    );
+    const userId = await this.em.findOne(Users, { userId: params.userId });
+    const todo = await this.em.findOne(Todos, {
+      userId: userId,
+      todoId: params.todoId,
+    });
+    await this.em.removeAndFlush(todo);
+    return { todoId: todo.todoId, name: todo.name };
   }
 }

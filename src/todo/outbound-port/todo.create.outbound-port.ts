@@ -13,8 +13,6 @@ export type TodoCreateOutboundPortInputDto = {
 export type TodoCreateOutboundPortOutputDto = {
   todoId: string;
 
-  userId: string;
-
   name: string;
 
   startTime: Date;
