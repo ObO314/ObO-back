@@ -27,7 +27,7 @@ class MockUserSignUpOutboundRepositoryPort
   }
 
   async signUp(
-    params: UserSignUpOutboundRepositoryPortInputDto,
+    _: UserSignUpOutboundRepositoryPortInputDto,
   ): Promise<UserSignUpOutboundRepositoryPortOutputDto> {
     if (this.params instanceof Error) {
       throw this.params;

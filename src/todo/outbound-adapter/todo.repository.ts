@@ -3,7 +3,6 @@ import {
   TodoUpdateOutboundPortOutputDto,
 } from '../outbound-port/todo.update.outbound-port';
 import { InjectRepository } from '@mikro-orm/nestjs';
-// import { EntityRepository } from '@mikro-orm/core';
 import { EntityManager, EntityRepository } from '@mikro-orm/knex';
 
 import {
@@ -17,7 +16,7 @@ import {
   TodoDeleteOutboundPortInputDto,
   TodoDeleteOutboundPortOutputDto,
 } from '../outbound-port/todo.delete.outbound-port';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { TodoUpdateOutboundPortInputDto } from '../outbound-port/todo.update.outbound-port';
 import { Users } from 'src/database/entities/Users';
 import {
@@ -45,7 +44,7 @@ export class TodoRepository
     params: TodoCreateOutboundPortInputDto,
   ): Promise<TodoCreateOutboundPortOutputDto> {
     const userId = await this.em.findOne(Users, { userId: params.userId });
-    const todo = this.em.create(Todos, {
+    const thisTodo = this.em.create(Todos, {
       userId: userId,
       name: params.name,
       startTime: params.startTime,
@@ -53,11 +52,11 @@ export class TodoRepository
       completed: params.completed,
     });
 
-    await this.em.persistAndFlush(todo);
+    await this.em.persistAndFlush(thisTodo);
 
     return {
-      todoId: todo.todoId,
-      ...todo,
+      todoId: thisTodo.todoId,
+      ...thisTodo,
     };
   }
 
