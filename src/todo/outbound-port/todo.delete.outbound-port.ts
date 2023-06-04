@@ -4,8 +4,8 @@ export type TodoDeleteOutboundPortInputDto = {
 };
 
 export type TodoDeleteOutboundPortOutputDto = {
-  userId: string;
   todoId: string;
+  name: string;
 };
 
 export const TODO_DELETE_OUTBOUND_PORT = 'TODO_DELETE_OUTBOUND_PORT' as const;

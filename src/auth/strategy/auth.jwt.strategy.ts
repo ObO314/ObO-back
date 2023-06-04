@@ -15,7 +15,11 @@ export class JwtStrategy
   extends PassportStrategy(StrategyJWT)
   implements AuthJwtInboundPort
 {
-  constructor(private jwtService: JwtService) {
+  constructor(
+    // @Inject(USER_LOGIN_OUTBOUND_TOKEN_PORT)
+    // private readonly userLoginOutboundTokenPort: UserLoginOutboundTokenPort,
+    private jwtService: JwtService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: true,
@@ -26,12 +30,12 @@ export class JwtStrategy
   async validate(
     payload: AuthJwtValidateInboundPortInputDto,
   ): Promise<AuthJwtValidateInboundPortOutputDto> {
-    return {};
+    return payload.userId;
   }
 
   createToken(
     userId: AuthJwtLoginInboundPortInputDto,
   ): AuthJwtLoginInboundPortOutputDto {
-    return { accessToken: this.jwtService.sign({ userId: userId }) };
+    return { accessToken: this.jwtService.sign(userId) };
   }
 }

@@ -11,18 +11,29 @@ import { AuthLocalStrategy } from './strategy/auth.local.strategy';
 import { AuthGoogleStrategy } from './strategy/auth.google.strategy';
 import { AUTH_LOCAL_STRATEGY_INBOUND_PORT } from './inbound-port/auth.local.strategy.inbound-port';
 import { AUTH_LOCAL_STRATEGY_OUTBOUND_PORT } from './outbound-port/auth.local.strategy.outbound-port';
-import { UserRepository } from './outbound-adapter/user.repository';
+import { AuthRepository } from './outbound-adapter/auth.repository';
 import { AUTH_GOOGLE_STRATEGY_INBOUND_PORT } from './inbound-port/auth.google.strategy.inbound-port';
 import { AUTH_GOOGLE_STRATEGY_OUTBOUND_PORT } from './outbound-port/auth.google.strategy.outbound-port';
 
+class ConfigService {
+  get(key: string) {
+    return new Promise<string>((resolve) => {
+      resolve(process.env.JWT_SECRETKEY);
+    });
+  }
+}
+
+const configService = new ConfigService();
+
 @Module({
   imports: [
-    MikroOrmModule.forFeature([Users]),
-    PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRETKEY || 'OBO_SECRET_KEY_314',
-      signOptions: { expiresIn: '3600s' },
+    JwtModule.registerAsync({
+      useFactory: async () => ({
+        secret: await configService.get('JWT_SECRETKEY'),
+        signOptions: { expiresIn: '3600s' },
+      }),
     }),
+    PassportModule,
   ],
   providers: [
     JwtStrategy,
@@ -37,7 +48,7 @@ import { AUTH_GOOGLE_STRATEGY_OUTBOUND_PORT } from './outbound-port/auth.google.
     },
     {
       provide: AUTH_LOCAL_STRATEGY_OUTBOUND_PORT,
-      useClass: UserRepository,
+      useClass: AuthRepository,
     },
     {
       provide: AUTH_GOOGLE_STRATEGY_INBOUND_PORT,
@@ -45,7 +56,7 @@ import { AUTH_GOOGLE_STRATEGY_OUTBOUND_PORT } from './outbound-port/auth.google.
     },
     {
       provide: AUTH_GOOGLE_STRATEGY_OUTBOUND_PORT,
-      useClass: UserRepository,
+      useClass: AuthRepository,
     },
   ],
   exports: [
