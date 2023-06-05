@@ -13,10 +13,10 @@ export class Circles {
   @Property({ length: 200, nullable: true })
   description?: string;
 
-  @Property({ nullable: true })
+  @Property({ length: 255, nullable: true })
   profileImg?: string;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'owner', nullable: true })
+  @ManyToOne({ entity: () => Users, fieldName: 'owner', onUpdateIntegrity: 'cascade', onDelete: 'set null', nullable: true })
   owner?: Users;
 
 }

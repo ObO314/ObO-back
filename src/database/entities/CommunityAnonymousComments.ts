@@ -7,13 +7,13 @@ export class CommunityAnonymousComments {
   @PrimaryKey({ columnType: 'int8' })
   commentId!: string;
 
-  @ManyToOne({ entity: () => CommunityAnonymous, fieldName: 'anopost_id' })
+  @ManyToOne({ entity: () => CommunityAnonymous, fieldName: 'anopost_id', onUpdateIntegrity: 'cascade' })
   anopostId!: CommunityAnonymous;
 
   @Property({ columnType: 'int8' })
   userId!: string;
 
-  @Property()
+  @Property({ length: 255 })
   comment!: string;
 
   @Property({ columnType: 'date' })
