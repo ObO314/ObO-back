@@ -101,6 +101,7 @@ export class TodoRepository
       ...(params.name && { name: params.name }),
       ...(params.startTime && { startTime: params.startTime }),
       ...(params.endTime && { endTime: params.endTime }),
+      ...(params.description && { description: params.description }),
       ...(params.completed && { completed: params.completed }),
     };
     // const newtodo = {
