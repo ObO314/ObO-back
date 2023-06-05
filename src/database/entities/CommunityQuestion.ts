@@ -7,13 +7,13 @@ export class CommunityQuestion {
   @PrimaryKey({ columnType: 'int8' })
   questionId!: string;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id' })
+  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade' })
   userId!: Users;
 
-  @Property()
+  @Property({ length: 255 })
   title!: string;
 
-  @Property()
+  @Property({ length: 255 })
   content!: string;
 
   @Property({ columnType: 'date' })

@@ -6,13 +6,16 @@ export class BlogPost {
 
   [OptionalProps]?: 'views';
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id' })
+  @PrimaryKey({ columnType: 'int8' })
+  postId!: string;
+
+  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade' })
   userId!: Users;
 
   @Property({ length: 100 })
   title!: string;
 
-  @Property()
+  @Property({ length: 255 })
   content!: string;
 
   @Property()
@@ -26,8 +29,5 @@ export class BlogPost {
 
   @Property({ columnType: 'int8', default: '0' })
   views!: string;
-
-  @PrimaryKey({ columnType: 'int8' })
-  postId!: string;
 
 }

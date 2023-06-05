@@ -7,7 +7,7 @@ export class Routines {
   @PrimaryKey({ columnType: 'int8' })
   routineId!: string;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id' })
+  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade' })
   userId!: Users;
 
   @Property({ length: 50 })
@@ -16,10 +16,10 @@ export class Routines {
   @Property({ length: 200 })
   description!: string;
 
-  @Property({ length: 6 })
-  startTime!: Date;
+  @Property({ columnType: 'timetz', length: 6 })
+  startTime!: unknown;
 
-  @Property({ length: 6 })
-  endTime!: Date;
+  @Property({ columnType: 'timetz', length: 6 })
+  endTime!: unknown;
 
 }
