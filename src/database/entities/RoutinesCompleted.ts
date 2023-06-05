@@ -6,7 +6,7 @@ export class RoutinesCompleted {
 
   [OptionalProps]?: 'completed';
 
-  @ManyToOne({ entity: () => Routines, fieldName: 'routine_id', primary: true })
+  @ManyToOne({ entity: () => Routines, fieldName: 'routine_id', onUpdateIntegrity: 'cascade', primary: true })
   routineId!: Routines;
 
   @PrimaryKey({ columnType: 'date' })

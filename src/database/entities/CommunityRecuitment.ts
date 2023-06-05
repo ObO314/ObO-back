@@ -8,16 +8,16 @@ export class CommunityRecuitment {
   @PrimaryKey({ columnType: 'int8' })
   recuritmentId!: string;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id' })
+  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade' })
   userId!: Users;
 
-  @ManyToOne({ entity: () => Circles, fieldName: 'circle_id' })
+  @ManyToOne({ entity: () => Circles, fieldName: 'circle_id', onUpdateIntegrity: 'cascade' })
   circleId!: Circles;
 
-  @Property()
+  @Property({ length: 255 })
   title!: string;
 
-  @Property()
+  @Property({ length: 255 })
   content!: string;
 
   @Property({ columnType: 'date' })

@@ -44,7 +44,11 @@ export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
           toArray,
         )
       )[0].userId;
-      return done(null, { userId: userId, email: user.email });
+      return done(null, {
+        userId: userId,
+        email: user.email,
+        AuthMethod: GOOGLE,
+      });
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     }

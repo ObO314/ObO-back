@@ -8,13 +8,13 @@ export class BlogPostComments {
   @PrimaryKey({ columnType: 'int8' })
   commentId!: string;
 
-  @ManyToOne({ entity: () => BlogPost, fieldName: 'post_id' })
+  @ManyToOne({ entity: () => BlogPost, fieldName: 'post_id', onUpdateIntegrity: 'cascade' })
   postId!: BlogPost;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id' })
+  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade' })
   userId!: Users;
 
-  @Property()
+  @Property({ length: 255 })
   comment!: string;
 
   @Property({ columnType: 'date' })

@@ -56,7 +56,10 @@ export class UserRepository
   ): Promise<UserLoginOutboundRepositoryPortOutputDto> {
     return pipe(
       params,
-      async ({ email }) => await this.em.findOne(Users, { email }),
+      async (params) =>
+        await this.em.findOne(Users, {
+          email: params.email,
+        }),
       (user) => {
         return { userId: user.userId };
       },

@@ -90,17 +90,27 @@ export class TodoRepository
     params: TodoUpdateOutboundPortInputDto,
   ): Promise<TodoUpdateOutboundPortOutputDto> {
     const userId = await this.em.findOne(Users, { userId: params.userId });
-    const todo = {
-      todoId: params.todoId,
-      name: params.name,
-      startTime: params.startTime,
-      endTime: params.endTime,
-      completed: params.completed,
+    const todo = await this.em.findOne(Todos, { todoId: params.todoId });
+
+    const ntodo = {
+      ...(params.name && { name: params.name }),
+      ...(params.startTime && { startTime: params.startTime }),
+      ...(params.endTime && { endTime: params.endTime }),
+      ...(params.completed && { completed: params.completed }),
     };
+    // const newtodo = {
+    //   todoId: params.todoId,
+    //   name: params.name,
+    //   startTime: params.startTime,
+    //   endTime: params.endTime,
+    //   completed: params.completed,
+    // };
     await this.em.upsert(Todos, {
       userId: userId,
-      ...todo,
+      todoId: params.todoId,
+      ...ntodo,
     });
+
     return todo;
   }
 

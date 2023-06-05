@@ -7,13 +7,13 @@ export class CommunityAnonymous {
   @PrimaryKey({ columnType: 'int8' })
   anopostId!: string;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id' })
+  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade' })
   userId!: Users;
 
   @Property({ length: 100 })
   title!: string;
 
-  @Property()
+  @Property({ length: 255 })
   content!: string;
 
   @Property({ columnType: 'date' })
