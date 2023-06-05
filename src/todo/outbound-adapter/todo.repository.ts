@@ -95,29 +95,26 @@ export class TodoRepository
     params: TodoUpdateOutboundPortInputDto,
   ): Promise<TodoUpdateOutboundPortOutputDto> {
     const userId = await this.em.findOne(Users, { userId: params.userId });
-    const todo = await this.em.findOne(Todos, { todoId: params.todoId });
 
-    const ntodo = {
+    const thisTodo = await this.em.findOne(Todos, { todoId: params.todoId });
+
+    const editTodo = {
       ...(params.name && { name: params.name }),
       ...(params.startTime && { startTime: params.startTime }),
       ...(params.endTime && { endTime: params.endTime }),
       ...(params.description && { description: params.description }),
       ...(params.completed && { completed: params.completed }),
     };
-    // const newtodo = {
-    //   todoId: params.todoId,
-    //   name: params.name,
-    //   startTime: params.startTime,
-    //   endTime: params.endTime,
-    //   completed: params.completed,
-    // };
+
     await this.em.upsert(Todos, {
       userId: userId,
       todoId: params.todoId,
-      ...ntodo,
+      ...editTodo,
     });
 
-    return todo;
+    await this.em.persistAndFlush(thisTodo);
+
+    return thisTodo;
   }
 
   // 유저와 할일을 특정하여 삭제함
