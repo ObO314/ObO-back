@@ -49,6 +49,7 @@ export class TodoRepository
       name: params.name,
       startTime: params.startTime,
       endTime: params.endTime,
+      description: params.description,
       completed: params.completed,
     });
 
@@ -59,6 +60,7 @@ export class TodoRepository
       name: thisTodo.name,
       startTime: thisTodo.startTime,
       endTime: thisTodo.endTime,
+      description: thisTodo.description,
       completed: thisTodo.completed,
     };
   }

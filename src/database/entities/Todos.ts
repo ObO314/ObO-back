@@ -24,4 +24,7 @@ export class Todos {
   @Property({ default: false })
   completed: boolean = false;
 
+  @Property({ length: 1000, nullable: true })
+  description?: string;
+
 }
