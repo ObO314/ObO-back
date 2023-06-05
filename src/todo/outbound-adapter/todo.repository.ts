@@ -55,6 +55,7 @@ export class TodoRepository
     await this.em.persistAndFlush(thisTodo);
 
     return {
+      userId: params.userId,
       todoId: thisTodo.todoId,
       ...thisTodo,
     };
