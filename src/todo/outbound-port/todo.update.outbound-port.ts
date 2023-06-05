@@ -1,17 +1,30 @@
 export type TodoUpdateOutboundPortInputDto = {
   userId: string;
+
   todoId: string;
+
   name?: string;
+
   startTime?: Date;
+
   endTime?: Date;
+
+  description?: string;
+
   completed?: boolean;
 };
 
 export type TodoUpdateOutboundPortOutputDto = {
   todoId: string;
+
   name: string;
+
   startTime: Date;
+
   endTime: Date;
+
+  description?: string;
+
   completed: boolean;
 };
 

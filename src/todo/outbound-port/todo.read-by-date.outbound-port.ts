@@ -15,6 +15,8 @@ export type TodoReadByDateOutboundPortOutputDto = {
 
   endTime: Date;
 
+  description?: string;
+
   completed: boolean;
 }[];
 
