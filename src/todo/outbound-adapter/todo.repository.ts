@@ -55,9 +55,11 @@ export class TodoRepository
     await this.em.persistAndFlush(thisTodo);
 
     return {
-      userId: params.userId,
       todoId: thisTodo.todoId,
-      ...thisTodo,
+      name: thisTodo.name,
+      startTime: thisTodo.startTime,
+      endTime: thisTodo.endTime,
+      completed: thisTodo.completed,
     };
   }
 
