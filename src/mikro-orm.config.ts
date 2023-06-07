@@ -4,7 +4,6 @@ import { Todos } from './database/entities/Todos';
 import { Routines } from './database/entities/Routines';
 import { RoutinesCompleted } from './database/entities/RoutinesCompleted';
 import { Circles } from './database/entities/Circles';
-import { UsersCircles } from './database/entities/UsersCircles';
 import { Works } from './database/entities/Works';
 import { DailyWorks } from './database/entities/DailyWorks';
 import { BlogPost } from './database/entities/BlogPost';
@@ -16,10 +15,13 @@ import { CommunityQuestion } from './database/entities/CommunityQuestion';
 import { CommunityQuestionComments } from './database/entities/CommunityQuestionComments';
 import { CommunityRecuitment } from './database/entities/CommunityRecuitment';
 import { CommunityRecuitmentComments } from './database/entities/CommunityRecuitmentComments';
+import { UsersHashtags } from './database/entities/usersHashtags';
+import { UsersCircles } from './database/entities/UsersCircles';
 
 const config: Options = {
   entities: [
     Users,
+    UsersHashtags,
     UsersCircles,
     Todos,
     BlogPost,
