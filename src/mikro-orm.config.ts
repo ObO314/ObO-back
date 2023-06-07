@@ -17,6 +17,7 @@ import { CommunityRecuitment } from './database/entities/CommunityRecuitment';
 import { CommunityRecuitmentComments } from './database/entities/CommunityRecuitmentComments';
 import { UsersHashtags } from './database/entities/usersHashtags';
 import { UsersCircles } from './database/entities/UsersCircles';
+import { Readme } from './database/entities/Readme';
 
 const config: Options = {
   entities: [
@@ -38,6 +39,7 @@ const config: Options = {
     Hashtags,
     Routines,
     RoutinesCompleted,
+    Readme,
   ],
   dbName: process.env.DB_NAME,
   user: process.env.DB_USER,

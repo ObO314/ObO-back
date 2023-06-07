@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { Users } from './database/entities/Users';
 import { Todos } from './database/entities/Todos';
 import { HashtagsModule } from './hashtags/hashtags.module';
+import { ReadmeModule } from './readme/readme.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { HashtagsModule } from './hashtags/hashtags.module';
     UserModule,
     TodoModule,
     HashtagsModule,
+    ReadmeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
