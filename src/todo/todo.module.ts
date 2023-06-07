@@ -14,7 +14,6 @@ import { TODO_DELETE_INBOUND_PORT } from './inbound-port/todo.delete.inbound-por
 import { TodoUpdateService } from './service/todo.update.service';
 import { TODO_UPDATE_INBOUND_PORT } from './inbound-port/todo.update.inbound-port';
 import { TODO_UPDATE_OUTBOUND_PORT } from './outbound-port/todo.update.outbound-port';
-import { Users } from 'src/database/entities/Users';
 import { TODO_READ_BY_DATE_INBOUND_PORT } from './inbound-port/todo.read-by-date.inbound-port';
 import { TodoReadByDateService } from './service/todo.read-by-date.service';
 import { TODO_READ_BY_DATE_OUTBOUND_PORT } from './outbound-port/todo.read-by-date.outbound-port';
@@ -23,7 +22,7 @@ import { TODO_READ_BY_TODO_ID_INBOUND_PORT } from './inbound-port/todo.read-by-t
 import { TODO_READ_BY_TODO_ID_OUTBOUND_PORT } from './outbound-port/todo.read-by-todo-id.outbound-port';
 
 @Module({
-  imports: [UserModule, PassportModule],
+  imports: [PassportModule],
   controllers: [TodoController],
   providers: [
     {

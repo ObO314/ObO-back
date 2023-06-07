@@ -1,9 +1,9 @@
 import { Entity, PrimaryKey, ManyToOne } from '@mikro-orm/core';
 import { Users } from './Users';
-import { Circles } from './Circles';
+import { Hashtags } from './Hashtags';
 
 @Entity()
-export class UsersCircles {
+export class UsersHashtags {
   @ManyToOne({
     entity: () => Users,
     fieldName: 'user_id',
@@ -13,10 +13,10 @@ export class UsersCircles {
   userId!: Users;
 
   @ManyToOne({
-    entity: () => Circles,
-    fieldName: 'ciecle_id',
+    entity: () => Hashtags,
+    fieldName: 'hashtag_id',
     onUpdateIntegrity: 'cascade',
     primary: true,
   })
-  circleId!: Circles;
+  hashtagId!: Hashtags;
 }
