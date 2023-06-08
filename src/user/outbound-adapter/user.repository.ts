@@ -20,10 +20,24 @@ import {
 } from '../outbound-port/user.login.outbound-repository-port';
 import { pipe, tap } from '@fxts/core';
 import { executeAndThrowError } from 'src/utilities/executeThrowError';
+import {
+  UserReadOutboundPort,
+  UserReadOutboundPortInputDto,
+  UserReadOutboundPortOutputDto,
+} from '../outbound-port/user.read.outbound-port';
+import {
+  UserUpdateOutboundPort,
+  UserUpdateOutboundPortInputDto,
+  UserUpdateOutboundPortOutputDto,
+} from '../outbound-port/user.update.outbound-port';
 
 @Injectable()
 export class UserRepository
-  implements UserSignUpOutboundRepositoryPort, UserLoginOutboundRepositoryPort
+  implements
+    UserSignUpOutboundRepositoryPort,
+    UserLoginOutboundRepositoryPort,
+    UserReadOutboundPort,
+    UserUpdateOutboundPort
 {
   constructor(private readonly em: EntityManager) {}
 
@@ -64,5 +78,25 @@ export class UserRepository
         return { userId: user.userId };
       },
     );
+  }
+
+  async read(
+    params: UserReadOutboundPortInputDto,
+  ): Promise<UserReadOutboundPortOutputDto> {
+    return { user: await this.em.findOne(Users, params) };
+  }
+
+  async update(
+    params: UserUpdateOutboundPortInputDto,
+  ): Promise<UserUpdateOutboundPortOutputDto> {
+    const user = await this.em.findOne(Users, {
+      userId: params.userId,
+    });
+    this.em.assign(user, {
+      nickname: params.nickname,
+      profileImg: params.profileImg,
+    });
+    await this.em.persistAndFlush(user);
+    return { user: user };
   }
 }

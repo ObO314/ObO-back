@@ -15,11 +15,7 @@ export class JwtStrategy
   extends PassportStrategy(StrategyJWT)
   implements AuthJwtInboundPort
 {
-  constructor(
-    // @Inject(USER_LOGIN_OUTBOUND_TOKEN_PORT)
-    // private readonly userLoginOutboundTokenPort: UserLoginOutboundTokenPort,
-    private jwtService: JwtService,
-  ) {
+  constructor(private jwtService: JwtService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: true,
