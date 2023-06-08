@@ -1,3 +1,11 @@
+import { AuthJwtGuard } from 'src/auth/guard/auth.jwt.guard';
+import {
+  USER_UPDATE_INBOUND_PORT,
+  UserUpdateInboundPort,
+} from './../inbound-port/user.update.inbound-port';
+import * as multerS3 from 'multer-s3';
+import { S3Client } from '@aws-sdk/client-s3';
+import * as path from 'path';
 import { each, map, pipe, tap } from '@fxts/core';
 import {
   Controller,
@@ -7,6 +15,9 @@ import {
   Res,
   UseGuards,
   Req,
+  Get,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
@@ -23,6 +34,16 @@ import {
 } from '../inbound-port/user.sign-up.inbound-port';
 import { AuthLocalGuard } from 'src/auth/guard/auth.local.guard';
 import { DynamicAuthGuard } from 'src/auth/guard/auth.dynamic.guard';
+import {
+  USER_READ_INBOUND_PORT,
+  UserReadInboundPort,
+  UserReadInboundPortInputDto,
+} from '../inbound-port/user.read.inbound-port';
+import { UserUpdateInboundPortInputDto } from '../inbound-port/user.update.inbound-port';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Controller('user')
 export class UserController {
@@ -32,6 +53,12 @@ export class UserController {
 
     @Inject(USER_LOGIN_INBOUND_PORT)
     private readonly userLoginInboundPort: UserLoginInboundPort,
+
+    @Inject(USER_READ_INBOUND_PORT)
+    private readonly userReadInboundPort: UserReadInboundPort,
+
+    @Inject(USER_UPDATE_INBOUND_PORT)
+    private readonly userUpdateInboundPort: UserUpdateInboundPort,
   ) {}
 
   @Post('signUp')
@@ -63,5 +90,47 @@ export class UserController {
       tap((accessToken) => res.json(accessToken)),
     );
     return;
+  }
+
+  @UseGuards(AuthJwtGuard)
+  @Get('read')
+  async read(@Req() req: Request) {
+    const params: UserReadInboundPortInputDto = { userId: req.user as string };
+    return await this.userReadInboundPort.read(params);
+  }
+
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: multerS3({
+        s3: new S3Client({
+          region: process.env.AWS_BUCKET_REGION,
+          credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          },
+        }),
+        bucket: 'obo-s3',
+        key(_req, file, done) {
+          const ext = path.extname(file.originalname); //확장자
+          const basename = path.basename(file.originalname, ext); //파일명
+          done(null, `obo-user-profile/${Date.now()}_${basename}${ext}`);
+        },
+      }),
+      limits: { fileSize: 10 * 1024 * 1024 },
+    }),
+  )
+  @UseGuards(AuthJwtGuard)
+  @Post('update')
+  async update(
+    @Req() req: Request,
+    @Body() body: any,
+    @UploadedFile() image: Express.MulterS3.File,
+  ) {
+    const params: UserUpdateInboundPortInputDto = {
+      userId: req.user as string,
+      nickname: body.nickname,
+      profileImg: image ? image.location : process.env.PRODUCT_DEFAULT_IMAGE,
+    };
+    return await this.userUpdateInboundPort.update(params);
   }
 }
