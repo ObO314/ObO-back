@@ -1,11 +1,12 @@
 export type AuthLocalStrategyOutboundPortInputDto = {
   email: string;
-  authMethod: 'LOCAL' | 'GOOGLE';
+  authMethod: string;
 };
 
 export type AuthLocalStrategyOutboundPortOutputDto = {
   userId: string;
   email: string;
+  nickname: string;
   password: string;
 };
 

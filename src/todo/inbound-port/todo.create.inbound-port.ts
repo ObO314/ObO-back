@@ -7,7 +7,7 @@ export type TodoCreateInboundPortInputDto = {
 
   endTime: Date;
 
-  description: string;
+  description?: string;
 
   completed: boolean;
 };
@@ -21,7 +21,7 @@ export type TodoCreateInboundPortOutputDto = {
 
   endTime: Date;
 
-  description: string;
+  description?: string;
 
   completed: boolean;
 };

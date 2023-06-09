@@ -35,6 +35,7 @@ describe('AuthLocalStrategy Spec', () => {
     const authLocalStrategy = new AuthLocalStrategy(
       new MockAuthLocalStrategyOutboundPort({
         userId: '1',
+        nickname: 'OBO백엔드관리자',
         email: 'backend@obo.com',
         password:
           '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
@@ -46,7 +47,12 @@ describe('AuthLocalStrategy Spec', () => {
       '1q2w3e4r',
     );
 
-    expect(result).toStrictEqual({ userId: '1' });
+    expect(result).toStrictEqual({
+      userId: '1',
+      email: 'backend@obo.com',
+      nickname: 'OBO백엔드관리자',
+      authMethod: 'LOCAL',
+    });
   });
 
   //----------------------------------------------------------------
@@ -55,6 +61,7 @@ describe('AuthLocalStrategy Spec', () => {
     const authLocalStrategy = new AuthLocalStrategy(
       new MockAuthLocalStrategyOutboundPort({
         userId: '1',
+        nickname: 'OBO백엔드관리자',
         email: 'backend@obo.com',
         password:
           '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',

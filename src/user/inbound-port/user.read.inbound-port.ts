@@ -1,11 +1,15 @@
-import { Users } from 'src/database/entities/Users';
-
 export type UserReadInboundPortInputDto = {
   userId: string;
 };
 
 export type UserReadInboundPortOutputDto = {
-  user: Users;
+  userId: string;
+  email: string;
+  nickname: string;
+  profileImg: string;
+  progressRoutine: number;
+  progressTodo: number;
+  progressWork: number;
 };
 
 export const USER_READ_INBOUND_PORT = 'USER_READ_INBOUND_PORT' as const;
