@@ -136,11 +136,9 @@ export class UserController {
 
   //------------------------------------------------------------
 
-  @UseGuards(AuthJwtGuard)
   @Get('read')
-  async read(@Req() req: Request) {
-    const params: UserReadInboundPortInputDto = { userId: req.user as string };
-    return await this.userReadInboundPort.read(params);
+  async read(@Body() userReadInboundPortInputDto: UserReadInboundPortInputDto) {
+    return await this.userReadInboundPort.read(userReadInboundPortInputDto);
   }
 
   //------------------------------------------------------------

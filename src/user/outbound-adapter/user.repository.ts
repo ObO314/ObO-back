@@ -1,25 +1,17 @@
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityManager, MikroORM } from '@mikro-orm/postgresql';
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {
   UserSignUpLocalOutboundPort,
   UserSignUpLocalOutboundPortInputDto,
   UserSignUpLocalOutboundPortOutputDto,
 } from '../outbound-port/user.sign-up-local.outbound-port';
-import { Users } from 'src/database/entities/Users';
-import {
-  UserLoginOutboundRepositoryPort,
-  UserLoginOutboundRepositoryPortInputDto,
-  UserLoginOutboundRepositoryPortOutputDto,
-} from '../outbound-port/user.login.outbound-repository-port';
+import { Users } from '../../database/entities/Users';
 import { pipe, tap } from '@fxts/core';
-import { executeAndThrowError } from 'src/utilities/executeThrowError';
+import {
+  executeAndThrowError,
+  executeOrThrowError,
+} from '../../utilities/executeThrowError';
 import {
   UserReadOutboundPort,
   UserReadOutboundPortInputDto,
@@ -41,7 +33,6 @@ export class UserRepository
   implements
     UserSignUpLocalOutboundPort,
     UserSignUpSocialOutboundPort,
-    UserLoginOutboundRepositoryPort,
     UserReadOutboundPort,
     UserUpdateOutboundPort
 {
@@ -52,74 +43,79 @@ export class UserRepository
     params: UserSignUpLocalOutboundPortInputDto,
   ): Promise<UserSignUpLocalOutboundPortOutputDto> {
     //
-    const findUserOrError = executeAndThrowError(
-      (email) => this.em.findOne(Users, { email }),
+    const findUserAndError = executeAndThrowError(
+      (email: string, authMethod: string) =>
+        this.em.findOne(Users, { email, authMethod }),
       '이미 가입된 이메일입니다.',
     );
-
-    return await pipe(
-      params,
-      tap(({ email }) => findUserOrError(email)),
-      tap(async (params) => {
-        params.password = await bcrypt.hash(params.password, 10);
-      }),
-      tap((user) => {
-        this.em.create(Users, user);
-        this.em.persistAndFlush(Users);
-      }),
-      (params) => this.em.findOne(Users, { email: params.email }),
-    );
+    try {
+      return await pipe(
+        params,
+        tap(({ email, authMethod }) => findUserAndError(email, authMethod)),
+        tap(async (params) => {
+          params.password = await bcrypt.hash(params.password, 10);
+        }),
+        tap((user) => {
+          this.em.create(Users, user);
+          this.em.persistAndFlush(Users);
+        }),
+        (params) =>
+          this.em.findOne(Users, {
+            email: params.email,
+            authMethod: params.authMethod,
+          }),
+      );
+    } catch (err) {
+      throw err;
+    }
   }
 
   async signUpSocial(
     params: UserSignUpSocialOutboundPortInputDto,
   ): Promise<UserSignUpSocialOutboundPortOutputDto> {
     //
-    const findUserOrError = executeAndThrowError(
-      (email) => this.em.findOne(Users, { email }),
+    const findUserAndError = executeAndThrowError(
+      (email: string, authMethod: string) =>
+        this.em.findOne(Users, { email, authMethod }),
       '이미 가입된 소셜 계정입니다.',
     );
 
     return await pipe(
       params,
-      tap(({ email }) => findUserOrError(email)),
+      tap(({ email, authMethod }) => findUserAndError(email, authMethod)),
       tap((user) => {
         this.em.create(Users, user);
         this.em.persistAndFlush(Users);
       }),
-      (params) => this.em.findOne(Users, { email: params.email }),
-    );
-  }
-
-  //read
-  async findUserId(
-    params: UserLoginOutboundRepositoryPortInputDto,
-  ): Promise<UserLoginOutboundRepositoryPortOutputDto> {
-    return pipe(
-      params,
-      async (params) =>
-        await this.em.findOne(Users, {
+      (params) =>
+        this.em.findOne(Users, {
           email: params.email,
+          authMethod: params.authMethod,
         }),
-      (user) => {
-        return { userId: user.userId };
-      },
     );
   }
 
   async read(
     params: UserReadOutboundPortInputDto,
   ): Promise<UserReadOutboundPortOutputDto> {
-    const user = await this.em.findOne(Users, params);
-    return {
-      userId: user.userId,
-      email: user.email,
-      nickname: user.nickname,
-      profileImg: user.authMethod || process.env.PRODUCT_DEFAULT_IMAGE,
-      progressRoutine: user.progressRoutine || 0,
-      progressTodo: user.progressRoutine || 0,
-      progressWork: user.progressWork || 0,
-    };
+    const findUserOrError = executeOrThrowError(
+      (params) => this.em.findOne(Users, { userId: params.userId }),
+      '존재하지 않는 사용자 입니다.',
+    );
+    try {
+      const user = await findUserOrError(params);
+      return {
+        userId: user.userId,
+        email: user.email,
+        nickname: user.nickname,
+        profileImg: user.profileImg || process.env.PRODUCT_DEFAULT_IMAGE,
+        progressRoutine: user.progressRoutine || 0,
+        progressTodo: user.progressRoutine || 0,
+        progressWork: user.progressWork || 0,
+      };
+    } catch (e) {
+      throw e;
+    }
   }
 
   async update(

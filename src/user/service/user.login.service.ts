@@ -1,7 +1,7 @@
 import {
-  USER_LOGIN_OUTBOUND_TOKEN_PORT,
-  UserLoginOutboundTokenPort,
-} from '../outbound-port/user.login.outbound-token-port';
+  USER_LOGIN_OUTBOUND_PORT,
+  UserLoginOutboundPort,
+} from '../outbound-port/user.login.outbound-port';
 import { Inject } from '@nestjs/common';
 import {
   UserLoginInboundPort,
@@ -11,12 +11,12 @@ import {
 
 export class UserLoginService implements UserLoginInboundPort {
   constructor(
-    @Inject(USER_LOGIN_OUTBOUND_TOKEN_PORT)
-    private readonly userLoginOutboundTokenPort: UserLoginOutboundTokenPort,
+    @Inject(USER_LOGIN_OUTBOUND_PORT)
+    private readonly userLoginOutboundPort: UserLoginOutboundPort,
   ) {}
 
   login(params: UserLoginInboundPortInputDto): UserLoginInboundPortOutputDto {
-    return this.userLoginOutboundTokenPort.createToken({
+    return this.userLoginOutboundPort.createToken({
       userId: params.userId,
     });
   }

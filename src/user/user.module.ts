@@ -6,7 +6,7 @@ import { UserController } from './controller/user.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { JwtStrategy } from 'src/auth/strategy/auth.jwt.strategy';
 import { USER_LOGIN_OUTBOUND_REPOSITORY_PORT } from './outbound-port/user.login.outbound-repository-port';
-import { USER_LOGIN_OUTBOUND_TOKEN_PORT } from './outbound-port/user.login.outbound-token-port';
+import { USER_LOGIN_OUTBOUND_TOKEN_PORT } from './outbound-port/user.login.outbound-port';
 import { UserLoginService } from './service/user.login.service';
 import { UserSignUpLocalService } from './service/user.sign-up-local.service';
 import { USER_READ_INBOUND_PORT } from './inbound-port/user.read.inbound-port';
@@ -46,9 +46,10 @@ import { USER_SIGN_UP_LOCAL_OUTBOUND_PORT } from './outbound-port/user.sign-up-l
       provide: USER_LOGIN_INBOUND_PORT,
       useClass: UserLoginService,
     },
+
     {
-      provide: USER_LOGIN_OUTBOUND_REPOSITORY_PORT,
-      useClass: UserRepository,
+      provide: USER_LOGIN_OUTBOUND_PORT,
+      useClass: JwtStrategy,
     },
 
     {
@@ -66,11 +67,6 @@ import { USER_SIGN_UP_LOCAL_OUTBOUND_PORT } from './outbound-port/user.sign-up-l
     {
       provide: USER_UPDATE_OUTBOUND_PORT,
       useClass: UserRepository,
-    },
-
-    {
-      provide: USER_LOGIN_OUTBOUND_TOKEN_PORT,
-      useClass: JwtStrategy,
     },
   ],
 })
