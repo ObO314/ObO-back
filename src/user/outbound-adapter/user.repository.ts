@@ -103,16 +103,17 @@ export class UserRepository
       '존재하지 않는 사용자 입니다.',
     );
     try {
-      const user = await findUserOrError(params);
-      return {
-        userId: user.userId,
-        email: user.email,
-        nickname: user.nickname,
-        profileImg: user.profileImg || process.env.PRODUCT_DEFAULT_IMAGE,
-        progressRoutine: user.progressRoutine || 0,
-        progressTodo: user.progressRoutine || 0,
-        progressWork: user.progressWork || 0,
-      };
+      return await pipe(params, findUserOrError, (user) => {
+        return {
+          userId: user.userId,
+          email: user.email,
+          nickname: user.nickname,
+          profileImg: user.profileImg || process.env.PRODUCT_DEFAULT_IMAGE,
+          progressRoutine: user.progressRoutine || 0,
+          progressTodo: user.progressRoutine || 0,
+          progressWork: user.progressWork || 0,
+        };
+      });
     } catch (e) {
       throw e;
     }
@@ -121,23 +122,27 @@ export class UserRepository
   async update(
     params: UserUpdateOutboundPortInputDto,
   ): Promise<UserUpdateOutboundPortOutputDto> {
-    const user = await this.em.findOne(Users, {
-      userId: params.userId,
-    });
-    this.em.assign(user, {
-      nickname: params.nickname,
-      profileImg: params.profileImg || null,
-    });
-    await this.em.persistAndFlush(user);
-
-    return {
-      userId: user.userId,
-      email: user.email,
-      nickname: user.nickname,
-      profileImg: user.profileImg || process.env.PRODUCT_DEFAULT_IMAGE,
-      progressRoutine: user.progressRoutine || 0,
-      progressTodo: user.progressTodo || 0,
-      progressWork: user.progressWork || 0,
-    };
+    return await pipe(
+      params,
+      (params) => this.em.findOne(Users, { userId: params.userId }),
+      tap((user) => {
+        this.em.assign(user, {
+          nickname: params.nickname,
+          profileImg: params.profileImg || null,
+        });
+      }),
+      tap((editedUser) => this.em.persistAndFlush(editedUser)),
+      (user) => {
+        return {
+          userId: user.userId,
+          email: user.email,
+          nickname: user.nickname,
+          profileImg: user.profileImg || process.env.PRODUCT_DEFAULT_IMAGE,
+          progressRoutine: user.progressRoutine || 0,
+          progressTodo: user.progressTodo || 0,
+          progressWork: user.progressWork || 0,
+        };
+      },
+    );
   }
 }
