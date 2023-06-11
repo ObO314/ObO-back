@@ -32,6 +32,8 @@ import {
 } from '../outbound-port/auth.local.strategy.outbound-port';
 import { executeOrThrowError } from '../../utilities/executeThrowError';
 
+export const LOCAL = 'LOCAL' as const;
+
 export class AuthLocalStrategy
   extends PassportStrategy(StrategyLOCAL)
   implements AuthLocalStrategyInboundPort
@@ -52,7 +54,6 @@ export class AuthLocalStrategy
       bcrypt.compare,
       '비밀번호가 틀렸습니다.',
     );
-    const LOCAL = 'LOCAL' as const;
     //
     try {
       const user = { email: email, authMethod: LOCAL };
@@ -67,8 +68,13 @@ export class AuthLocalStrategy
           take(1),
           toArray,
         )
-      )[0].userId;
-      return { userId: userId };
+      )[0];
+      return {
+        userId: userId.userId,
+        email: email,
+        nickname: userId.nickname,
+        authMethod: LOCAL,
+      };
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     }

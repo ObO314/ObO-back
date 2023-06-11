@@ -3,6 +3,7 @@ export type AuthGoogleStrategyOutboundPortInputDto = {};
 export type AuthGoogleStrategyOutboundPortOutputDto = {
   userId: string;
   email: string;
+  nickname: string;
 };
 
 export const AUTH_GOOGLE_STRATEGY_OUTBOUND_PORT =

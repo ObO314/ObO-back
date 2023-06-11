@@ -1,25 +1,20 @@
 import {
-  UserLoginOutboundRepositoryPort,
-  UserLoginOutboundRepositoryPortInputDto,
-  UserLoginOutboundRepositoryPortOutputDto,
-} from '../outbound-port/user.login.outbound-repository-port';
-import {
-  UserLoginOutboundTokenPort,
-  UserLoginOutboundTokenPortInputDto,
-  UserLoginOutboundTokenPortOutputDto,
-} from '../outbound-port/user.login.outbound-token-port';
+  UserLoginOutboundPort,
+  UserLoginOutboundPortInputDto,
+  UserLoginOutboundPortOutputDto,
+} from '../outbound-port/user.login.outbound-port';
 import { UserLoginService } from './user.login.service';
 
-class MockUserLoginOutboundTokenPort implements UserLoginOutboundTokenPort {
-  private readonly token: UserLoginOutboundTokenPortOutputDto;
+class MockUserLoginOutboundTokenPort implements UserLoginOutboundPort {
+  private readonly token: UserLoginOutboundPortOutputDto;
 
-  constructor(token: UserLoginOutboundTokenPortOutputDto) {
+  constructor(token: UserLoginOutboundPortOutputDto) {
     this.token = token;
   }
 
   createToken(
-    params: UserLoginOutboundTokenPortInputDto,
-  ): UserLoginOutboundTokenPortOutputDto {
+    params: UserLoginOutboundPortInputDto,
+  ): UserLoginOutboundPortOutputDto {
     return this.token;
   }
 }
@@ -38,6 +33,7 @@ describe('UserLoginService Spec', () => {
 
     const result = userLoginService.login({
       userId: '1',
+      authMethod: 'LOCAL',
     });
 
     expect(result).toStrictEqual({

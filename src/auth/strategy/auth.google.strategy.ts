@@ -7,6 +7,8 @@ import {
   AuthGoogleStrategyOutboundPort,
 } from '../outbound-port/auth.google.strategy.outbound-port';
 
+export const GOOGLE = 'GOOGLE' as const;
+
 @Injectable()
 export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
@@ -28,7 +30,6 @@ export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: any,
   ) {
     //, name: profile.displayName
-    const GOOGLE = 'GOOGLE' as const;
 
     // 아웃바운드인 레포지토리에서 유저를 찾음
     try {

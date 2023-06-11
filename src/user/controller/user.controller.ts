@@ -27,11 +27,11 @@ import {
   UserLoginInboundPortOutputDto,
 } from '../inbound-port/user.login.inbound-port';
 import {
-  USER_SIGN_UP_INBOUND_PORT,
-  UserSignUpInboundPort,
-  UserSignUpInboundPortInputDto,
-  UserSignUpInboundPortOutputDto,
-} from '../inbound-port/user.sign-up.inbound-port';
+  USER_SIGN_UP_LOCAL_INBOUND_PORT,
+  UserSignUpLocalInboundPort,
+  UserSignUpLocalInboundPortInputDto,
+  UserSignUpLocalInboundPortOutputDto,
+} from '../inbound-port/user.sign-up-local.inbound-port';
 import { AuthLocalGuard } from 'src/auth/guard/auth.local.guard';
 import { DynamicAuthGuard } from 'src/auth/guard/auth.dynamic.guard';
 import {
@@ -42,14 +42,33 @@ import {
 import { UserUpdateInboundPortInputDto } from '../inbound-port/user.update.inbound-port';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import * as dotenv from 'dotenv';
+import {
+  UserSignUpSocialInboundPort,
+  UserSignUpSocialInboundPortInputDto,
+  UserSignUpSocialInboundPortOutputDto,
+} from '../inbound-port/user.sign-up-social.inbound-port';
+import { USER_SIGN_UP_SOCIAL_INBOUND_PORT } from '../inbound-port/user.sign-up-social.inbound-port';
+import { LOCAL } from 'src/auth/strategy/auth.local.strategy';
 
 dotenv.config();
+
+interface RequestGuardGiven extends Request {
+  user: {
+    userId: string;
+    nickname: string;
+    email: string;
+    authMethod: string;
+  };
+}
 
 @Controller('user')
 export class UserController {
   constructor(
-    @Inject(USER_SIGN_UP_INBOUND_PORT)
-    private readonly userSignUpInboundPort: UserSignUpInboundPort,
+    @Inject(USER_SIGN_UP_LOCAL_INBOUND_PORT)
+    private readonly userSignUpLocalInboundPort: UserSignUpLocalInboundPort,
+
+    @Inject(USER_SIGN_UP_SOCIAL_INBOUND_PORT)
+    private readonly UserSignUpSocialInboundPort: UserSignUpSocialInboundPort,
 
     @Inject(USER_LOGIN_INBOUND_PORT)
     private readonly userLoginInboundPort: UserLoginInboundPort,
@@ -61,13 +80,37 @@ export class UserController {
     private readonly userUpdateInboundPort: UserUpdateInboundPort,
   ) {}
 
-  @Post('signUp')
-  async signUp(
+  //------------------------------------------------------------
+
+  @Post('signUp/local')
+  async signUpLocal(
     @Body()
-    userSignUpInboundPortInput: UserSignUpInboundPortInputDto,
-  ): Promise<UserSignUpInboundPortOutputDto> {
-    return this.userSignUpInboundPort.signUp(userSignUpInboundPortInput);
+    body: any,
+  ): Promise<UserSignUpLocalInboundPortOutputDto> {
+    const params: UserSignUpLocalInboundPortInputDto = {
+      ...body,
+      authMethod: LOCAL,
+    };
+    return this.userSignUpLocalInboundPort.signUpLocal(params);
   }
+
+  //------------------------------------------------------------
+
+  @UseGuards(DynamicAuthGuard)
+  @Post('signUp/:method')
+  async signUpSocial(
+    @Req()
+    req: RequestGuardGiven,
+  ): Promise<UserSignUpSocialInboundPortOutputDto> {
+    const params: UserSignUpSocialInboundPortInputDto = {
+      email: req.user.email,
+      nickname: req.user.nickname,
+      authMethod: req.user.authMethod,
+    };
+    return this.UserSignUpSocialInboundPort.signUpSocial(params);
+  }
+
+  //------------------------------------------------------------
 
   @UseGuards(DynamicAuthGuard)
   @Post('login/:method')
@@ -80,7 +123,6 @@ export class UserController {
   ): Promise<UserLoginInboundPortOutputDto> {
     const userlocalLoginInboundPortInput =
       req.user as UserLoginInboundPortInputDto;
-
     pipe(
       userlocalLoginInboundPortInput,
       (input) => this.userLoginInboundPort.login(input),
@@ -92,12 +134,14 @@ export class UserController {
     return;
   }
 
-  @UseGuards(AuthJwtGuard)
+  //------------------------------------------------------------
+
   @Get('read')
-  async read(@Req() req: Request) {
-    const params: UserReadInboundPortInputDto = { userId: req.user as string };
-    return await this.userReadInboundPort.read(params);
+  async read(@Body() userReadInboundPortInputDto: UserReadInboundPortInputDto) {
+    return await this.userReadInboundPort.read(userReadInboundPortInputDto);
   }
+
+  //------------------------------------------------------------
 
   @UseInterceptors(
     FileInterceptor('image', {
