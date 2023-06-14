@@ -1,9 +1,9 @@
 export type TodoReadByDateOutboundPortInputDto = {
   userId: string;
 
-  startDate: Date;
+  startTime: Date;
 
-  endDate: Date;
+  endTime: Date;
 };
 
 export type TodoReadByDateOutboundPortOutputDto = {

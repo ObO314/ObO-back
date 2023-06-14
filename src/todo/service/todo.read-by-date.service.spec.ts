@@ -39,8 +39,8 @@ describe('TodoReadByDateService Spec', () => {
     );
     const result = await todoReadByDateService.readByDate({
       userId: '1',
-      startDate: new Date(2023, 6, 1, 0, 0, 0),
-      endDate: new Date(2023, 6, 2, 0, 0, 0),
+      startTime: new Date(2023, 6, 1, 0, 0, 0),
+      endTime: new Date(2023, 6, 2, 0, 0, 0),
     });
 
     expect(result).toStrictEqual([

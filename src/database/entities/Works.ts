@@ -3,11 +3,14 @@ import { Circles } from './Circles';
 
 @Entity()
 export class Works {
-
   @PrimaryKey({ columnType: 'int8' })
   workId!: string;
 
-  @ManyToOne({ entity: () => Circles, fieldName: 'circle_id', onUpdateIntegrity: 'cascade' })
+  @ManyToOne({
+    entity: () => Circles,
+    fieldName: 'circle_id',
+    onUpdateIntegrity: 'cascade',
+  })
   circleId!: Circles;
 
   @Property({ length: 50 })
@@ -21,5 +24,4 @@ export class Works {
 
   @Property({ length: 255 })
   description!: string;
-
 }
