@@ -3,12 +3,14 @@ import { Users } from './Users';
 
 @Entity()
 export class Readme {
-  @OneToOne({ entity: () => Users, fieldName: 'user_id', primary: true })
-  userId!: Users;
+
+  @OneToOne({ entity: () => Users, fieldName: 'user', primary: true })
+  user!: Users;
 
   @Property({ nullable: true })
-  title!: string;
+  title?: string;
 
   @Property({ nullable: true })
-  content!: string;
+  content?: string;
+
 }

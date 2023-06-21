@@ -1,4 +1,4 @@
-import { Entity, EntityName } from '@mikro-orm/core';
+import { Entity, EntityName, PopulateHint, Reference } from '@mikro-orm/core';
 import {
   TodoUpdateOutboundPort,
   TodoUpdateOutboundPortOutputDto,
@@ -11,7 +11,7 @@ import {
   TodoCreateOutboundPortInputDto,
   TodoCreateOutboundPortOutputDto,
 } from '../outbound-port/todo.create.outbound-port';
-import { Todos } from 'src/database/entities/Todos';
+import { Todos } from '../../database/entities/Todos';
 import {
   TodoDeleteOutboundPort,
   TodoDeleteOutboundPortInputDto,
@@ -19,7 +19,6 @@ import {
 } from '../outbound-port/todo.delete.outbound-port';
 import { Injectable } from '@nestjs/common';
 import { TodoUpdateOutboundPortInputDto } from '../outbound-port/todo.update.outbound-port';
-import { Users } from 'src/database/entities/Users';
 import {
   TodoReadByDateOutboundPort,
   TodoReadByDateOutboundPortInputDto,
@@ -30,15 +29,7 @@ import {
   TodoReadByTodoIdOutboundPortOutputDto,
 } from '../outbound-port/todo.read-by-todo-id.outbound-port';
 import { curry, pipe, tap, filter } from '@fxts/core';
-import {
-  receiveEntityPersistAndFlush,
-  receiveParamsCreateEntity,
-  receiveParamsDeleteEntity,
-  receiveParamsFindEntity,
-  receiveParamsFindOneEntity,
-  receiveParamsFindProp,
-  receiveParamsUpsertEntity,
-} from 'src/utilities/useEntityManager';
+import { Users } from 'src/database/entities/Users';
 
 @Injectable()
 export class TodoRepository
@@ -55,11 +46,14 @@ export class TodoRepository
     params: TodoCreateOutboundPortInputDto,
   ): Promise<TodoCreateOutboundPortOutputDto> {
     const em = this.em;
+    const { userId, ...rest } = params;
+    const user = em.getReference(Users, userId);
+    const content = { user, ...rest };
+
     return await pipe(
-      params,
-      receiveParamsFindProp('userId', Users, em),
-      receiveParamsCreateEntity(Todos, em),
-      receiveEntityPersistAndFlush(em),
+      content,
+      (content) => em.create(Todos, content),
+      tap((createdTodo) => em.persistAndFlush(createdTodo)),
     );
   }
 
@@ -68,43 +62,39 @@ export class TodoRepository
   ): Promise<TodoReadByDateOutboundPortOutputDto> {
     // 불러올 날짜의 시작지점, 끝지점을 받아서 그 사이에 있는 투두를 모두 받아옴
     const em = this.em;
-
+    const { userId, ...rest } = params;
+    const user = em.getReference(Users, userId);
+    const content = { user, ...rest };
     const condition = {
-      ...params,
-      startTime: { $gte: params.startTime, $lte: params.endTime },
-      endTime: { $gte: params.startTime, $lte: params.endTime },
+      user: content.user,
+      startTime: { $gte: content.startTime, $lte: content.endTime },
+      endTime: { $gte: content.startTime, $lte: content.endTime },
     };
 
-    return await pipe(
-      condition,
-      receiveParamsFindProp('userId', Users, em),
-      receiveParamsFindEntity(Todos, em),
-    );
+    return await pipe(params, (params) => em.find(Todos, condition));
   }
 
   async readByTodoId(
     params: TodoReadByTodoIdOutboundPortInputDto,
   ): Promise<TodoReadByTodoIdOutboundPortOutputDto> {
     const em = this.em;
-
-    return pipe(
-      params,
-      receiveParamsFindProp('userId', Users, em),
-      receiveParamsFindOneEntity(Todos, em),
-    );
+    const { userId, ...rest } = params;
+    const user = em.getReference(Users, userId);
+    const content = { user, ...rest };
+    return await em.findOne(Todos, content);
   }
-
   // 유저와 할 일을 특정하여, 최신 정보를 업데이트 함
   async update(
     params: TodoUpdateOutboundPortInputDto,
   ): Promise<TodoUpdateOutboundPortOutputDto> {
     const em = this.em;
+    const { userId, ...rest } = params;
+    const user = em.getReference(Users, userId);
+    const content = { user, ...rest };
     return await pipe(
-      params,
-      receiveParamsFindProp('userId', Users, em),
-      receiveParamsFindProp('TodoId', Todos, em),
-      receiveParamsUpsertEntity(Todos, em),
-      receiveEntityPersistAndFlush(em),
+      content,
+      (content) => em.upsert(Todos, content),
+      tap((updatedTodo) => em.persistAndFlush(updatedTodo)),
     );
   }
 
@@ -113,11 +103,13 @@ export class TodoRepository
     params: TodoDeleteOutboundPortInputDto,
   ): Promise<TodoDeleteOutboundPortOutputDto> {
     const em = this.em;
-    return pipe(
-      params,
-      receiveParamsFindProp('userId', Users, em),
-      receiveParamsFindOneEntity(Todos, em),
-      receiveParamsDeleteEntity(em),
+    const { userId, ...rest } = params;
+    const user = em.getReference(Users, userId);
+    const content = { user, ...rest };
+    return await pipe(
+      content,
+      (content) => em.findOne(Todos, content),
+      tap((todo) => em.removeAndFlush(todo)),
     );
   }
 }

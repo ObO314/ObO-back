@@ -1,22 +1,12 @@
+import { Todos } from 'src/database/entities/Todos';
+import { Users } from 'src/database/entities/Users';
+
 export type TodoReadByTodoIdInboundPortInputDto = {
+  todoId: string;
   userId: string;
-
-  todoId: string;
 };
 
-export type TodoReadByTodoIdInboundPortOutputDto = {
-  todoId: string;
-
-  name: string;
-
-  startTime: Date;
-
-  endTime: Date;
-
-  description?: string;
-
-  completed: boolean;
-};
+export type TodoReadByTodoIdInboundPortOutputDto = Todos;
 
 export const TODO_READ_BY_TODO_ID_INBOUND_PORT =
   'TODO_READ_BY_TODO_ID_INBOUND_PORT' as const;

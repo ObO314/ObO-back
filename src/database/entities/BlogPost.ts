@@ -1,16 +1,25 @@
-import { Entity, ManyToOne, OptionalProps, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Entity,
+  ManyToOne,
+  OptionalProps,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 import { Users } from './Users';
 
 @Entity()
 export class BlogPost {
-
   [OptionalProps]?: 'views';
 
   @PrimaryKey({ columnType: 'int8' })
-  postId!: string;
+  id!: string;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade' })
-  userId!: Users;
+  @ManyToOne({
+    entity: () => Users,
+    fieldName: 'user',
+    onUpdateIntegrity: 'cascade',
+  })
+  user!: Users;
 
   @Property({ length: 100 })
   title!: string;
@@ -29,5 +38,4 @@ export class BlogPost {
 
   @Property({ columnType: 'int8', default: '0' })
   views!: string;
-
 }

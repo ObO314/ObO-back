@@ -7,7 +7,6 @@ import {
   UserSignUpLocalOutboundPortOutputDto,
 } from '../outbound-port/user.sign-up-local.outbound-port';
 import { Users } from '../../database/entities/Users';
-import { pipe, tap } from '@fxts/core';
 import {
   executeAndThrowError,
   executeOrThrowError,
@@ -27,6 +26,7 @@ import {
   UserSignUpSocialOutboundPortInputDto,
   UserSignUpSocialOutboundPortOutputDto,
 } from '../outbound-port/user.sign-up-social.outbound-port';
+import { pipe, tap } from '@fxts/core';
 
 @Injectable()
 export class UserRepository
@@ -64,6 +64,13 @@ export class UserRepository
             email: params.email,
             authMethod: params.authMethod,
           }),
+        (user) => {
+          return {
+            userId: user.id,
+            email: user.email,
+            nickname: user.nickname,
+          };
+        },
       );
     } catch (err) {
       throw err;
@@ -92,6 +99,13 @@ export class UserRepository
           email: params.email,
           authMethod: params.authMethod,
         }),
+      (user) => {
+        return {
+          userId: user.id,
+          email: user.email,
+          nickname: user.nickname,
+        };
+      },
     );
   }
 
@@ -99,7 +113,7 @@ export class UserRepository
     params: UserReadOutboundPortInputDto,
   ): Promise<UserReadOutboundPortOutputDto> {
     const findUserOrError = executeOrThrowError(
-      (params) => this.em.findOne(Users, { userId: params.userId }),
+      (params) => this.em.findOne(Users, { id: params.userId }),
       '존재하지 않는 사용자 입니다.',
     );
     try {
@@ -124,7 +138,7 @@ export class UserRepository
   ): Promise<UserUpdateOutboundPortOutputDto> {
     return await pipe(
       params,
-      (params) => this.em.findOne(Users, { userId: params.userId }),
+      (params) => this.em.findOne(Users, { id: params.userId }),
       tap((user) => {
         this.em.assign(user, {
           nickname: params.nickname,
@@ -134,7 +148,7 @@ export class UserRepository
       tap((editedUser) => this.em.persistAndFlush(editedUser)),
       (user) => {
         return {
-          userId: user.userId,
+          userId: user.id,
           email: user.email,
           nickname: user.nickname,
           profileImg: user.profileImg || process.env.PRODUCT_DEFAULT_IMAGE,

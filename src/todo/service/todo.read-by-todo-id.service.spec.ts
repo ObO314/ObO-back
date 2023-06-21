@@ -1,9 +1,13 @@
+import { EntityManager } from '@mikro-orm/knex';
 import { TodoReadByTodoIdOutboundPortInputDto } from '../outbound-port/todo.read-by-todo-id.outbound-port';
 import {
   TodoReadByTodoIdOutboundPort,
   TodoReadByTodoIdOutboundPortOutputDto,
 } from '../outbound-port/todo.read-by-todo-id.outbound-port';
 import { TodoReadByTodoIdService } from './todo.read-by-todo-id.service';
+import { MikroORM, PostgreSqlDriver } from '@mikro-orm/postgresql';
+import testConfig from 'src/mikro-orm.test.config';
+import { Users } from 'src/database/entities/Users';
 
 class MockTodoReadByTodoIdOutboundPort implements TodoReadByTodoIdOutboundPort {
   private params: TodoReadByTodoIdOutboundPortOutputDto;
@@ -18,10 +22,25 @@ class MockTodoReadByTodoIdOutboundPort implements TodoReadByTodoIdOutboundPort {
 }
 
 describe('TodoReadByTodoIdService Spec', () => {
+  let em: EntityManager;
+  let orm: MikroORM;
+
+  beforeAll(async () => {
+    orm = await MikroORM.init({ ...testConfig, driver: PostgreSqlDriver });
+    em = orm.em;
+  });
+
+  beforeEach(() => {});
+
+  afterAll(async () => {
+    await orm.close();
+  });
+
   test('투두 검색 : todoId로 할 일 받아오기', async () => {
     const todoReadByTodoIdService = new TodoReadByTodoIdService(
       new MockTodoReadByTodoIdOutboundPort({
-        todoId: '1',
+        id: '1',
+        user: em.getReference(Users, '1'),
         name: 'TodoId로 검색하기',
         startTime: new Date(2023, 6, 1, 10, 30),
         endTime: new Date(2023, 6, 1, 11, 0),
@@ -35,7 +54,8 @@ describe('TodoReadByTodoIdService Spec', () => {
     });
 
     expect(result).toStrictEqual({
-      todoId: '1',
+      id: '1',
+      user: em.getReference(Users, '1'),
       name: 'TodoId로 검색하기',
       startTime: new Date(2023, 6, 1, 10, 30),
       endTime: new Date(2023, 6, 1, 11, 0),

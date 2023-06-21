@@ -14,9 +14,9 @@ export class UserReadService implements UserReadInboundPort {
     @Inject(USER_READ_OUTBOUND_PORT)
     private readonly userReadOutboundPort: UserReadOutboundPort,
   ) {}
-  read(
+  async read(
     params: UserReadInboundPortInputDto,
   ): Promise<UserReadInboundPortOutputDto> {
-    return this.userReadOutboundPort.read(params);
+    return await this.userReadOutboundPort.read(params);
   }
 }

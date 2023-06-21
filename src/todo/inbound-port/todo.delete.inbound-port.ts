@@ -1,12 +1,12 @@
+import { Todos } from 'src/database/entities/Todos';
+import { Users } from 'src/database/entities/Users';
+
 export type TodoDeleteInboundPortInputDto = {
-  userId: string;
   todoId: string;
+  userId: string;
 };
 
-export type TodoDeleteInboundPortOutputDto = {
-  todoId: string;
-  name: string;
-};
+export type TodoDeleteInboundPortOutputDto = Todos;
 
 export const TODO_DELETE_INBOUND_PORT = 'TODO_DELETE_INBOUND_PORT' as const;
 

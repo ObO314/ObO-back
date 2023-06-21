@@ -1,5 +1,6 @@
+import { Users } from './../../database/entities/Users';
 import { JwtService } from '@nestjs/jwt';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ExtractJwt, Strategy as StrategyJWT } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import {
@@ -9,13 +10,17 @@ import {
   AuthJwtValidateInboundPortInputDto,
   AuthJwtValidateInboundPortOutputDto,
 } from '../inbound-port/auth.jwt.strategy.inbound-port';
+import { EntityManager } from '@mikro-orm/knex';
 
 @Injectable()
 export class JwtStrategy
   extends PassportStrategy(StrategyJWT)
   implements AuthJwtInboundPort
 {
-  constructor(private jwtService: JwtService) {
+  constructor(
+    private jwtService: JwtService,
+    private readonly em: EntityManager,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: true,
@@ -26,12 +31,12 @@ export class JwtStrategy
   async validate(
     payload: AuthJwtValidateInboundPortInputDto,
   ): Promise<AuthJwtValidateInboundPortOutputDto> {
-    return payload.userId;
+    return payload;
   }
 
   createToken(
-    userId: AuthJwtLoginInboundPortInputDto,
+    user: AuthJwtLoginInboundPortInputDto,
   ): AuthJwtLoginInboundPortOutputDto {
-    return { accessToken: this.jwtService.sign(userId) };
+    return { accessToken: this.jwtService.sign(user) };
   }
 }

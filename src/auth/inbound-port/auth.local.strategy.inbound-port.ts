@@ -1,11 +1,10 @@
+import { Users } from 'src/database/entities/Users';
+
 export type AuthLocalStrategyInboundPortInputEmailDto = string;
 export type AuthLocalStrategyInboundPortInputPasswordDto = string;
 
 export type AuthLocalStrategyInboundPortOutputDto = {
   userId: string;
-  email: string;
-  nickname: string;
-  authMethod: string;
 };
 
 export const AUTH_LOCAL_STRATEGY_INBOUND_PORT =

@@ -33,7 +33,6 @@ describe('UserSignUpLocalService Spec', () => {
       new MockUserSignUpLocalOutboundPort({
         userId: '0',
         email: 'testSignUp@obo.com',
-        password: '1q2w3e4r',
         nickname: '신규로컬닉네임',
       }),
     );
@@ -48,7 +47,6 @@ describe('UserSignUpLocalService Spec', () => {
     expect(result).toStrictEqual({
       userId: '0',
       email: 'testSignUp@obo.com',
-      password: '1q2w3e4r',
       nickname: '신규로컬닉네임',
     });
   });

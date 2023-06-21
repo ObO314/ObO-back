@@ -10,7 +10,7 @@ export class UsersHashtags {
     onUpdateIntegrity: 'cascade',
     primary: true,
   })
-  userId!: Users;
+  user!: Users;
 
   @ManyToOne({
     entity: () => Hashtags,
@@ -18,5 +18,5 @@ export class UsersHashtags {
     onUpdateIntegrity: 'cascade',
     primary: true,
   })
-  hashtagId!: Hashtags;
+  hashtag!: Hashtags;
 }

@@ -33,7 +33,6 @@ describe('UserLoginService Spec', () => {
 
     const result = userLoginService.login({
       userId: '1',
-      authMethod: 'LOCAL',
     });
 
     expect(result).toStrictEqual({

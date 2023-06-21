@@ -1,6 +1,7 @@
+import { Users } from 'src/database/entities/Users';
+
 export type UserLoginInboundPortInputDto = {
   userId: string;
-  authMethod: string;
 };
 
 export type UserLoginInboundPortOutputDto = {

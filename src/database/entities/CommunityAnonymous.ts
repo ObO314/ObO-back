@@ -5,10 +5,10 @@ import { Users } from './Users';
 export class CommunityAnonymous {
 
   @PrimaryKey({ columnType: 'int8' })
-  anopostId!: string;
+  id!: string;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade' })
-  userId!: Users;
+  @ManyToOne({ entity: () => Users, fieldName: 'user', onUpdateIntegrity: 'cascade' })
+  user!: Users;
 
   @Property({ length: 100 })
   title!: string;
