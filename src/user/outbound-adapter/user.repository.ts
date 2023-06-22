@@ -1,5 +1,5 @@
 import { EntityManager, MikroORM } from '@mikro-orm/postgresql';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {
   UserSignUpLocalOutboundPort,
@@ -26,7 +26,7 @@ import {
   UserSignUpSocialOutboundPortInputDto,
   UserSignUpSocialOutboundPortOutputDto,
 } from '../outbound-port/user.sign-up-social.outbound-port';
-import { pipe, tap } from '@fxts/core';
+import { filter, pipe, tap, toAsync } from '@fxts/core';
 
 @Injectable()
 export class UserRepository
@@ -40,24 +40,29 @@ export class UserRepository
 
   //create
   async signUpLocal(
-    params: UserSignUpLocalOutboundPortInputDto,
-  ): Promise<UserSignUpLocalOutboundPortOutputDto> {
+    params: UserSignUpLocalOutboundPortInputDto, // : Promise<UserSignUpLocalOutboundPortOutputDto> {
+  ) {
     //
     const findUserAndError = executeAndThrowError(
-      (email: string, authMethod: string) =>
-        this.em.findOne(Users, { email, authMethod }),
+      (email: string) => this.em.findOne(Users, { email }),
       '이미 가입된 이메일입니다.',
+    );
+
+    const validatePassword = executeOrThrowError(
+      (password: string) => password,
+      '비밀번호를 입력하세요',
     );
     try {
       return await pipe(
         params,
-        tap(({ email, authMethod }) => findUserAndError(email, authMethod)),
+        tap(({ email }) => findUserAndError(email)),
+        tap(({ password }) => validatePassword(password)),
         tap(async (params) => {
           params.password = await bcrypt.hash(params.password, 10);
         }),
         tap((user) => {
-          this.em.create(Users, user);
-          this.em.persistAndFlush(Users);
+          const createdUser = this.em.create(Users, user);
+          this.em.persistAndFlush(createdUser);
         }),
         (params) =>
           this.em.findOne(Users, {
@@ -82,17 +87,16 @@ export class UserRepository
   ): Promise<UserSignUpSocialOutboundPortOutputDto> {
     //
     const findUserAndError = executeAndThrowError(
-      (email: string, authMethod: string) =>
-        this.em.findOne(Users, { email, authMethod }),
-      '이미 가입된 소셜 계정입니다.',
+      (email: string) => this.em.findOne(Users, { email }),
+      '이미 가입된 이메일입니다.',
     );
 
     return await pipe(
       params,
-      tap(({ email, authMethod }) => findUserAndError(email, authMethod)),
+      tap(({ email }) => findUserAndError(email)),
       tap((user) => {
-        this.em.create(Users, user);
-        this.em.persistAndFlush(Users);
+        const createdUser = this.em.create(Users, user);
+        this.em.persistAndFlush(createdUser);
       }),
       (params) =>
         this.em.findOne(Users, {
@@ -119,7 +123,8 @@ export class UserRepository
     try {
       return await pipe(params, findUserOrError, (user) => {
         return {
-          userId: user.userId,
+          // 타입스크립트 에러나는데 코드에 문제 없음.
+          userId: user.id,
           email: user.email,
           nickname: user.nickname,
           profileImg: user.profileImg || process.env.PRODUCT_DEFAULT_IMAGE,

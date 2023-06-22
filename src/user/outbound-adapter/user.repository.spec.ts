@@ -1,326 +1,427 @@
-import { EntityManager } from '@mikro-orm/postgresql';
+import * as dotenv from 'dotenv';
 import { UserRepository } from './user.repository';
-import { LOCAL } from '../../auth/strategy/auth.local.strategy';
-import { Users } from '../../database/entities/Users';
-import { GOOGLE } from '../../auth/strategy/auth.google.strategy';
+import { EntityManager } from '@mikro-orm/knex';
+import { MikroORM, PostgreSqlDriver } from '@mikro-orm/postgresql';
+import testConfig from 'src/mikro-orm.test.config';
+import { Users } from 'src/database/entities/Users';
+import { UserSignUpLocalOutboundPortOutputDto } from '../outbound-port/user.sign-up-local.outbound-port';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { UserSignUpSocialOutboundPortOutputDto } from '../outbound-port/user.sign-up-social.outbound-port';
+import { UserReadOutboundPortOutputDto } from '../outbound-port/user.read.outbound-port';
+import { UserUpdateOutboundPortOutputDto } from '../outbound-port/user.update.outbound-port';
 
-describe('UserRepository Spec', () => {
+dotenv.config();
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////    추 후  파 일  분 리 예 정     ///////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+describe('UserRepository : signUpLocal', () => {
   let userRepository: UserRepository;
-  let mockEntityManager: jest.Mocked<EntityManager>;
+  let em: EntityManager;
+  let orm: MikroORM;
 
-  beforeEach(() => {
-    mockEntityManager = {
-      findOne: jest.fn(),
-      create: jest.fn(),
-      persistAndFlush: jest.fn(),
-      assign: jest.fn(),
-    } as any;
+  //------------------------------------------------------------------------------------------
 
-    userRepository = new UserRepository(mockEntityManager);
+  beforeAll(async () => {
+    orm = await MikroORM.init({ ...testConfig, driver: PostgreSqlDriver });
+    em = orm.em;
+    userRepository = new UserRepository(em);
   });
 
-  //------------------------------------------------------------
-  //------------------------------------------------------------
+  //------------------------------------------------------------------------------------------
 
-  describe('signUpLocal', () => {
-    test('회원가입 : 가입 가능한 이메일', async () => {
-      const params = {
-        email: 'test@obo.com',
-        password: '1q2w3e4r',
-        nickname: 'oboBackend',
-        authMethod: LOCAL,
-      };
-
-      mockEntityManager.findOne
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          userId: '1',
-          email: 'test@obo.com',
-          password: '1q2w3e4r',
-          nickname: 'oboBackend',
-        });
-
-      const result = await userRepository.signUpLocal(params);
-
-      expect(mockEntityManager.findOne).toHaveBeenCalledWith(Users, {
-        email: params.email,
-        authMethod: LOCAL,
-      });
-
-      expect(mockEntityManager.create).toHaveBeenCalledWith(
-        Users,
-        expect.objectContaining(params),
-      );
-
-      expect(mockEntityManager.persistAndFlush).toHaveBeenCalledWith(Users);
-
-      expect(mockEntityManager.findOne).toHaveBeenCalledWith(Users, {
-        email: params.email,
-        authMethod: LOCAL,
-      });
-
-      expect(result).toStrictEqual({
-        userId: '1',
-        email: 'test@obo.com',
-        password: '1q2w3e4r',
-        nickname: 'oboBackend',
-      });
-    });
-
-    //------------------------------------------------------------
-
-    test('회원가입 : 이미 가입한 이메일', async () => {
-      const params = {
-        email: 'test@obo.com',
-        password: '1q2w3e4r',
-        nickname: 'oboBackend',
-        authMethod: LOCAL,
-      };
-
-      mockEntityManager.findOne.mockResolvedValue({
-        userId: '1',
-        email: 'test@obo.com',
+  beforeEach(async () => {
+    const newUsers = [];
+    newUsers.push(
+      em.create(Users, {
+        id: '1',
+        email: 'oboTestUser1@obo.com',
+        nickname: 'whiteOBO',
         password:
           '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
-        nickname: 'oboBackend',
-      });
-
-      let error: Error;
-
-      try {
-        const result = await userRepository.signUpLocal(params);
-      } catch (e) {
-        error = e;
-      }
-
-      expect(mockEntityManager.findOne).toHaveBeenCalledWith(Users, {
-        email: params.email,
-        authMethod: LOCAL,
-      });
-
-      expect(error).toBeDefined();
-
-      expect(error.message).toEqual('이미 가입된 이메일입니다.');
-
-      expect(mockEntityManager.create).not.toHaveBeenCalledWith();
-
-      expect(mockEntityManager.create).not.toHaveBeenCalledWith();
-
-      expect(mockEntityManager.persistAndFlush).not.toHaveBeenCalledWith();
-    });
-    //------------------------------------------------------------
-  });
-
-  //------------------------------------------------------------
-  //------------------------------------------------------------
-
-  describe('signUpSocial', () => {
-    test('소셜가입 : 가입 가능한 소셜 이메일', async () => {
-      const params = {
-        email: 'whitedayobo@gmail.com',
-        nickname: '소셜가입닉네임',
-        authMethod: GOOGLE,
-      };
-
-      mockEntityManager.findOne
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          userId: '1',
-          email: 'whitedayobo@gmail.com',
-          nickname: '소셜가입닉네임',
-        });
-
-      const result = await userRepository.signUpSocial(params);
-
-      expect(mockEntityManager.findOne).toHaveBeenCalledWith(Users, {
-        email: 'whitedayobo@gmail.com',
-        authMethod: GOOGLE,
-      });
-
-      expect(mockEntityManager.create).toHaveBeenCalledWith(Users, params);
-
-      expect(mockEntityManager.persistAndFlush).toHaveBeenCalledWith(Users);
-
-      expect(mockEntityManager.findOne).toHaveBeenCalledWith(Users, {
-        email: 'whitedayobo@gmail.com',
-        authMethod: GOOGLE,
-      });
-
-      expect(result).toStrictEqual({
-        userId: '1',
-        email: 'whitedayobo@gmail.com',
-        nickname: '소셜가입닉네임',
-      });
-    });
-
-    //------------------------------------------------------------
-
-    test('소셜가입 : 이미 가입한 소셜 이메일', async () => {
-      const params = {
-        email: 'whitedayobo@gmail.com',
-        nickname: '소셜가입닉네임',
-        authMethod: GOOGLE,
-      };
-
-      mockEntityManager.findOne.mockResolvedValue({
-        userId: '1',
-        email: 'test@obo.com',
-        nickname: 'oboBackend',
-      });
-
-      let error: Error;
-
-      try {
-        await userRepository.signUpSocial(params);
-      } catch (e) {
-        error = e;
-      }
-
-      expect(mockEntityManager.findOne).toHaveBeenCalledWith(Users, {
-        email: params.email,
-        authMethod: GOOGLE,
-      });
-
-      expect(error).toBeDefined();
-
-      expect(error.message).toEqual('이미 가입된 소셜 계정입니다.');
-
-      expect(mockEntityManager.create).not.toHaveBeenCalledWith();
-
-      expect(mockEntityManager.create).not.toHaveBeenCalledWith();
-
-      expect(mockEntityManager.persistAndFlush).not.toHaveBeenCalledWith();
-    });
-  });
-
-  //------------------------------------------------------------
-  //------------------------------------------------------------
-
-  describe('read', () => {
-    test('유저검색 : 유저Id로 찾기', async () => {
-      const params = {
-        userId: '1',
-      };
-
-      mockEntityManager.findOne.mockResolvedValue({
-        userId: '1',
-        email: 'backend@obo.com',
-        password:
-          '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
-        nickname: 'editedname',
-        profileImg:
-          'https://obo-s3.s3.ap-northeast-2.amazonaws.com/obo-user-profile/1686223996746_ObO.profile.jpg',
-        progressRoutine: 0,
-        progressTodo: 0,
-        progressWork: 0,
         authMethod: 'LOCAL',
-      });
+      }),
+    );
+    newUsers.push(
+      em.create(Users, {
+        id: '2',
+        email: 'oboTestUser2@obo.com',
+        nickname: 'blackOBO',
+        password:
+          '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
+        authMethod: 'LOCAL',
+      }),
+    );
 
-      const result = await userRepository.read(params);
+    for (const newUser of newUsers) {
+      await em.persistAndFlush(newUser);
+    }
+  });
 
-      expect(mockEntityManager.findOne).toHaveBeenCalledWith(Users, params);
+  //------------------------------------------------------------------------------------------
 
-      expect(result).toStrictEqual({
-        userId: '1',
-        email: 'backend@obo.com',
-        nickname: 'editedname',
-        profileImg:
-          'https://obo-s3.s3.ap-northeast-2.amazonaws.com/obo-user-profile/1686223996746_ObO.profile.jpg',
-        progressRoutine: 0,
-        progressTodo: 0,
-        progressWork: 0,
-      });
+  afterEach(async () => {
+    await em.nativeDelete(Users, {});
+    em.clear();
+  });
 
-      //------------------------------------------------------------
-    });
-    test('가입되지 않은 유저에 대한 검색', async () => {
-      const params = {
-        userId: '1',
-      };
+  //------------------------------------------------------------------------------------------
 
-      mockEntityManager.findOne.mockResolvedValue(null);
+  afterAll(async () => {
+    await em.nativeDelete(Users, {});
+    await orm.close();
+  });
 
-      let error: Error;
+  //------------------------------------------------------------------------------------------
 
-      try {
-        await userRepository.read(params);
-      } catch (e) {
-        error = e;
-      }
+  test('회원가입(로컬) : 가입 가능한 이메일', async () => {
+    const params = {
+      id: '3', // 임의지정
+      email: 'oboTestUser3@obo.com',
+      nickname: 'blackOBO',
+      password: '1q2w3e4r',
+      authMethod: 'LOCAL',
+    };
 
-      expect(mockEntityManager.findOne).toHaveBeenCalledWith(Users, {
-        userId: params.userId,
-      });
+    const result: UserSignUpLocalOutboundPortOutputDto =
+      await userRepository.signUpLocal(params);
 
-      expect(error).toBeDefined();
-
-      expect(error.message).toEqual('존재하지 않는 사용자 입니다.');
-
-      expect(mockEntityManager.create).not.toHaveBeenCalledWith();
-
-      expect(mockEntityManager.create).not.toHaveBeenCalledWith();
-
-      expect(mockEntityManager.persistAndFlush).not.toHaveBeenCalledWith();
+    expect(result).toEqual({
+      userId: '3',
+      email: 'oboTestUser3@obo.com',
+      nickname: 'blackOBO',
     });
   });
 
-  //------------------------------------------------------------
-  //------------------------------------------------------------
+  //------------------------------------------------------------------------------------------
 
-  describe('update', () => {
-    test('유저 수정 : 유저 닉네임 업데이트하기', async () => {
-      const params = {
-        userId: '1',
-        nickname: '유저업데이트닉네임',
-        profileImg:
-          'https://obo-s3.s3.ap-northeast-2.amazonaws.com/obo-user-profile/1686223996746_ObO.profile.jpg',
-      };
+  test('회원가입(로컬) : 이미 가입된 이메일', async () => {
+    const params = {
+      email: 'oboTestUser1@obo.com',
+      nickname: 'ImDuplicated',
+      password: '1q2w3e4r',
+      authMethod: 'LOCAL',
+    };
 
-      const output = {
-        userId: '1',
-        email: 'backend@obo.com',
+    expect(
+      async () => await userRepository.signUpLocal(params),
+    ).rejects.toThrow(
+      new HttpException('이미 가입된 이메일입니다.', HttpStatus.BAD_REQUEST),
+    );
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  test('회원가입(로컬) : 비어있는 비밀번호', async () => {
+    const params = {
+      email: 'oboTestUser4@obo.com',
+      nickname: 'IhaveNotPw',
+      password: null,
+      authMethod: 'LOCAL',
+    };
+
+    expect(
+      async () => await userRepository.signUpLocal(params),
+    ).rejects.toThrow(
+      new HttpException('비밀번호를 입력하세요', HttpStatus.BAD_REQUEST),
+    );
+  });
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+describe('UserRepository : signUpSocial', () => {
+  let userRepository: UserRepository;
+  let em: EntityManager;
+  let orm: MikroORM;
+
+  //------------------------------------------------------------------------------------------
+
+  beforeAll(async () => {
+    orm = await MikroORM.init({ ...testConfig, driver: PostgreSqlDriver });
+    em = orm.em;
+    userRepository = new UserRepository(em);
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  beforeEach(async () => {
+    const newUsers = [];
+    newUsers.push(
+      em.create(Users, {
+        id: '1',
+        email: 'oboTestUser1@obo.com',
+        nickname: 'whiteOBO',
         password:
           '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
-        nickname: '바꾸기전닉네임',
-        profileImg:
-          'https://obo-s3.s3.ap-northeast-2.amazonaws.com/obo-user-profile/1686223996746_ObO.profile.jpg',
-        description: null,
-        progressRoutine: null,
-        progressTodo: null,
-        progressWork: null,
         authMethod: 'LOCAL',
-      };
+      }),
+    );
+    newUsers.push(
+      em.create(Users, {
+        id: '2',
+        email: 'oboTestUser2@google.com',
+        nickname: 'blackOBO',
+        authMethod: 'GOOGLE',
+      }),
+    );
 
-      mockEntityManager.findOne.mockResolvedValueOnce(output);
+    for (const newUser of newUsers) {
+      await em.persistAndFlush(newUser);
+    }
+  });
 
-      mockEntityManager.assign.mockImplementation((target, source) => {
-        return Object.assign(target, source);
-      });
-      const result = await userRepository.update(params);
+  //------------------------------------------------------------------------------------------
 
-      expect(mockEntityManager.findOne).toHaveBeenCalledWith(Users, {
-        userId: params.userId,
-      });
+  afterEach(async () => {
+    await em.nativeDelete(Users, {});
+    em.clear();
+  });
 
-      expect(mockEntityManager.assign).toHaveBeenCalledWith(output, {
-        nickname: params.nickname,
-        profileImg: params.profileImg,
-      });
+  //------------------------------------------------------------------------------------------
 
-      expect(mockEntityManager.persistAndFlush).toHaveBeenCalledWith(output);
+  afterAll(async () => {
+    await em.nativeDelete(Users, {});
+    await orm.close();
+  });
 
-      expect(result).toStrictEqual({
-        userId: '1',
-        email: 'backend@obo.com',
-        nickname: '유저업데이트닉네임',
-        profileImg:
-          'https://obo-s3.s3.ap-northeast-2.amazonaws.com/obo-user-profile/1686223996746_ObO.profile.jpg',
-        progressRoutine: 0,
-        progressTodo: 0,
-        progressWork: 0,
-      });
+  //------------------------------------------------------------------------------------------
 
-      //------------------------------------------------------------
+  test('회원가입(소셜) : 가입 가능한 이메일', async () => {
+    const params = {
+      id: '3', // 임의지정
+      email: 'oboTestUser3@google.com',
+      nickname: 'newbieOBO',
+      authMethod: 'GOOGLE',
+    };
+
+    const result: UserSignUpSocialOutboundPortOutputDto =
+      await userRepository.signUpSocial(params);
+
+    expect(result).toEqual({
+      userId: '3',
+      email: 'oboTestUser3@google.com',
+      nickname: 'newbieOBO',
+    });
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  test('회원가입(소셜) : 이미 가입된 이메일', async () => {
+    const params = {
+      email: 'oboTestUser2@google.com',
+      nickname: 'ImDuplicated',
+      authMethod: 'GOOGLE',
+    };
+
+    expect(
+      async () => await userRepository.signUpSocial(params),
+    ).rejects.toThrow(
+      new HttpException('이미 가입된 이메일입니다.', HttpStatus.BAD_REQUEST),
+    );
+  });
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+describe('UserRepository : read', () => {
+  let userRepository: UserRepository;
+  let em: EntityManager;
+  let orm: MikroORM;
+
+  //------------------------------------------------------------------------------------------
+
+  beforeAll(async () => {
+    orm = await MikroORM.init({ ...testConfig, driver: PostgreSqlDriver });
+    em = orm.em;
+    userRepository = new UserRepository(em);
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  beforeEach(async () => {
+    const newUsers = [];
+    newUsers.push(
+      em.create(Users, {
+        id: '1',
+        email: 'oboTestUser1@obo.com',
+        nickname: 'whiteOBO',
+        password:
+          '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
+        authMethod: 'LOCAL',
+      }),
+    );
+    newUsers.push(
+      em.create(Users, {
+        id: '2',
+        email: 'oboTestUser2@google.com',
+        nickname: 'blackOBO',
+        authMethod: 'GOOGLE',
+      }),
+    );
+
+    for (const newUser of newUsers) {
+      await em.persistAndFlush(newUser);
+    }
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  afterEach(async () => {
+    await em.nativeDelete(Users, {});
+    em.clear();
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  afterAll(async () => {
+    await em.nativeDelete(Users, {});
+    await orm.close();
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  test('유저정보 조회 : 확인 가능한 유저정보', async () => {
+    const params = {
+      userId: '1',
+    };
+
+    const result: UserReadOutboundPortOutputDto = await userRepository.read(
+      params,
+    );
+
+    expect(result).toEqual({
+      userId: '1',
+      email: 'oboTestUser1@obo.com',
+      nickname: 'whiteOBO',
+      profileImg: process.env.PRODUCT_DEFAULT_IMAGE,
+      progressRoutine: 0,
+      progressTodo: 0,
+      progressWork: 0,
+    });
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  test('유저정보 조회 : 존재하지 않는 유저정보', async () => {
+    const params = {
+      userId: '0',
+    };
+
+    expect(async () => await userRepository.read(params)).rejects.toThrow(
+      new HttpException('존재하지 않는 사용자 입니다.', HttpStatus.BAD_REQUEST),
+    );
+  });
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+describe('UserRepository : update', () => {
+  let userRepository: UserRepository;
+  let em: EntityManager;
+  let orm: MikroORM;
+
+  //------------------------------------------------------------------------------------------
+
+  beforeAll(async () => {
+    orm = await MikroORM.init({ ...testConfig, driver: PostgreSqlDriver });
+    em = orm.em;
+    userRepository = new UserRepository(em);
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  beforeEach(async () => {
+    const newUsers = [];
+    newUsers.push(
+      em.create(Users, {
+        id: '1',
+        email: 'oboTestUser1@obo.com',
+        nickname: 'whiteOBO',
+        password:
+          '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
+        authMethod: 'LOCAL',
+      }),
+    );
+    newUsers.push(
+      em.create(Users, {
+        id: '2',
+        email: 'oboTestUser2@google.com',
+        nickname: 'blackOBO',
+        authMethod: 'GOOGLE',
+      }),
+    );
+
+    for (const newUser of newUsers) {
+      await em.persistAndFlush(newUser);
+    }
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  afterEach(async () => {
+    await em.nativeDelete(Users, {});
+    em.clear();
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  afterAll(async () => {
+    await em.nativeDelete(Users, {});
+    await orm.close();
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  test('유저정보 수정 : 수정 가능한 유저정보 (닉네임)', async () => {
+    const params = {
+      userId: '1',
+      nickname: '수정하려는닉네임',
+    };
+
+    const result: UserUpdateOutboundPortOutputDto = await userRepository.update(
+      params,
+    );
+
+    expect(result).toEqual({
+      userId: '1',
+      email: 'oboTestUser1@obo.com',
+      nickname: '수정하려는닉네임',
+      profileImg: process.env.PRODUCT_DEFAULT_IMAGE,
+      progressRoutine: 0,
+      progressTodo: 0,
+      progressWork: 0,
+    });
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  test('유저정보 수정 : 수정 가능한 유저정보 (닉네임, 프로필사진)', async () => {
+    const params = {
+      userId: '1',
+      nickname: '수정하려는닉네임',
+      profileImg: 's3://obo-s3/obo-user-profile/1686223996746_ObO.profile.jpg',
+    };
+
+    const result: UserUpdateOutboundPortOutputDto = await userRepository.update(
+      params,
+    );
+
+    expect(result).toEqual({
+      userId: '1',
+      email: 'oboTestUser1@obo.com',
+      nickname: '수정하려는닉네임',
+      profileImg: 's3://obo-s3/obo-user-profile/1686223996746_ObO.profile.jpg',
+      progressRoutine: 0,
+      progressTodo: 0,
+      progressWork: 0,
     });
   });
 });
