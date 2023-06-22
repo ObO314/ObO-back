@@ -50,11 +50,13 @@ export class TodoRepository
     const user = em.getReference(Users, userId);
     const content = { user, ...rest };
 
-    return await pipe(
+    const result = await pipe(
       content,
       (content) => em.create(Todos, content),
       tap((createdTodo) => em.persistAndFlush(createdTodo)),
     );
+
+    return await em.findOne(Todos, { id: result.id });
   }
 
   async readByDate(
@@ -91,11 +93,13 @@ export class TodoRepository
     const { userId, todoId, ...rest } = params;
     const user = em.getReference(Users, userId);
     const content = { user, id: todoId, ...rest };
-    return await pipe(
+    const result = await pipe(
       content,
       (content) => em.upsert(Todos, content),
       tap((updatedTodo) => em.persistAndFlush(updatedTodo)),
     );
+
+    return await em.findOne(Todos, { id: result.id });
   }
 
   // 유저와 할일을 특정하여 삭제함
