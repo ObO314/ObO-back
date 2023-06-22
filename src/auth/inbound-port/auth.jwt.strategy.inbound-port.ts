@@ -2,7 +2,7 @@ import { Users } from 'src/database/entities/Users';
 
 export type AuthJwtValidateInboundPortInputDto = { userId: string };
 
-export type AuthJwtValidateInboundPortOutputDto = { userId: string };
+export type AuthJwtValidateInboundPortOutputDto = string;
 
 export type AuthJwtLoginInboundPortInputDto = {
   userId: string;

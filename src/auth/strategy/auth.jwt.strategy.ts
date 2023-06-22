@@ -31,7 +31,7 @@ export class JwtStrategy
   async validate(
     payload: AuthJwtValidateInboundPortInputDto,
   ): Promise<AuthJwtValidateInboundPortOutputDto> {
-    return { userId: payload.userId };
+    return payload.userId;
   }
 
   createToken(

@@ -169,9 +169,8 @@ export class UserController {
     @Body() body: any,
     @UploadedFile() image: Express.MulterS3.File,
   ) {
-    const { userId } = req.user as { userId: string };
     const params: UserUpdateInboundPortInputDto = {
-      userId: userId,
+      userId: req.user as string,
       nickname: body.nickname,
       profileImg: image ? image.location : process.env.PRODUCT_DEFAULT_IMAGE,
     };
