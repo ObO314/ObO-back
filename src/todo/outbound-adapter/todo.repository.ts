@@ -71,16 +71,16 @@ export class TodoRepository
       endTime: { $gte: content.startTime, $lte: content.endTime },
     };
 
-    return await pipe(params, (params) => em.find(Todos, condition));
+    return await pipe(condition, (condition) => em.find(Todos, condition));
   }
 
   async readByTodoId(
     params: TodoReadByTodoIdOutboundPortInputDto,
   ): Promise<TodoReadByTodoIdOutboundPortOutputDto> {
     const em = this.em;
-    const { userId, ...rest } = params;
+    const { userId, todoId } = params;
     const user = em.getReference(Users, userId);
-    const content = { user, ...rest };
+    const content = { user, id: todoId };
     return await em.findOne(Todos, content);
   }
   // 유저와 할 일을 특정하여, 최신 정보를 업데이트 함
@@ -88,9 +88,9 @@ export class TodoRepository
     params: TodoUpdateOutboundPortInputDto,
   ): Promise<TodoUpdateOutboundPortOutputDto> {
     const em = this.em;
-    const { userId, ...rest } = params;
+    const { userId, todoId, ...rest } = params;
     const user = em.getReference(Users, userId);
-    const content = { user, ...rest };
+    const content = { user, id: todoId, ...rest };
     return await pipe(
       content,
       (content) => em.upsert(Todos, content),
@@ -103,9 +103,9 @@ export class TodoRepository
     params: TodoDeleteOutboundPortInputDto,
   ): Promise<TodoDeleteOutboundPortOutputDto> {
     const em = this.em;
-    const { userId, ...rest } = params;
+    const { userId, todoId } = params;
     const user = em.getReference(Users, userId);
-    const content = { user, ...rest };
+    const content = { user, id: todoId };
     return await pipe(
       content,
       (content) => em.findOne(Todos, content),

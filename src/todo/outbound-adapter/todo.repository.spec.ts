@@ -10,6 +10,13 @@ import {
   TodoCreateOutboundPortOutputDto,
 } from '../outbound-port/todo.create.outbound-port';
 import { testConfig } from '../../mikro-orm.test.config';
+import { TodoReadByTodoIdOutboundPortOutputDto } from '../outbound-port/todo.read-by-todo-id.outbound-port';
+import { TodoReadByDateOutboundPortOutputDto } from '../outbound-port/todo.read-by-date.outbound-port';
+import {
+  TodoUpdateOutboundPortInputDto,
+  TodoUpdateOutboundPortOutputDto,
+} from '../outbound-port/todo.update.outbound-port';
+import { TodoDeleteOutboundPortOutputDto } from '../outbound-port/todo.delete.outbound-port';
 
 dotenv.config();
 
@@ -17,6 +24,8 @@ describe('Todo Repository', () => {
   let todoRepository: TodoRepository;
   let em: EntityManager;
   let orm: MikroORM;
+
+  //------------------------------------------------------------------------------------------
 
   beforeAll(async () => {
     orm = await MikroORM.init({ ...testConfig, driver: PostgreSqlDriver });
@@ -40,15 +49,7 @@ describe('Todo Repository', () => {
     await em.persistAndFlush(newUser2);
   });
 
-  // 설정해야 하는 것
-  // - user 생성 all
-  // - 투두 생성 each
-
-  // 해야하는것
-  // - 투두 생성
-  // - 투두 수정
-  // - 투두 검색
-  // - 투두 삭제
+  //------------------------------------------------------------------------------------------
 
   beforeEach(async () => {
     const newTodos = [];
@@ -134,14 +135,21 @@ describe('Todo Repository', () => {
     }
   });
 
+  //------------------------------------------------------------------------------------------
+
   afterEach(async () => {
     await em.nativeDelete(Todos, {});
+    em.clear();
   });
+
+  //------------------------------------------------------------------------------------------
 
   afterAll(async () => {
     await em.nativeDelete(Users, {});
     await orm.close();
   });
+
+  //------------------------------------------------------------------------------------------
 
   test('create', async () => {
     const params = {
@@ -160,143 +168,143 @@ describe('Todo Repository', () => {
 
     expect(result).toEqual({
       id: '50',
+      user: em.getReference(Users, '1'),
       name: '8월 8일에 추가한 투두 테스트1',
       startTime: new Date('2023-08-08 16:00:00'),
       endTime: new Date('2023-08-21 18:00:00'),
       description: 'test로 생성된 투두입니다.',
       completed: false,
-      user: em.getReference(Users, '1'),
     });
   });
+
+  //------------------------------------------------------------------------------------------
+
+  test('readByDate', async () => {
+    const params = {
+      userId: '1',
+      startTime: new Date('2023-06-01 00:00:00'),
+      endTime: new Date('2023-06-30 23:59:59'),
+    };
+
+    const result: TodoReadByDateOutboundPortOutputDto =
+      await todoRepository.readByDate(params);
+
+    expect(result).toEqual([
+      {
+        id: '20',
+        user: em.getReference(Users, '1'),
+        name: '6월 1일에 추가한 투두 테스트1',
+        startTime: new Date('2023-06-01 16:00:00'),
+        endTime: new Date('2023-06-01 18:00:00'),
+        description: 'beforeEach로 생성된 투두입니다.',
+        completed: true,
+      },
+      {
+        id: '25',
+        user: em.getReference(Users, '1'),
+        name: '6월 21일에 추가한 투두 테스트1',
+        startTime: new Date('2023-06-21 16:00:00'),
+        endTime: new Date('2023-06-25 18:00:00'),
+        description: 'beforeEach로 생성된 투두입니다.',
+        completed: false,
+      },
+    ]);
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  test('readById', async () => {
+    const params = {
+      userId: '1',
+      todoId: '40',
+    };
+
+    const result: TodoReadByTodoIdOutboundPortOutputDto =
+      await todoRepository.readByTodoId(params);
+
+    expect(result).toEqual({
+      id: '40',
+      user: em.getReference(Users, '1'),
+      name: '7월 21일에 추가한 투두 테스트1',
+      startTime: new Date('2023-07-21 16:00:00'),
+      endTime: new Date('2023-07-23 18:00:00'),
+      description: 'beforeEach로 생성된 투두입니다.',
+      completed: false,
+    });
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  test('update', async () => {
+    const params = {
+      userId: '1',
+      todoId: '40',
+      name: '수정된 7월의 할 일 테스트',
+      startTime: new Date('2023-07-21 16:00:00'),
+      endTime: new Date('2023-07-23 18:00:00'),
+      description: 'update로 수정된 Todo 입니다.',
+      completed: false,
+    };
+
+    const result: TodoUpdateOutboundPortOutputDto = await todoRepository.update(
+      params,
+    );
+
+    expect(result).toEqual({
+      id: '40',
+      user: em.getReference(Users, '1'),
+      name: '수정된 7월의 할 일 테스트',
+      startTime: new Date('2023-07-21 16:00:00'),
+      endTime: new Date('2023-07-23 18:00:00'),
+      description: 'update로 수정된 Todo 입니다.',
+      completed: false,
+    });
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  test('delete', async () => {
+    // 지우기
+    const params = {
+      userId: '2',
+      todoId: '35',
+    };
+
+    const result: TodoDeleteOutboundPortOutputDto = await todoRepository.delete(
+      params,
+    );
+
+    expect(result).toEqual({
+      id: '35',
+      user: em.getReference(Users, '2'),
+      name: '6월 21일에 추가한 투두 테스트2',
+      startTime: new Date('2023-06-21 16:00:00'),
+      endTime: new Date('2023-06-25 18:00:00'),
+      description: 'beforeEach로 생성된 투두입니다.',
+      completed: false,
+    });
+
+    // 지운 후 기간으로 검색해서 없어진 지 확인하기
+    const afterDeleteParams = {
+      userId: '2',
+      startTime: new Date('2023-06-01 00:00:00'),
+      endTime: new Date('2023-06-30 23:59:59'),
+    };
+
+    const afterDeleteResult: TodoReadByDateOutboundPortOutputDto =
+      await todoRepository.readByDate(afterDeleteParams);
+
+    expect(afterDeleteResult).toEqual([
+      {
+        id: '30',
+        name: '6월 1일에 추가한 투두 테스트2',
+        startTime: new Date('2023-06-01 16:00:00'),
+        endTime: new Date('2023-06-01 18:00:00'),
+        description: 'beforeEach로 생성된 투두입니다.',
+        completed: true,
+        user: em.getReference(Users, '2'),
+      },
+    ]);
+  });
+  //------------------------------------------------------------------------------------------
 });
-
-// import { EntityManager } from '@mikro-orm/knex';
-// import {
-//   Entity,
-//   EntityName,
-//   ManyToOne,
-//   PrimaryKey,
-//   Property,
-// } from '@mikro-orm/core';
-// import { TodoRepository } from './todo.repository';
-
-// describe('UseEntityManager Util Spec', () => {
-//   let mockEntityManager: jest.Mocked<EntityManager>;
-//   let mockTodoRepository: TodoRepository;
-
-//   mockEntityManager = {
-//     findOne: jest.fn(),
-//     find: jest.fn(),
-//     create: jest.fn(),
-//     persistAndFlush: jest.fn(),
-//     assign: jest.fn(),
-//   } as any;
-
-//   mockTodoRepository = new TodoRepository(mockEntityManager);
-
-//   //----------------------------------------------------------------------
-
-//   test('create', async () => {
-//     jest
-//       .spyOn(mockEntityManager, 'create')
-//       .mockImplementation(
-//         async (entity: EntityName<object>, params: object) => {
-//           return { ...params, todoId: 1, userId: { userId: '1' } };
-//         },
-//       );
-
-//     const params = {
-//       name: '6월 14일에 추가한 투두 테스트3',
-//       startTime: new Date(2023, 6, 14, 12, 0, 0),
-//       endTime: new Date(2023, 6, 14, 18, 0, 0),
-//       description: '이것은 투두에 대한 설명입니다. 필수 요소는 아닙니다.',
-//       completed: false,
-//       userId: {
-//         userId: '1',
-//         email: 'test@obo.com',
-//         password: '1ersdfgAWEUTAw4eFawJE$aPJWGPAJ',
-//         nickname: '테스트계정',
-//       },
-//     };
-
-//     const result = await mockTodoRepository.create(params);
-
-//     expect(result).toEqual({
-//       todoId: 1,
-//       name: '6월 14일에 추가한 투두 테스트3',
-//       startTime: new Date(2023, 6, 14, 12, 0, 0),
-//       endTime: new Date(2023, 6, 14, 18, 0, 0),
-//       description: '이것은 투두에 대한 설명입니다. 필수 요소는 아닙니다.',
-//       completed: false,
-//       userId: {
-//         userId: '1',
-//       },
-//     });
-//   });
-
-//   //----------------------------------------------------------------------
-//   test('readByDate', async () => {
-//     jest
-//       .spyOn(mockEntityManager, 'find')
-//       .mockImplementation(
-//         async (entity: EntityName<object>, params: object) => {
-//           return [
-//             {
-//               todoId: '49',
-//               userId: '1',
-//               name: '6월 11일에 할 일',
-//               startTime: new Date(2023, 6, 11, 10, 0, 0),
-//               endTime: new Date(2023, 6, 11, 20, 30, 0),
-//               completed: false,
-//               description:
-//                 '이것은 투두에 대한 설명입니다. 필수 요소는 아닙니다.',
-//             },
-//             {
-//               todoId: '50',
-//               userId: '1',
-//               name: '6월 21일에 할 일',
-//               startTime: new Date(2023, 6, 21, 10, 0, 0),
-//               endTime: new Date(2023, 6, 21, 10, 30, 0),
-//               completed: false,
-//               description:
-//                 '이것은 투두에 대한 설명입니다. 필수 요소는 아닙니다.',
-//             },
-//           ];
-//         },
-//       );
-
-//     const params = {
-//       startTime: new Date(2023, 6, 1, 0, 0, 0),
-//       endTime: new Date(2023, 6, 30, 0, 0, 0),
-//       userId: {
-//         userId: '1',
-//         email: 'test@obo.com',
-//         password: '1ersdfgAWEUTAw4eFawJE$aPJWGPAJ',
-//         nickname: '테스트계정',
-//       },
-//     };
-
-//     const result = await mockTodoRepository.readByDate(params);
-
-//     expect(result).toEqual([
-//       {
-//         todoId: '49',
-//         userId: '1',
-//         name: '6월 11일에 할 일',
-//         startTime: new Date(2023, 6, 11, 10, 0, 0),
-//         endTime: new Date(2023, 6, 11, 20, 30, 0),
-//         completed: false,
-//         description: '이것은 투두에 대한 설명입니다. 필수 요소는 아닙니다.',
-//       },
-//       {
-//         todoId: '50',
-//         userId: '1',
-//         name: '6월 21일에 할 일',
-//         startTime: new Date(2023, 6, 21, 10, 0, 0),
-//         endTime: new Date(2023, 6, 21, 10, 30, 0),
-//         completed: false,
-//         description: '이것은 투두에 대한 설명입니다. 필수 요소는 아닙니다.',
-//       },
-//     ]);
-//   });
-// });
