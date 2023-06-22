@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { HashtagsController } from './controller/hashtags.controller';
 import { HASHTAGS_USER_CREATE_INBOUND_PORT } from './inbound-port/hashtags.user-create.inbound-port';
-import { HashtagsUserRepository } from './outbound-adapter/hashtags.repository';
+import { HashtagsUserRepository } from './outbound-adapter/hashtags.user.repository';
 import { HashtagsUserCreateService } from './service/hashtags.user-create.service';
 import { HASHTAGS_USER_CREATE_OUTBOUND_PORT } from './outbound-port/hashtags.user-create.outbound-port';
 import { HASHTAGS_USER_READ_INBOUND_PORT } from './inbound-port/hashtags.user-read.inbound-port';

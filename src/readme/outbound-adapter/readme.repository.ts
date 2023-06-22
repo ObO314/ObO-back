@@ -59,10 +59,14 @@ export class ReadmeRepository
       title: params.title,
       content: params.content,
     };
-    this.em.upsert(Readme, editedReadme); //upsert는 있으면 업데이트하고 없으면 삽입함.
-    this.em.flush();
+    const upsertedReadme = await this.em.upsert(Readme, editedReadme); //upsert는 있으면 업데이트하고 없으면 삽입함.
+    await this.em.persistAndFlush(upsertedReadme);
 
-    return editedReadme;
+    const result = await em.findOne(Readme, {
+      user: editedReadme.user,
+    });
+
+    return { title: result.title, content: result.content };
   }
 
   async delete(
