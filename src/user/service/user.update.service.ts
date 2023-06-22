@@ -15,9 +15,9 @@ export class UserUpdateService implements UserUpdateInboundPort {
     private readonly userUpdateOutboundPort: UserUpdateOutboundPort,
   ) {}
 
-  update(
+  async update(
     params: UserUpdateInboundPortInputDto,
   ): Promise<UserUpdateInboundPortOutputDto> {
-    return this.userUpdateOutboundPort.update(params);
+    return await this.userUpdateOutboundPort.update(params);
   }
 }

@@ -31,8 +31,9 @@ export class ReadmeRepository
     params: ReadmeReadOutboundPortInputDto,
   ): Promise<ReadmeReadOutboundPortOutputDto> {
     //
-    const user = await this.em.findOne(Users, params);
-    const readme = await this.em.findOne(Readme, { userId: user });
+    const em = this.em;
+    const user = em.getReference(Users, params.userId);
+    const readme = await this.em.findOne(Readme, { user });
 
     if (!readme) {
       return {
@@ -51,10 +52,10 @@ export class ReadmeRepository
   async update(
     params: ReadmeUpdateOutboundPortInputDto,
   ): Promise<ReadmeUpdateOutboundPortOutputDto> {
-    const user = await this.em.findOne(Users, { userId: params.userId });
-
+    const em = this.em;
+    const user = em.getReference(Users, params.userId);
     const editedReadme = {
-      userId: user,
+      user: user,
       title: params.title,
       content: params.content,
     };
@@ -67,12 +68,15 @@ export class ReadmeRepository
   async delete(
     params: ReadmeDeleteOutboundPortInputDto,
   ): Promise<ReadmeDeleteOutboundPortOutputDto> {
-    const user = await this.em.findOne(Users, { userId: params.userId });
-
-    const toDeleteReadme = await this.em.findOne(Readme, { userId: user });
+    const em = this.em;
+    const user = em.getReference(Users, params.userId);
+    const toDeleteReadme = await this.em.findOne(Readme, { user });
 
     await this.em.removeAndFlush(toDeleteReadme);
 
-    return toDeleteReadme;
+    return {
+      title: toDeleteReadme.title,
+      content: toDeleteReadme.content,
+    };
   }
 }

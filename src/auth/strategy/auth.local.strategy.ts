@@ -69,12 +69,7 @@ export class AuthLocalStrategy
           toArray,
         )
       )[0];
-      return {
-        userId: userId.userId,
-        email: email,
-        nickname: userId.nickname,
-        authMethod: LOCAL,
-      };
+      return { userId: userId.id };
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     }

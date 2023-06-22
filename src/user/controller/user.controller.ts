@@ -123,7 +123,7 @@ export class UserController {
   ): Promise<UserLoginInboundPortOutputDto> {
     const userlocalLoginInboundPortInput =
       req.user as UserLoginInboundPortInputDto;
-    pipe(
+    return pipe(
       userlocalLoginInboundPortInput,
       (input) => this.userLoginInboundPort.login(input),
       tap((accessToken) =>
@@ -131,7 +131,6 @@ export class UserController {
       ),
       tap((accessToken) => res.json(accessToken)),
     );
-    return;
   }
 
   //------------------------------------------------------------

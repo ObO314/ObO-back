@@ -8,7 +8,6 @@ export type UserSignUpLocalOutboundPortInputDto = {
 export type UserSignUpLocalOutboundPortOutputDto = {
   userId: string;
   email: string;
-  password: string;
   nickname: string;
 };
 

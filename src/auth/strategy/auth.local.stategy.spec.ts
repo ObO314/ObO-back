@@ -34,7 +34,7 @@ describe('AuthLocalStrategy Spec', () => {
   test('로컬 로그인 : 존재하는 이메일, 일치하는 비밀번호', async () => {
     const authLocalStrategy = new AuthLocalStrategy(
       new MockAuthLocalStrategyOutboundPort({
-        userId: '1',
+        id: '1',
         nickname: 'OBO백엔드관리자',
         email: 'backend@obo.com',
         password:
@@ -49,9 +49,6 @@ describe('AuthLocalStrategy Spec', () => {
 
     expect(result).toStrictEqual({
       userId: '1',
-      email: 'backend@obo.com',
-      nickname: 'OBO백엔드관리자',
-      authMethod: 'LOCAL',
     });
   });
 
@@ -60,7 +57,7 @@ describe('AuthLocalStrategy Spec', () => {
   test('로컬 로그인 : 존재하는 이메일, 불일치하는 비밀번호', async () => {
     const authLocalStrategy = new AuthLocalStrategy(
       new MockAuthLocalStrategyOutboundPort({
-        userId: '1',
+        id: '1',
         nickname: 'OBO백엔드관리자',
         email: 'backend@obo.com',
         password:

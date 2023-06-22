@@ -6,17 +6,17 @@ import { Circles } from './Circles';
 export class UsersCircles {
   @ManyToOne({
     entity: () => Users,
-    fieldName: 'user_id',
+    fieldName: 'id',
     onUpdateIntegrity: 'cascade',
     primary: true,
   })
-  userId!: Users;
+  user!: Users;
 
   @ManyToOne({
     entity: () => Circles,
-    fieldName: 'ciecle_id',
+    fieldName: 'id',
     onUpdateIntegrity: 'cascade',
     primary: true,
   })
-  circleId!: Circles;
+  circle!: Circles;
 }

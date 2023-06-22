@@ -8,7 +8,7 @@ export type UserUpdateInboundPortOutputDto = {
   userId: string;
   email: string;
   nickname: string;
-  profileImg: string;
+  profileImg?: string;
   progressRoutine: number;
   progressTodo: number;
   progressWork: number;

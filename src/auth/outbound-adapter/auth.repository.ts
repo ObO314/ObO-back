@@ -23,9 +23,9 @@ export class AuthRepository implements AuthLocalStrategyOutboundPort {
   async findUser(
     params: AuthLocalStrategyOutboundPortInputDto,
   ): Promise<AuthLocalStrategyOutboundPortOutputDto> {
-    return await executeOrThrowError(
+    return (await executeOrThrowError(
       (params) => this.em.findOne(Users, params),
       '계정이 존재하지 않습니다.',
-    )(params);
+    )(params)) as any;
   }
 }

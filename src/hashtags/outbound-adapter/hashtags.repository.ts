@@ -33,7 +33,8 @@ export class HashtagsUserRepository
     params: HashtagsUserCreateOutboundPortInputDto,
   ): Promise<HashtagsUserCreateOutboundPortOutputDto> {
     //
-    const userId = await this.em.findOne(Users, { userId: params.userId });
+    const em = this.em;
+    const user = em.getReference(Users, params.userId);
 
     const hashtagId =
       (await this.em.findOne(Hashtags, { hashtagName: params.hashtag })) ||
@@ -42,18 +43,20 @@ export class HashtagsUserRepository
     await this.em.persistAndFlush(hashtagId);
 
     await this.em.upsert(Hashtags, {
-      hashtagId: hashtagId.hashtagId,
+      id: hashtagId.id,
       mentions: String(BigInt(hashtagId.mentions) + 1n),
     });
 
     const userHashtag =
-      (await this.em.findOne(UsersHashtags, { userId, hashtagId })) ||
-      this.em.create(UsersHashtags, { userId, hashtagId });
+      (await this.em.findOne(UsersHashtags, {
+        user: user,
+        hashtag: hashtagId.id,
+      })) || this.em.create(UsersHashtags, { user, hashtag: hashtagId });
 
     await this.em.persistAndFlush(userHashtag);
 
     return {
-      hashtagId: hashtagId.hashtagId,
+      hashtagId: hashtagId.id,
       hashtagName: hashtagId.hashtagName,
       mentions: hashtagId.mentions,
     };
@@ -62,13 +65,14 @@ export class HashtagsUserRepository
   async read(
     params: HashtagsUserReadOutboundPortInputDto,
   ): Promise<HashtagsUserReadOutboundPortOutputDto> {
+    const em = this.em;
     return {
       hashtags: await pipe(
         params,
-        (params) => this.em.findOne(Users, { userId: params.userId }),
-        (userId) => this.em.find(UsersHashtags, { userId: userId }),
-        (userhashtag) => this.em.populate(userhashtag, ['hashtagId']),
-        map((userHashtag) => userHashtag.hashtagId),
+        (params) => em.getReference(Users, params.userId),
+        (user) => this.em.find(UsersHashtags, { user }),
+        (userhashtag) => this.em.populate(userhashtag, ['hashtag']),
+        map((userHashtag) => userHashtag.hashtag),
         toArray,
       ),
     };
@@ -77,28 +81,28 @@ export class HashtagsUserRepository
   async delete(
     params: HashtagsUserDeleteOutboundPortInputDto,
   ): Promise<HashtagsUserDeleteOutboundPortOutputDto> {
+    const em = this.em;
     return await pipe(
       params,
       async (params) => {
         return {
-          userId: await this.em.findOne(Users, { userId: params.userId }),
-          hashtagId: await this.em.findOne(Hashtags, {
+          user: em.getReference(Users, params.userId),
+          hashtag: await this.em.findOne(Hashtags, {
             hashtagName: params.hashtag,
           }),
         };
       },
-
       tap(async (params) => {
         const descHashtag = await this.em.upsert(Hashtags, {
-          hashtagId: params.hashtagId.hashtagId,
-          mentions: String(BigInt(params.hashtagId.mentions) - 1n),
+          id: params.hashtag.id,
+          mentions: String(BigInt(params.hashtag.mentions) - 1n),
         });
         await this.em.persistAndFlush(descHashtag);
       }),
       async (params) => {
         const rmHashtag = await this.em.findOne(UsersHashtags, { ...params });
         await this.em.removeAndFlush(rmHashtag);
-        return params.hashtagId;
+        return { hashtagId: params.hashtag.id };
       },
     );
   }

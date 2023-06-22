@@ -16,8 +16,6 @@ export class UserLoginService implements UserLoginInboundPort {
   ) {}
 
   login(params: UserLoginInboundPortInputDto): UserLoginInboundPortOutputDto {
-    return this.userLoginOutboundPort.createToken({
-      userId: params.userId,
-    });
+    return this.userLoginOutboundPort.createToken(params);
   }
 }

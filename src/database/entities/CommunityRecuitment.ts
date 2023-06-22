@@ -6,13 +6,13 @@ import { Users } from './Users';
 export class CommunityRecuitment {
 
   @PrimaryKey({ columnType: 'int8' })
-  recuritmentId!: string;
+  id!: string;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade' })
-  userId!: Users;
+  @ManyToOne({ entity: () => Users, fieldName: 'user', onUpdateIntegrity: 'cascade' })
+  user!: Users;
 
-  @ManyToOne({ entity: () => Circles, fieldName: 'circle_id', onUpdateIntegrity: 'cascade' })
-  circleId!: Circles;
+  @ManyToOne({ entity: () => Circles, fieldName: 'circle', onUpdateIntegrity: 'cascade' })
+  circle!: Circles;
 
   @Property({ length: 255 })
   title!: string;

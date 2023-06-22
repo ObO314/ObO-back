@@ -6,13 +6,13 @@ import { Users } from './Users';
 export class BlogPostComments {
 
   @PrimaryKey({ columnType: 'int8' })
-  commentId!: string;
+  id!: string;
 
-  @ManyToOne({ entity: () => BlogPost, fieldName: 'post_id', onUpdateIntegrity: 'cascade' })
-  postId!: BlogPost;
+  @ManyToOne({ entity: () => BlogPost, fieldName: 'post', onUpdateIntegrity: 'cascade' })
+  post!: BlogPost;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade' })
-  userId!: Users;
+  @ManyToOne({ entity: () => Users, fieldName: 'user', onUpdateIntegrity: 'cascade' })
+  user!: Users;
 
   @Property({ length: 255 })
   comment!: string;

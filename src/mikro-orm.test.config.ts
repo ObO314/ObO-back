@@ -18,8 +18,10 @@ import { CommunityRecuitmentComments } from './database/entities/CommunityRecuit
 import { UsersHashtags } from './database/entities/usersHashtags';
 import { UsersCircles } from './database/entities/UsersCircles';
 import { Readme } from './database/entities/Readme';
+import * as dotenv from 'dotenv';
 
-export const config: Options = {
+dotenv.config();
+export const testConfig: Options = {
   entities: [
     Users,
     UsersHashtags,
@@ -41,16 +43,13 @@ export const config: Options = {
     RoutinesCompleted,
     Readme,
   ],
-  dbName: process.env.DB_NAME,
+  dbName: process.env.TEST_DB_NAME || 'OBO_TEST',
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   type: 'postgresql',
   host: process.env.DB_HOST,
   port: 5432,
-  // allowGlobalContext: true,
-
-  //autoLoadEntities : true, //이거 키면 entities 에 있는 배열이 비어야 함.
-  //synchronize : true,
+  allowGlobalContext: true,
 };
 
-export default config;
+export default testConfig;
