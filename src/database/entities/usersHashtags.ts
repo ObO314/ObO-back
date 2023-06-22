@@ -6,7 +6,7 @@ import { Hashtags } from './Hashtags';
 export class UsersHashtags {
   @ManyToOne({
     entity: () => Users,
-    fieldName: 'user_id',
+    fieldName: 'user',
     onUpdateIntegrity: 'cascade',
     primary: true,
   })
@@ -14,7 +14,7 @@ export class UsersHashtags {
 
   @ManyToOne({
     entity: () => Hashtags,
-    fieldName: 'hashtag_id',
+    fieldName: 'hashtag',
     onUpdateIntegrity: 'cascade',
     primary: true,
   })

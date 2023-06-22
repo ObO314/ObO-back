@@ -4,9 +4,7 @@ export type HashtagsUserReadInboundPortInputDto = {
   userId: string;
 };
 
-export type HashtagsUserReadInboundPortOutputDto = {
-  hashtags: Hashtags[];
-};
+export type HashtagsUserReadInboundPortOutputDto = Hashtags[];
 
 export const HASHTAGS_USER_READ_INBOUND_PORT =
   'HASHTAGS_USER_READ_INBOUND_PORT ' as const;

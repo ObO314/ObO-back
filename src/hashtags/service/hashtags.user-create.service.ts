@@ -20,11 +20,6 @@ export class HashtagsUserCreateService
   async create(
     params: HashtagsUserCreateInboundPortInputDto,
   ): Promise<HashtagsUserCreateInboundPortOutputDto> {
-    const userId = params.userId;
-    const trimmedHashtag = params.hashtag.replace(/\s/g, '').toUpperCase();
-    return this.hashtagsUserCreateOutboundPort.create({
-      userId: userId,
-      hashtag: trimmedHashtag,
-    });
+    return this.hashtagsUserCreateOutboundPort.create(params);
   }
 }
