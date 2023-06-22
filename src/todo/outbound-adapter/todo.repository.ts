@@ -1,3 +1,4 @@
+import { Entity, EntityName, PopulateHint, Reference } from '@mikro-orm/core';
 import {
   TodoUpdateOutboundPort,
   TodoUpdateOutboundPortOutputDto,
@@ -10,7 +11,7 @@ import {
   TodoCreateOutboundPortInputDto,
   TodoCreateOutboundPortOutputDto,
 } from '../outbound-port/todo.create.outbound-port';
-import { Todos } from 'src/database/entities/Todos';
+import { Todos } from '../../database/entities/Todos';
 import {
   TodoDeleteOutboundPort,
   TodoDeleteOutboundPortInputDto,
@@ -18,7 +19,6 @@ import {
 } from '../outbound-port/todo.delete.outbound-port';
 import { Injectable } from '@nestjs/common';
 import { TodoUpdateOutboundPortInputDto } from '../outbound-port/todo.update.outbound-port';
-import { Users } from 'src/database/entities/Users';
 import {
   TodoReadByDateOutboundPort,
   TodoReadByDateOutboundPortInputDto,
@@ -28,6 +28,8 @@ import {
   TodoReadByTodoIdOutboundPortInputDto,
   TodoReadByTodoIdOutboundPortOutputDto,
 } from '../outbound-port/todo.read-by-todo-id.outbound-port';
+import { curry, pipe, tap, filter } from '@fxts/core';
+import { Users } from 'src/database/entities/Users';
 
 @Injectable()
 export class TodoRepository
@@ -43,90 +45,71 @@ export class TodoRepository
   async create(
     params: TodoCreateOutboundPortInputDto,
   ): Promise<TodoCreateOutboundPortOutputDto> {
-    const userId = await this.em.findOne(Users, { userId: params.userId });
-    const thisTodo = this.em.create(Todos, {
-      userId: userId,
-      name: params.name,
-      startTime: params.startTime,
-      endTime: params.endTime,
-      description: params.description,
-      completed: params.completed,
-    });
+    const em = this.em;
+    const { userId, ...rest } = params;
+    const user = em.getReference(Users, userId);
+    const content = { user, ...rest };
 
-    await this.em.persistAndFlush(thisTodo);
-
-    return {
-      todoId: thisTodo.todoId,
-      name: thisTodo.name,
-      startTime: thisTodo.startTime,
-      endTime: thisTodo.endTime,
-      description: thisTodo.description,
-      completed: thisTodo.completed,
-    };
+    return await pipe(
+      content,
+      (content) => em.create(Todos, content),
+      tap((createdTodo) => em.persistAndFlush(createdTodo)),
+    );
   }
 
-  // 날짜를 받아 해당기간의 할일 모두 불러오기
   async readByDate(
     params: TodoReadByDateOutboundPortInputDto,
   ): Promise<TodoReadByDateOutboundPortOutputDto> {
     // 불러올 날짜의 시작지점, 끝지점을 받아서 그 사이에 있는 투두를 모두 받아옴
-    const userId = await this.em.findOne(Users, { userId: params.userId });
-    const todos = await this.em.find(Todos, {
-      userId: userId,
-      startTime: { $gte: params.startDate, $lte: params.endDate },
-      endTime: { $gte: params.startDate, $lte: params.endDate },
-    });
-    return todos;
+    const em = this.em;
+    const { userId, ...rest } = params;
+    const user = em.getReference(Users, userId);
+    const content = { user, ...rest };
+    const condition = {
+      user: content.user,
+      startTime: { $gte: content.startTime, $lte: content.endTime },
+      endTime: { $gte: content.startTime, $lte: content.endTime },
+    };
+
+    return await pipe(condition, (condition) => em.find(Todos, condition));
   }
 
   async readByTodoId(
     params: TodoReadByTodoIdOutboundPortInputDto,
   ): Promise<TodoReadByTodoIdOutboundPortOutputDto> {
-    const userId = await this.em.findOne(Users, { userId: params.userId });
-    const todo = await this.em.findOne(Todos, {
-      userId: userId,
-      todoId: params.todoId,
-    });
-    return todo;
+    const em = this.em;
+    const { userId, todoId } = params;
+    const user = em.getReference(Users, userId);
+    const content = { user, id: todoId };
+    return await em.findOne(Todos, content);
   }
-
   // 유저와 할 일을 특정하여, 최신 정보를 업데이트 함
   async update(
     params: TodoUpdateOutboundPortInputDto,
   ): Promise<TodoUpdateOutboundPortOutputDto> {
-    const userId = await this.em.findOne(Users, { userId: params.userId });
-
-    const thisTodo = await this.em.findOne(Todos, { todoId: params.todoId });
-
-    const editTodo = {
-      ...(params.name && { name: params.name }),
-      ...(params.startTime && { startTime: params.startTime }),
-      ...(params.endTime && { endTime: params.endTime }),
-      ...(params.description && { description: params.description }),
-      ...(params.completed && { completed: params.completed }),
-    };
-
-    await this.em.upsert(Todos, {
-      userId: userId,
-      todoId: params.todoId,
-      ...editTodo,
-    });
-
-    await this.em.persistAndFlush(thisTodo);
-
-    return thisTodo;
+    const em = this.em;
+    const { userId, todoId, ...rest } = params;
+    const user = em.getReference(Users, userId);
+    const content = { user, id: todoId, ...rest };
+    return await pipe(
+      content,
+      (content) => em.upsert(Todos, content),
+      tap((updatedTodo) => em.persistAndFlush(updatedTodo)),
+    );
   }
 
   // 유저와 할일을 특정하여 삭제함
   async delete(
     params: TodoDeleteOutboundPortInputDto,
   ): Promise<TodoDeleteOutboundPortOutputDto> {
-    const userId = await this.em.findOne(Users, { userId: params.userId });
-    const todo = await this.em.findOne(Todos, {
-      userId: userId,
-      todoId: params.todoId,
-    });
-    await this.em.removeAndFlush(todo);
-    return { todoId: todo.todoId, name: todo.name };
+    const em = this.em;
+    const { userId, todoId } = params;
+    const user = em.getReference(Users, userId);
+    const content = { user, id: todoId };
+    return await pipe(
+      content,
+      (content) => em.findOne(Todos, content),
+      tap((todo) => em.removeAndFlush(todo)),
+    );
   }
 }

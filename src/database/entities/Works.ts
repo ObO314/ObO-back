@@ -5,10 +5,10 @@ import { Circles } from './Circles';
 export class Works {
 
   @PrimaryKey({ columnType: 'int8' })
-  workId!: string;
+  id!: string;
 
-  @ManyToOne({ entity: () => Circles, fieldName: 'circle_id', onUpdateIntegrity: 'cascade' })
-  circleId!: Circles;
+  @ManyToOne({ entity: () => Circles, fieldName: 'circle', onUpdateIntegrity: 'cascade' })
+  circle!: Circles;
 
   @Property({ length: 50 })
   name!: string;

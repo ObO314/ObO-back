@@ -19,7 +19,7 @@ import { UsersHashtags } from './database/entities/usersHashtags';
 import { UsersCircles } from './database/entities/UsersCircles';
 import { Readme } from './database/entities/Readme';
 
-const config: Options = {
+export const config: Options = {
   entities: [
     Users,
     UsersHashtags,
@@ -47,6 +47,7 @@ const config: Options = {
   type: 'postgresql',
   host: process.env.DB_HOST,
   port: 5432,
+  // allowGlobalContext: true,
 
   //autoLoadEntities : true, //이거 키면 entities 에 있는 배열이 비어야 함.
   //synchronize : true,

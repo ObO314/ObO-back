@@ -1,13 +1,17 @@
-import { Users } from 'src/database/entities/Users';
-
 export type UserUpdateOutboundPortInputDto = {
   userId: string;
   nickname: string;
-  profileImg: string;
+  profileImg?: string;
 };
 
 export type UserUpdateOutboundPortOutputDto = {
-  user: Users;
+  userId: string;
+  email: string;
+  nickname: string;
+  profileImg?: string;
+  progressRoutine: number;
+  progressTodo: number;
+  progressWork: number;
 };
 
 export const USER_UPDATE_OUTBOUND_PORT = 'USER_UPDATE_OUTBOUND_PORT' as const;

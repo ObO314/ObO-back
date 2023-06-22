@@ -1,21 +1,10 @@
+import { Todos } from 'src/database/entities/Todos';
+import { Users } from 'src/database/entities/Users';
+
 export type TodoUpdateInboundPortInputDto = {
+  todoId: string;
+
   userId: string;
-
-  todoId: string;
-
-  name?: string;
-
-  startTime?: Date;
-
-  endTime?: Date;
-
-  description?: string;
-
-  completed?: boolean;
-};
-
-export type TodoUpdateInboundPortOutputDto = {
-  todoId: string;
 
   name: string;
 
@@ -27,6 +16,8 @@ export type TodoUpdateInboundPortOutputDto = {
 
   completed: boolean;
 };
+
+export type TodoUpdateInboundPortOutputDto = Todos;
 
 export const TODO_UPDATE_INBOUND_PORT = 'TODO_UPDATE_INBOUND_PORT' as const;
 

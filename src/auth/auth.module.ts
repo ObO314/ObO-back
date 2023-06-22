@@ -14,6 +14,7 @@ import { AUTH_LOCAL_STRATEGY_OUTBOUND_PORT } from './outbound-port/auth.local.st
 import { AuthRepository } from './outbound-adapter/auth.repository';
 import { AUTH_GOOGLE_STRATEGY_INBOUND_PORT } from './inbound-port/auth.google.strategy.inbound-port';
 import { AUTH_GOOGLE_STRATEGY_OUTBOUND_PORT } from './outbound-port/auth.google.strategy.outbound-port';
+import { AUTH_JWT_INBOUND_PORT } from './inbound-port/auth.jwt.strategy.inbound-port';
 
 class ConfigService {
   get(key: string) {
@@ -57,6 +58,10 @@ const configService = new ConfigService();
     {
       provide: AUTH_GOOGLE_STRATEGY_OUTBOUND_PORT,
       useClass: AuthRepository,
+    },
+    {
+      provide: AUTH_JWT_INBOUND_PORT,
+      useClass: JwtStrategy,
     },
   ],
   exports: [

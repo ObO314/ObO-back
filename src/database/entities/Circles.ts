@@ -5,7 +5,7 @@ import { Users } from './Users';
 export class Circles {
 
   @PrimaryKey({ columnType: 'int8' })
-  circleId!: string;
+  id!: string;
 
   @Property({ length: 20 })
   name!: string;

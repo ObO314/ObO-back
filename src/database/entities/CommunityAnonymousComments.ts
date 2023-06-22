@@ -5,13 +5,13 @@ import { CommunityAnonymous } from './CommunityAnonymous';
 export class CommunityAnonymousComments {
 
   @PrimaryKey({ columnType: 'int8' })
-  commentId!: string;
+  id!: string;
 
-  @ManyToOne({ entity: () => CommunityAnonymous, fieldName: 'anopost_id', onUpdateIntegrity: 'cascade' })
-  anopostId!: CommunityAnonymous;
+  @ManyToOne({ entity: () => CommunityAnonymous, fieldName: 'anopost', onUpdateIntegrity: 'cascade' })
+  anopost!: CommunityAnonymous;
 
   @Property({ columnType: 'int8' })
-  userId!: string;
+  user!: string;
 
   @Property({ length: 255 })
   comment!: string;

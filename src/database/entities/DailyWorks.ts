@@ -7,11 +7,11 @@ export class DailyWorks {
 
   [OptionalProps]?: 'completed';
 
-  @ManyToOne({ entity: () => Works, fieldName: 'work_id', onUpdateIntegrity: 'cascade', primary: true })
-  workId!: Works;
+  @ManyToOne({ entity: () => Works, fieldName: 'work', onUpdateIntegrity: 'cascade', primary: true })
+  work!: Works;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade', primary: true })
-  userId!: Users;
+  @ManyToOne({ entity: () => Users, fieldName: 'user', onUpdateIntegrity: 'cascade', primary: true })
+  user!: Users;
 
   @PrimaryKey({ columnType: 'date' })
   date!: string;

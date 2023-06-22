@@ -4,7 +4,6 @@ export type ReadmeDeleteOutboundPortInputDto = {
 
 export type ReadmeDeleteOutboundPortOutputDto = {
   title: string;
-
   content: string;
 };
 

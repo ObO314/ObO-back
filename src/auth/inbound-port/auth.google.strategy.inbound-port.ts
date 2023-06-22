@@ -1,12 +1,14 @@
-export type AuthGoogleValidateInboundPortInputDto = {};
+import { Users } from 'src/database/entities/Users';
 
-export type AuthGoogleValidateInboundPortOutputDto = { userId: string };
+export type AuthGoogleInboundPortInputDto = {};
+
+export type AuthGoogleInboundPortOutputDto = Users;
 
 export const AUTH_GOOGLE_STRATEGY_INBOUND_PORT =
   'AUTH_GOOGLE_INBOUND_PORT' as const;
 
 export interface AuthGoogleInboundPort {
   validate(
-    payload: AuthGoogleValidateInboundPortInputDto,
-  ): Promise<AuthGoogleValidateInboundPortOutputDto>;
+    payload: AuthGoogleInboundPortInputDto,
+  ): Promise<AuthGoogleInboundPortOutputDto>;
 }

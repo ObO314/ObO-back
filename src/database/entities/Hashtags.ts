@@ -1,21 +1,17 @@
-import {
-  Collection,
-  Entity,
-  ManyToMany,
-  OptionalProps,
-  PrimaryKey,
-  Property,
-} from '@mikro-orm/core';
-import { UsersHashtags } from './usersHashtags';
+import { Entity, OptionalProps, PrimaryKey, Property } from '@mikro-orm/core';
 
 @Entity()
 export class Hashtags {
+
+  [OptionalProps]?: 'mentions';
+
   @PrimaryKey({ columnType: 'int8' })
-  hashtagId!: string;
+  id!: string;
 
   @Property()
   hashtagName!: string;
 
   @Property({ columnType: 'int8', defaultRaw: `0` })
   mentions!: string;
+
 }

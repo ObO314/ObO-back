@@ -7,10 +7,10 @@ export class Todos {
   [OptionalProps]?: 'completed';
 
   @PrimaryKey({ columnType: 'int8' })
-  todoId!: string;
+  id!: string;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user_id', onUpdateIntegrity: 'cascade' })
-  userId!: Users;
+  @ManyToOne({ entity: () => Users, fieldName: 'user', onUpdateIntegrity: 'cascade' })
+  user!: Users;
 
   @Property({ length: 50 })
   name!: string;

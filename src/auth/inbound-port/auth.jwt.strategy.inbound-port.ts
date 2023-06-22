@@ -1,10 +1,11 @@
-export type AuthJwtValidateInboundPortInputDto = { userId: string };
+import { Users } from 'src/database/entities/Users';
 
-export type AuthJwtValidateInboundPortOutputDto = {};
+export type AuthJwtValidateInboundPortInputDto = { id: string };
+
+export type AuthJwtValidateInboundPortOutputDto = { id: string };
 
 export type AuthJwtLoginInboundPortInputDto = {
-  email: string;
-  password: string;
+  id: string;
 };
 
 export type AuthJwtLoginInboundPortOutputDto = {
