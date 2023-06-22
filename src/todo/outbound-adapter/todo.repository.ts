@@ -91,8 +91,8 @@ export class TodoRepository
   ): Promise<TodoUpdateOutboundPortOutputDto> {
     const em = this.em;
     const { userId, todoId, ...rest } = params;
-    const user = em.getReference(Users, userId);
-    const content = { user, id: todoId, ...rest };
+    const existed = await em.findOne(Todos, { id: todoId });
+    const content = { ...existed, ...rest };
     const result = await pipe(
       content,
       (content) => em.upsert(Todos, content),
