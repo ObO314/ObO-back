@@ -34,7 +34,6 @@ export class JwtStrategy
     payload: AuthJwtValidateInboundPortInputDto,
   ): Promise<AuthJwtValidateInboundPortOutputDto> {
     const { userId, tokenType, iat, exp } = payload;
-    // const token = req.headers.authorization.replace('Bearer ', '');
     switch (tokenType) {
       case 'ACCESS':
         return { undefined, userId };

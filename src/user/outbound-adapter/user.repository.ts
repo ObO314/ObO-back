@@ -27,6 +27,12 @@ import {
   UserSignUpSocialOutboundPortOutputDto,
 } from '../outbound-port/user.sign-up-social.outbound-port';
 import { filter, pipe, tap, toAsync } from '@fxts/core';
+import {
+  userLogoutOutboundPort,
+  userLogoutOutboundPortInputDto,
+  userLogoutOutboundPortOutputDto,
+} from '../outbound-port/user.logout.outbound-port';
+import { RefreshTokens } from 'src/database/entities/RefreshTokens';
 
 @Injectable()
 export class UserRepository
@@ -34,11 +40,11 @@ export class UserRepository
     UserSignUpLocalOutboundPort,
     UserSignUpSocialOutboundPort,
     UserReadOutboundPort,
-    UserUpdateOutboundPort
+    UserUpdateOutboundPort,
+    userLogoutOutboundPort
 {
   constructor(private readonly em: EntityManager) {}
 
-  //create
   async signUpLocal(
     params: UserSignUpLocalOutboundPortInputDto, // : Promise<UserSignUpLocalOutboundPortOutputDto> {
   ) {
@@ -163,5 +169,17 @@ export class UserRepository
         };
       },
     );
+  }
+  async logout(
+    params: userLogoutOutboundPortInputDto,
+  ): Promise<userLogoutOutboundPortOutputDto> {
+    const em = this.em;
+    const toLogoutUser = params.userId;
+    await pipe(
+      toLogoutUser,
+      (user) => em.findOne(RefreshTokens, { user }),
+      (user) => em.removeAndFlush(user),
+    );
+    return { userId: toLogoutUser };
   }
 }
