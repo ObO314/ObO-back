@@ -18,6 +18,9 @@ import { USER_SIGN_UP_SOCIAL_INBOUND_PORT } from './inbound-port/user.sign-up-so
 import { UserSignUpSocialService } from './service/user.sign-up-social.service';
 import { USER_SIGN_UP_SOCIAL_OUTBOUND_PORT } from './outbound-port/user.sign-up-social.outbound-port';
 import { USER_SIGN_UP_LOCAL_OUTBOUND_PORT } from './outbound-port/user.sign-up-local.outbound-port';
+import { USER_LOGOUT_INBOUND_PORT } from './inbound-port/user.logout.inbound-port';
+import { USER_LOGOUT_OUTBOUND_PORT } from './outbound-port/user.logout.outbound-port';
+import { UserLogoutService } from './service/user.logout.service';
 
 @Module({
   imports: [AuthModule],
@@ -49,6 +52,16 @@ import { USER_SIGN_UP_LOCAL_OUTBOUND_PORT } from './outbound-port/user.sign-up-l
     {
       provide: USER_LOGIN_OUTBOUND_PORT,
       useClass: JwtStrategy,
+    },
+
+    {
+      provide: USER_LOGOUT_INBOUND_PORT,
+      useClass: UserLogoutService,
+    },
+
+    {
+      provide: USER_LOGOUT_OUTBOUND_PORT,
+      useClass: UserRepository,
     },
 
     {

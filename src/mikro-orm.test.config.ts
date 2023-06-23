@@ -19,6 +19,7 @@ import { UsersHashtags } from './database/entities/usersHashtags';
 import { UsersCircles } from './database/entities/UsersCircles';
 import { Readme } from './database/entities/Readme';
 import * as dotenv from 'dotenv';
+import { RefreshTokens } from './database/entities/RefreshTokens';
 
 dotenv.config();
 export const testConfig: Options = {
@@ -42,6 +43,7 @@ export const testConfig: Options = {
     Routines,
     RoutinesCompleted,
     Readme,
+    RefreshTokens,
   ],
   dbName: process.env.TEST_DB_NAME || 'OBO_TEST',
   user: process.env.DB_USER,

@@ -4,6 +4,7 @@ export type UserLoginOutboundPortInputDto = {
 
 export type UserLoginOutboundPortOutputDto = {
   accessToken: string;
+  refreshToken: string;
 };
 
 export const USER_LOGIN_OUTBOUND_PORT =

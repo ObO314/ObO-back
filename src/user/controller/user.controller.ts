@@ -1,3 +1,9 @@
+import {
+  USER_LOGOUT_INBOUND_PORT,
+  userLogoutInboundPort,
+  userLogoutInboundPortInputDto,
+  userLogoutInboundPortOutputDto,
+} from './../inbound-port/user.logout.inbound-port';
 import { AuthJwtGuard } from 'src/auth/guard/auth.jwt.guard';
 import {
   USER_UPDATE_INBOUND_PORT,
@@ -78,6 +84,9 @@ export class UserController {
 
     @Inject(USER_UPDATE_INBOUND_PORT)
     private readonly userUpdateInboundPort: UserUpdateInboundPort,
+
+    @Inject(USER_LOGOUT_INBOUND_PORT)
+    private readonly userLogoutInboundPort: userLogoutInboundPort,
   ) {}
 
   //------------------------------------------------------------
@@ -131,6 +140,16 @@ export class UserController {
       ),
       tap((accessToken) => res.json(accessToken)),
     );
+  }
+
+  @UseGuards(AuthJwtGuard)
+  @Post('logout')
+  async logout(
+    @Req()
+    req: Request,
+  ): Promise<userLogoutInboundPortOutputDto> {
+    const userId = { userId: req.user } as userLogoutInboundPortInputDto;
+    return await this.userLogoutInboundPort.logout(userId);
   }
 
   //------------------------------------------------------------
