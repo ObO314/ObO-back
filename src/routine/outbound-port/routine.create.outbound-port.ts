@@ -1,6 +1,14 @@
-export type RoutineCreateOutboundPortInputDto = {};
+import { Routines } from 'src/database/entities/Routines';
 
-export type RoutineCreateOutboundPortOutputDto = {};
+export type RoutineCreateOutboundPortInputDto = {
+  userId: string;
+  name: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+};
+
+export type RoutineCreateOutboundPortOutputDto = Routines;
 
 export const ROUTINE_CREATE_OUTBOUND_PORT =
   'ROUTINE_CREATE_OUTBOUND_PORT' as const;

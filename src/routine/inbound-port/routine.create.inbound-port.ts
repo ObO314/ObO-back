@@ -1,3 +1,5 @@
+import { Routines } from 'src/database/entities/Routines';
+
 export type RoutineCreateInboundPortInputDto = {
   userId: string;
   name: string;
@@ -6,7 +8,7 @@ export type RoutineCreateInboundPortInputDto = {
   endTime: string;
 };
 
-export type RoutineCreateInboundPortOutputDto = {};
+export type RoutineCreateInboundPortOutputDto = Routines;
 
 export const ROUTINE_CREATE_INBOUND_PORT =
   'ROUTINE_CREATE_INBOUND_PORT' as const;
