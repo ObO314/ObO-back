@@ -18,6 +18,7 @@ import { CommunityRecuitmentComments } from './database/entities/CommunityRecuit
 import { UsersHashtags } from './database/entities/usersHashtags';
 import { UsersCircles } from './database/entities/UsersCircles';
 import { Readme } from './database/entities/Readme';
+import { RefreshTokens } from './database/entities/RefreshTokens';
 
 export const config: Options = {
   entities: [
@@ -40,6 +41,7 @@ export const config: Options = {
     Routines,
     RoutinesCompleted,
     Readme,
+    RefreshTokens,
   ],
   dbName: process.env.DB_NAME,
   user: process.env.DB_USER,
