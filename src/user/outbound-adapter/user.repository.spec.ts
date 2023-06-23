@@ -9,6 +9,8 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { UserSignUpSocialOutboundPortOutputDto } from '../outbound-port/user.sign-up-social.outbound-port';
 import { UserReadOutboundPortOutputDto } from '../outbound-port/user.read.outbound-port';
 import { UserUpdateOutboundPortOutputDto } from '../outbound-port/user.update.outbound-port';
+import { RefreshTokens } from 'src/database/entities/RefreshTokens';
+import { userLogoutOutboundPortOutputDto } from '../outbound-port/user.logout.outbound-port';
 
 dotenv.config();
 
@@ -299,7 +301,7 @@ describe('UserRepository : read', () => {
       userId: '1',
       email: 'oboTestUser1@obo.com',
       nickname: 'whiteOBO',
-      profileImg: process.env.PRODUCT_DEFAULT_IMAGE,
+      profileImg: process.env.USER_DEFAULT_IMAGE,
       progressRoutine: 0,
       progressTodo: 0,
       progressWork: 0,
@@ -394,7 +396,7 @@ describe('UserRepository : update', () => {
       userId: '1',
       email: 'oboTestUser1@obo.com',
       nickname: '수정하려는닉네임',
-      profileImg: process.env.PRODUCT_DEFAULT_IMAGE,
+      profileImg: process.env.USER_DEFAULT_IMAGE,
       progressRoutine: 0,
       progressTodo: 0,
       progressWork: 0,
@@ -424,4 +426,90 @@ describe('UserRepository : update', () => {
       progressWork: 0,
     });
   });
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+describe('UserRepository : logout', () => {
+  let userRepository: UserRepository;
+  let em: EntityManager;
+  let orm: MikroORM;
+
+  //------------------------------------------------------------------------------------------
+
+  beforeAll(async () => {
+    orm = await MikroORM.init({ ...testConfig, driver: PostgreSqlDriver });
+    em = orm.em;
+    userRepository = new UserRepository(em);
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  beforeEach(async () => {
+    const users = [
+      em.create(Users, {
+        id: '1',
+        email: 'oboTestUser1@obo.com',
+        nickname: 'whiteOBO',
+        password:
+          '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
+        authMethod: 'LOCAL',
+      }),
+      em.create(Users, {
+        id: '2',
+        email: 'oboTestUser2@google.com',
+        nickname: 'blackOBO',
+        authMethod: 'GOOGLE',
+      }),
+    ];
+
+    const tokens = [
+      em.create(RefreshTokens, {
+        user: '1',
+        token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidG9rZW5UeXBlIjoiQUNDRVNTIiwiaWF0IjoxNjg3NTE2NzAzLCJleHAiOjE2ODc1MTg1MDN9.OkeeOgHV2cL3DWzAnV-ubnKi63ZZLy3wI9bZMZ4jMxQ',
+      }),
+    ];
+
+    for (const user of users) {
+      await em.persistAndFlush(user);
+    }
+    for (const token of tokens) {
+      await em.persistAndFlush(token);
+    }
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  afterEach(async () => {
+    await em.nativeDelete(Users, {});
+    em.clear();
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  afterAll(async () => {
+    await em.nativeDelete(Users, {});
+    await orm.close();
+  });
+
+  //------------------------------------------------------------------------------------------
+
+  test('로그아웃 : 현재 로그인 된 유저의 로그아웃', async () => {
+    const params = {
+      userId: '1',
+    };
+
+    const result: userLogoutOutboundPortOutputDto = await userRepository.logout(
+      params,
+    );
+
+    expect(result).toEqual({
+      userId: '1',
+    });
+  });
+
+  //------------------------------------------------------------------------------------------
 });

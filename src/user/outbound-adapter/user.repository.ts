@@ -27,6 +27,12 @@ import {
   UserSignUpSocialOutboundPortOutputDto,
 } from '../outbound-port/user.sign-up-social.outbound-port';
 import { filter, pipe, tap, toAsync } from '@fxts/core';
+import {
+  userLogoutOutboundPort,
+  userLogoutOutboundPortInputDto,
+  userLogoutOutboundPortOutputDto,
+} from '../outbound-port/user.logout.outbound-port';
+import { RefreshTokens } from 'src/database/entities/RefreshTokens';
 
 @Injectable()
 export class UserRepository
@@ -34,11 +40,11 @@ export class UserRepository
     UserSignUpLocalOutboundPort,
     UserSignUpSocialOutboundPort,
     UserReadOutboundPort,
-    UserUpdateOutboundPort
+    UserUpdateOutboundPort,
+    userLogoutOutboundPort
 {
   constructor(private readonly em: EntityManager) {}
 
-  //create
   async signUpLocal(
     params: UserSignUpLocalOutboundPortInputDto, // : Promise<UserSignUpLocalOutboundPortOutputDto> {
   ) {
@@ -127,7 +133,7 @@ export class UserRepository
           userId: user.id,
           email: user.email,
           nickname: user.nickname,
-          profileImg: user.profileImg || process.env.PRODUCT_DEFAULT_IMAGE,
+          profileImg: user.profileImg || process.env.USER_DEFAULT_IMAGE,
           progressRoutine: user.progressRoutine || 0,
           progressTodo: user.progressRoutine || 0,
           progressWork: user.progressWork || 0,
@@ -156,12 +162,24 @@ export class UserRepository
           userId: user.id,
           email: user.email,
           nickname: user.nickname,
-          profileImg: user.profileImg || process.env.PRODUCT_DEFAULT_IMAGE,
+          profileImg: user.profileImg || process.env.USER_DEFAULT_IMAGE,
           progressRoutine: user.progressRoutine || 0,
           progressTodo: user.progressTodo || 0,
           progressWork: user.progressWork || 0,
         };
       },
     );
+  }
+  async logout(
+    params: userLogoutOutboundPortInputDto,
+  ): Promise<userLogoutOutboundPortOutputDto> {
+    const em = this.em;
+    const toLogoutUser = params.userId;
+    await pipe(
+      toLogoutUser,
+      (user) => em.findOne(RefreshTokens, { user }),
+      (user) => em.removeAndFlush(user),
+    );
+    return { userId: toLogoutUser };
   }
 }

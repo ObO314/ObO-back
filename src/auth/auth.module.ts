@@ -16,23 +16,10 @@ import { AUTH_GOOGLE_STRATEGY_INBOUND_PORT } from './inbound-port/auth.google.st
 import { AUTH_GOOGLE_STRATEGY_OUTBOUND_PORT } from './outbound-port/auth.google.strategy.outbound-port';
 import { AUTH_JWT_INBOUND_PORT } from './inbound-port/auth.jwt.strategy.inbound-port';
 
-class ConfigService {
-  get(key: string) {
-    return new Promise<string>((resolve) => {
-      resolve(process.env.JWT_SECRETKEY);
-    });
-  }
-}
-
-const configService = new ConfigService();
-
 @Module({
   imports: [
-    JwtModule.registerAsync({
-      useFactory: async () => ({
-        secret: await configService.get('JWT_SECRETKEY'),
-        signOptions: { expiresIn: '3600s' },
-      }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRETKEY,
     }),
     PassportModule,
   ],
