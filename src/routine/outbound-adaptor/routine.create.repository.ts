@@ -4,9 +4,15 @@ import {
   RoutineCreateOutboundPortInputDto,
   RoutineCreateOutboundPortOutputDto,
 } from '../outbound-port/routine.create.outbound-port';
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  HttpStatus,
+} from '@nestjs/common';
 import { Routines } from 'src/database/entities/Routines';
 import { filter, pipe, tap } from '@fxts/core';
+import { RoutineHistories } from 'src/database/entities/RoutineHistories';
 
 @Injectable()
 export class RoutineCreateRepository implements RoutineCreateOutboundPort {
@@ -22,14 +28,36 @@ export class RoutineCreateRepository implements RoutineCreateOutboundPort {
     // 시간 string 값 검증로직 필요한 지?
     const em = this.em;
 
-    return await pipe(
-      [params],
-      filter((params) => this.validateTimeString(params.startTime)),
-      filter((params) => this.validateTimeString(params.endTime)),
-      (params) => em.create(Routines, params),
-      tap((routine) => {
-        em.persistAndFlush(routine);
-      }),
+    if (
+      !this.validateTimeString(params.startTime) ||
+      !this.validateTimeString(params.endTime)
+    ) {
+      throw new HttpException(
+        '시간 값이 잘못 입력되었습니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const routineData = {
+      user: params.userId,
+      name: params.name,
+      description: params.description,
+    };
+    const createdRoutine = em.create(Routines, routineData);
+    await em.persistAndFlush(createdRoutine);
+
+    const routineHistoryData = {
+      routine: createdRoutine.id,
+      updatedTime: new Date(),
+      startTime: params.startTime,
+      endTime: params.endTime,
+    };
+    const createdRoutineHistory = em.create(
+      RoutineHistories,
+      routineHistoryData,
     );
+    await em.persistAndFlush(createdRoutineHistory);
+
+    return createdRoutine;
   }
 }

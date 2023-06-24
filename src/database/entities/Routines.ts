@@ -16,10 +16,4 @@ export class Routines {
   @Property({ length: 200 })
   description!: string;
 
-  @Property({ columnType: 'timetz', length: 6 })
-  startTime!: unknown;
-
-  @Property({ columnType: 'timetz', length: 6 })
-  endTime!: unknown;
-
 }
