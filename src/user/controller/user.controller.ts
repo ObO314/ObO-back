@@ -105,19 +105,19 @@ export class UserController {
 
   //------------------------------------------------------------
 
-  @UseGuards(DynamicAuthGuard)
-  @Post('signUp/:method')
-  async signUpSocial(
-    @Req()
-    req: RequestGuardGiven,
-  ): Promise<UserSignUpSocialInboundPortOutputDto> {
-    const params: UserSignUpSocialInboundPortInputDto = {
-      email: req.user.email,
-      nickname: req.user.nickname,
-      authMethod: req.user.authMethod,
-    };
-    return this.UserSignUpSocialInboundPort.signUpSocial(params);
-  }
+  // @UseGuards(DynamicAuthGuard)
+  // @Post('signUp/:method')
+  // async signUpSocial(
+  //   @Req()
+  //   req: RequestGuardGiven,
+  // ): Promise<UserSignUpSocialInboundPortOutputDto> {
+  //   const params: UserSignUpSocialInboundPortInputDto = {
+  //     email: req.user.email,
+  //     nickname: req.user.nickname,
+  //     authMethod: req.user.authMethod,
+  //   };
+  //   return this.UserSignUpSocialInboundPort.signUpSocial(params);
+  // }
 
   //------------------------------------------------------------
 
@@ -130,10 +130,9 @@ export class UserController {
     @Res()
     res: Response,
   ): Promise<UserLoginInboundPortOutputDto> {
-    const userlocalLoginInboundPortInput =
-      req.user as UserLoginInboundPortInputDto;
+    const userLoginInboundPortInput = req.user as UserLoginInboundPortInputDto;
     return pipe(
-      userlocalLoginInboundPortInput,
+      userLoginInboundPortInput,
       (input) => this.userLoginInboundPort.login(input),
       tap((accessToken) =>
         res.setHeader('Authorization', 'Bearer ' + accessToken),

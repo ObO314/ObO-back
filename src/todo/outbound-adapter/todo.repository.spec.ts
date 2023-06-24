@@ -32,28 +32,30 @@ describe('Todo Repository', () => {
     em = orm.em;
     todoRepository = new TodoRepository(em);
 
-    const newUser1 = em.create(Users, {
-      id: '1',
-      email: 'oboTestUser1@obo.com',
-      nickname: 'whiteOBO',
-      password: '123123',
-    });
-    const newUser2 = em.create(Users, {
-      id: '2',
-      email: 'oboTestUser2@obo.com',
-      nickname: 'blackOBO',
-      password: '123123',
-    });
+    const newUsers = [
+      em.create(Users, {
+        id: '1',
+        email: 'oboTestUser1@obo.com',
+        nickname: 'whiteOBO',
+        password: '123123',
+      }),
+      em.create(Users, {
+        id: '2',
+        email: 'oboTestUser2@obo.com',
+        nickname: 'blackOBO',
+        password: '123123',
+      }),
+    ];
 
-    await em.persistAndFlush(newUser1);
-    await em.persistAndFlush(newUser2);
+    for (const newUser of newUsers) {
+      await em.persistAndFlush(newUser);
+    }
   });
 
   //------------------------------------------------------------------------------------------
 
   beforeEach(async () => {
-    const newTodos = [];
-    newTodos.push(
+    const newTodos = [
       em.create(Todos, {
         id: '15',
         name: '4월 15일에 추가한 투두 테스트2',
@@ -63,8 +65,6 @@ describe('Todo Repository', () => {
         completed: false,
         user: em.getReference(Users, '2'),
       }),
-    );
-    newTodos.push(
       em.create(Todos, {
         id: '20',
         name: '6월 1일에 추가한 투두 테스트1',
@@ -74,8 +74,6 @@ describe('Todo Repository', () => {
         completed: true,
         user: em.getReference(Users, '1'),
       }),
-    );
-    newTodos.push(
       em.create(Todos, {
         id: '25',
         name: '6월 21일에 추가한 투두 테스트1',
@@ -85,8 +83,6 @@ describe('Todo Repository', () => {
         completed: false,
         user: em.getReference(Users, '1'),
       }),
-    );
-    newTodos.push(
       em.create(Todos, {
         id: '30',
         name: '6월 1일에 추가한 투두 테스트2',
@@ -96,8 +92,6 @@ describe('Todo Repository', () => {
         completed: true,
         user: em.getReference(Users, '2'),
       }),
-    );
-    newTodos.push(
       em.create(Todos, {
         id: '35',
         name: '6월 21일에 추가한 투두 테스트2',
@@ -107,8 +101,6 @@ describe('Todo Repository', () => {
         completed: false,
         user: em.getReference(Users, '2'),
       }),
-    );
-    newTodos.push(
       em.create(Todos, {
         id: '40',
         name: '7월 21일에 추가한 투두 테스트1',
@@ -118,8 +110,6 @@ describe('Todo Repository', () => {
         completed: false,
         user: em.getReference(Users, '1'),
       }),
-    );
-    newTodos.push(
       em.create(Todos, {
         id: '45',
         name: '7월 21일에 추가한 투두 테스트2',
@@ -129,7 +119,7 @@ describe('Todo Repository', () => {
         completed: false,
         user: em.getReference(Users, '2'),
       }),
-    );
+    ];
     for (const newTodo of newTodos) {
       await em.persistAndFlush(newTodo);
     }
@@ -165,15 +155,28 @@ describe('Todo Repository', () => {
     const result: TodoCreateOutboundPortOutputDto = await todoRepository.create(
       params,
     );
-
     expect(result).toEqual({
       id: '50',
-      user: em.getReference(Users, '1'),
       name: '8월 8일에 추가한 투두 테스트1',
       startTime: new Date('2023-08-08 16:00:00'),
       endTime: new Date('2023-08-21 18:00:00'),
       description: 'test로 생성된 투두입니다.',
       completed: false,
+      user: em.getReference(Users, '1'),
+    });
+
+    const resultDB: TodoCreateOutboundPortOutputDto = await em.findOne(
+      Todos,
+      result.id,
+    );
+    expect(resultDB).toEqual({
+      id: '50',
+      name: '8월 8일에 추가한 투두 테스트1',
+      startTime: new Date('2023-08-08 16:00:00'),
+      endTime: new Date('2023-08-21 18:00:00'),
+      description: 'test로 생성된 투두입니다.',
+      completed: false,
+      user: em.getReference(Users, '1'),
     });
   });
 
