@@ -93,11 +93,7 @@ export class TodoRepository
     const { userId, todoId, ...rest } = params;
     const existed = await em.findOne(Todos, { id: todoId, user: userId });
     const content = { ...existed, ...rest };
-    const result = await pipe(
-      content,
-      (content) => em.upsert(Todos, content),
-      tap((updatedTodo) => em.persistAndFlush(updatedTodo)),
-    );
+    const result = await em.upsert(Todos, content);
 
     return await em.findOne(Todos, { id: result.id });
   }
