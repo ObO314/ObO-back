@@ -105,24 +105,24 @@ export class UserController {
 
   //------------------------------------------------------------
 
-  @UseGuards(DynamicAuthGuard)
-  @Post('signUp/:method')
-  async signUpSocial(
-    @Req()
-    req: RequestGuardGiven,
-  ): Promise<UserSignUpSocialInboundPortOutputDto> {
-    const params: UserSignUpSocialInboundPortInputDto = {
-      email: req.user.email,
-      nickname: req.user.nickname,
-      authMethod: req.user.authMethod,
-    };
-    return this.UserSignUpSocialInboundPort.signUpSocial(params);
-  }
+  // @UseGuards(DynamicAuthGuard)
+  // @Post('signUp/:method')
+  // async signUpSocial(
+  //   @Req()
+  //   req: RequestGuardGiven,
+  // ): Promise<UserSignUpSocialInboundPortOutputDto> {
+  //   const params: UserSignUpSocialInboundPortInputDto = {
+  //     email: req.user.email,
+  //     nickname: req.user.nickname,
+  //     authMethod: req.user.authMethod,
+  //   };
+  //   return this.UserSignUpSocialInboundPort.signUpSocial(params);
+  // }
 
   //------------------------------------------------------------
 
+  @Get('login/:method')
   @UseGuards(DynamicAuthGuard)
-  @Post('login/:method')
   async login(
     // 이 로그인 로직에서는 토큰만 발급. 검증은 가드에서 함.
     @Req() // 가드를 통과하고 넘어오는 user 정보
@@ -130,10 +130,9 @@ export class UserController {
     @Res()
     res: Response,
   ): Promise<UserLoginInboundPortOutputDto> {
-    const userlocalLoginInboundPortInput =
-      req.user as UserLoginInboundPortInputDto;
+    const userLoginInboundPortInput = req.user as UserLoginInboundPortInputDto;
     return pipe(
-      userlocalLoginInboundPortInput,
+      userLoginInboundPortInput,
       (input) => this.userLoginInboundPort.login(input),
       tap((accessToken) =>
         res.setHeader('Authorization', 'Bearer ' + accessToken),

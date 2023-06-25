@@ -8,10 +8,10 @@ export class AuthJwtGuard extends AuthGuard('jwt') implements CanActivate {
     super();
   }
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const response = context.switchToHttp().getResponse();
     const isValid = (await super.canActivate(context)) as boolean;
 
+    const request = context.switchToHttp().getRequest();
+    const response = context.switchToHttp().getResponse();
     const newAccessToken = request.user.newAccessToken;
     const userId = request.user.userId;
 

@@ -6,6 +6,8 @@ import {
   AUTH_GOOGLE_STRATEGY_OUTBOUND_PORT,
   AuthGoogleStrategyOutboundPort,
 } from '../outbound-port/auth.google.strategy.outbound-port';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export const GOOGLE = 'GOOGLE' as const;
 
@@ -16,42 +18,40 @@ export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     private readonly authGoogleStrategyOutboundPort: AuthGoogleStrategyOutboundPort,
   ) {
     super({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_HOST,
+      clientID:
+        '709696078484-6gtqt51vusii3ag8uaih73lerdflvp47.apps.googleusercontent.com',
+      clientSecret: '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',
+      callbackURL: '/user/login/google',
       scope: ['email', 'profile'],
     });
   }
-
   async validate(
     accessToken: string,
     refreshToken: string,
     profile: any,
     done: any,
   ) {
-    //, name: profile.displayName
-
-    // 아웃바운드인 레포지토리에서 유저를 찾음
+    const user = {
+      email: profile.emails[0].value,
+      nickname: profile.displayName,
+      authMethod: GOOGLE,
+    };
+    // 회원 여부확인 후 반환, 없으면 가입후 반환
     try {
-      const user = { email: profile.emails[0].value, AuthMethod: GOOGLE };
-      const userId = (
-        await pipe(
-          [user],
-          toAsync,
-          map((email) =>
-            this.authGoogleStrategyOutboundPort.findUser({ email }),
-          ),
-          take(1),
-          toArray,
-        )
-      )[0].id;
+      const tofinduser = { email: user.email, authMethod: GOOGLE };
+      const userId = await this.authGoogleStrategyOutboundPort.findUser(
+        tofinduser,
+      );
       return done(null, {
         userId: userId,
-        email: user.email,
-        AuthMethod: GOOGLE,
       });
     } catch (err) {
-      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+      if (err.message == '계정이 존재하지 않습니다.') {
+        const newUser = await this.authGoogleStrategyOutboundPort.signUp(user);
+        return done(null, {
+          userId: newUser.id,
+        });
+      }
     }
   }
 }
