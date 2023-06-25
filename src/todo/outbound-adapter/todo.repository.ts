@@ -11,7 +11,7 @@ import {
   TodoCreateOutboundPortInputDto,
   TodoCreateOutboundPortOutputDto,
 } from '../outbound-port/todo.create.outbound-port';
-import { Todos } from '../../database/entities/Todos';
+import { Todos } from '../../../database/entities/Todos';
 import {
   TodoDeleteOutboundPort,
   TodoDeleteOutboundPortInputDto,
@@ -29,7 +29,7 @@ import {
   TodoReadByTodoIdOutboundPortOutputDto,
 } from '../outbound-port/todo.read-by-todo-id.outbound-port';
 import { curry, pipe, tap, filter } from '@fxts/core';
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 
 @Injectable()
 export class TodoRepository

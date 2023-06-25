@@ -1,4 +1,4 @@
-import { Routines } from 'src/database/entities/Routines';
+import { Routines } from 'database/entities/Routines';
 
 export type RoutineReadByIdInboundPortInputDto = { routineId: string };
 

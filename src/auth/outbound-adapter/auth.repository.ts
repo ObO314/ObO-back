@@ -13,7 +13,7 @@ import {
   AuthLocalStrategyOutboundPortInputDto,
   AuthLocalStrategyOutboundPortOutputDto,
 } from '../outbound-port/auth.local.strategy.outbound-port';
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 import { executeOrThrowError } from 'src/utilities/executeThrowError';
 import { AuthGoogleStrategyOutboundSignUpPortInputDto } from '../outbound-port/auth.google.strategy.outbound-port';
 

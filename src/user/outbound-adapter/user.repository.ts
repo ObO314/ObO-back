@@ -6,7 +6,7 @@ import {
   UserSignUpLocalOutboundPortInputDto,
   UserSignUpLocalOutboundPortOutputDto,
 } from '../outbound-port/user.sign-up-local.outbound-port';
-import { Users } from '../../database/entities/Users';
+import { Users } from '../../../database/entities/Users';
 import {
   executeAndThrowError,
   executeOrThrowError,
@@ -32,7 +32,7 @@ import {
   userLogoutOutboundPortInputDto,
   userLogoutOutboundPortOutputDto,
 } from '../outbound-port/user.logout.outbound-port';
-import { RefreshTokens } from 'src/database/entities/RefreshTokens';
+import { RefreshTokens } from 'database/entities/RefreshTokens';
 
 @Injectable()
 export class UserRepository

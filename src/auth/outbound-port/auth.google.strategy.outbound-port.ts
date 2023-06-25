@@ -1,4 +1,4 @@
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 
 export type AuthGoogleStrategyOutboundPortInputDto = {};
 

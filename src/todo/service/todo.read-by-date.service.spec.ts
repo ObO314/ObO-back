@@ -7,7 +7,7 @@ import { TodoReadByDateService } from './todo.read-by-date.service';
 import { EntityManager } from '@mikro-orm/knex';
 import { MikroORM, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import testConfig from 'src/mikro-orm.test.config';
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 
 class MockTodoReadByDateOutboundPort implements TodoReadByDateOutboundPort {
   private readonly params: TodoReadByDateOutboundPortOutputDto;

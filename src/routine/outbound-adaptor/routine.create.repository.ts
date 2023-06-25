@@ -10,9 +10,9 @@ import {
   Injectable,
   HttpStatus,
 } from '@nestjs/common';
-import { Routines } from 'src/database/entities/Routines';
+import { Routines } from 'database/entities/Routines';
 import { filter, pipe, tap } from '@fxts/core';
-import { RoutineHistories } from 'src/database/entities/RoutineHistories';
+import { RoutineHistories } from 'database/entities/RoutineHistories';
 
 @Injectable()
 export class RoutineCreateRepository implements RoutineCreateOutboundPort {

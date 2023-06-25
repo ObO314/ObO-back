@@ -1,5 +1,5 @@
-import { Todos } from 'src/database/entities/Todos';
-import { Users } from 'src/database/entities/Users';
+import { Todos } from 'database/entities/Todos';
+import { Users } from 'database/entities/Users';
 
 export type TodoReadByTodoIdInboundPortInputDto = {
   todoId: string;

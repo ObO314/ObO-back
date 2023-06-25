@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy as StrategyLOCAL } from 'passport-local';
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 import {
   AuthLocalStrategyInboundPort,
   AuthLocalStrategyInboundPortInputEmailDto,

@@ -7,7 +7,7 @@ import {
 import { TodoReadByTodoIdService } from './todo.read-by-todo-id.service';
 import { MikroORM, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import testConfig from 'src/mikro-orm.test.config';
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 
 class MockTodoReadByTodoIdOutboundPort implements TodoReadByTodoIdOutboundPort {
   private params: TodoReadByTodoIdOutboundPortOutputDto;

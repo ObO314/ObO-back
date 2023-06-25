@@ -2,12 +2,12 @@ import * as dotenv from 'dotenv';
 import { EntityManager } from '@mikro-orm/knex';
 import { MikroORM, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import testConfig from 'src/mikro-orm.test.config';
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { HashtagsUserRepository } from './hashtags.user.repository';
-import { Hashtags } from 'src/database/entities/Hashtags';
+import { Hashtags } from 'database/entities/Hashtags';
 import { HashtagsCreateOutboundPortOutputDto } from '../outbound-port/hashtags.create.outbound-port';
-import { UsersHashtags } from 'src/database/entities/usersHashtags';
+import { UsersHashtags } from 'database/entities/usersHashtags';
 import { HashtagsUserReadOutboundPortOutputDto } from '../outbound-port/hashtags.user-read.outbound-port';
 import { HashtagsUserDeleteOutboundPortOutputDto } from '../outbound-port/hashtags.user-delete.outbound-port';
 

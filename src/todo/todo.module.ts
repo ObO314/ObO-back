@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { PassportModule } from '@nestjs/passport';
 import { UserModule } from './../user/user.module';
-import { Todos } from 'src/database/entities/Todos';
+import { Todos } from 'database/entities/Todos';
 import { TodoController } from './controller/todo.controller';
 import { TodoRepository } from './outbound-adapter/todo.repository';
 import { TodoCreateService } from './service/todo.create.service';

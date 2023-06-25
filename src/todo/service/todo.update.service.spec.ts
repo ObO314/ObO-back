@@ -7,7 +7,7 @@ import {
 import { TodoUpdateService } from './todo.update.service';
 import { MikroORM, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import testConfig from 'src/mikro-orm.test.config';
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 
 class MockTodoUpdateOutboundPort implements TodoUpdateOutboundPort {
   private readonly params: TodoUpdateOutboundPortOutputDto;

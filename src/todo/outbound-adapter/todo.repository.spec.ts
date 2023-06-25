@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/knex';
-import { Todos } from '../../database/entities/Todos';
-import { Users } from '../../database/entities/Users';
+import { Todos } from '../../../database/entities/Todos';
+import { Users } from '../../../database/entities/Users';
 import * as dotenv from 'dotenv';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { TodoRepository } from './todo.repository';

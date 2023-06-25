@@ -7,8 +7,8 @@ import {
 import { TodoCreateService } from './todo.create.service';
 import { MikroORM, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import testConfig from 'src/mikro-orm.test.config';
-import { Users } from 'src/database/entities/Users';
-import { Todos } from 'src/database/entities/Todos';
+import { Users } from 'database/entities/Users';
+import { Todos } from 'database/entities/Todos';
 import { TodoCreateInboundPortInputDto } from '../inbound-port/todo.create.inbound-port';
 
 class MockTodoCreateOutboundPort implements TodoCreateOutboundPort {

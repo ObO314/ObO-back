@@ -1,6 +1,6 @@
-import { RefreshTokens } from './../../database/entities/RefreshTokens';
+import { RefreshTokens } from '../../../database/entities/RefreshTokens';
 import { Request, Response } from 'express';
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 
 export type AuthJwtValidateInboundPortInputDto = {
   userId: string;

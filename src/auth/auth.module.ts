@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { PassportModule } from '@nestjs/passport';
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 import { AuthLocalGuard } from './guard/auth.local.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/auth.jwt.strategy';

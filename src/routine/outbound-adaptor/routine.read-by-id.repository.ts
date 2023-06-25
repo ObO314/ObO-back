@@ -4,7 +4,7 @@ import {
   RoutineReadByIdOutboundPortInputDto,
   RoutineReadByIdOutboundPortOutputDto,
 } from '../outbound-port/routine.read-by-id.outbound-port';
-import { Routines } from 'src/database/entities/Routines';
+import { Routines } from 'database/entities/Routines';
 
 export class RoutineReadByIdRepository implements RoutineReadByIdOutboundPort {
   constructor(private readonly em: EntityManager) {}

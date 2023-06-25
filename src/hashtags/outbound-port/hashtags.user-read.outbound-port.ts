@@ -1,4 +1,4 @@
-import { Hashtags } from 'src/database/entities/Hashtags';
+import { Hashtags } from 'database/entities/Hashtags';
 
 export type HashtagsUserReadOutboundPortInputDto = {
   userId: string;

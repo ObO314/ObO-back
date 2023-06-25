@@ -3,13 +3,13 @@ import { UserRepository } from './user.repository';
 import { EntityManager } from '@mikro-orm/knex';
 import { MikroORM, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import testConfig from 'src/mikro-orm.test.config';
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 import { UserSignUpLocalOutboundPortOutputDto } from '../outbound-port/user.sign-up-local.outbound-port';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { UserSignUpSocialOutboundPortOutputDto } from '../outbound-port/user.sign-up-social.outbound-port';
 import { UserReadOutboundPortOutputDto } from '../outbound-port/user.read.outbound-port';
 import { UserUpdateOutboundPortOutputDto } from '../outbound-port/user.update.outbound-port';
-import { RefreshTokens } from 'src/database/entities/RefreshTokens';
+import { RefreshTokens } from 'database/entities/RefreshTokens';
 import { userLogoutOutboundPortOutputDto } from '../outbound-port/user.logout.outbound-port';
 
 dotenv.config();

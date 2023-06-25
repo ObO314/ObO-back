@@ -1,4 +1,4 @@
-import { Users } from './../../database/entities/Users';
+import { Users } from '../../../database/entities/Users';
 import { JwtService } from '@nestjs/jwt';
 import { Inject, Injectable, Req, Res } from '@nestjs/common';
 import { ExtractJwt, Strategy as StrategyJWT } from 'passport-jwt';
@@ -11,7 +11,7 @@ import {
   AuthJwtValidateInboundPortOutputDto,
 } from '../inbound-port/auth.jwt.strategy.inbound-port';
 import { EntityManager } from '@mikro-orm/knex';
-import { RefreshTokens } from 'src/database/entities/RefreshTokens';
+import { RefreshTokens } from 'database/entities/RefreshTokens';
 import { Request, Response } from 'express';
 
 @Injectable()

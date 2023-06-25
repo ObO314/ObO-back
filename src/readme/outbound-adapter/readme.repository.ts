@@ -10,8 +10,8 @@ import {
   ReadmeUpdateOutboundPortOutputDto,
 } from '../outbound-port/readme.update.outbound-port';
 import { EntityManager } from '@mikro-orm/knex';
-import { Users } from 'src/database/entities/Users';
-import { Readme } from 'src/database/entities/Readme';
+import { Users } from 'database/entities/Users';
+import { Readme } from 'database/entities/Readme';
 import {
   ReadmeDeleteOutboundPort,
   ReadmeDeleteOutboundPortInputDto,

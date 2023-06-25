@@ -1,13 +1,13 @@
-import { UsersHashtags } from 'src/database/entities/usersHashtags';
+import { UsersHashtags } from 'database/entities/usersHashtags';
 import { EntityManager } from '@mikro-orm/knex';
 import {
   HashtagsUserCreateOutboundPort,
   HashtagsUserCreateOutboundPortInputDto,
   HashtagsUserCreateOutboundPortOutputDto,
 } from '../outbound-port/hashtags.user-create.outbound-port';
-import { Hashtags } from 'src/database/entities/Hashtags';
+import { Hashtags } from 'database/entities/Hashtags';
 import { map, pipe, tap, toArray, toAsync } from '@fxts/core';
-import { Users } from 'src/database/entities/Users';
+import { Users } from 'database/entities/Users';
 import {
   HashtagsUserReadOutboundPort,
   HashtagsUserReadOutboundPortInputDto,
