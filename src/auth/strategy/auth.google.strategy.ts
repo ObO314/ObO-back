@@ -18,13 +18,13 @@ export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     private readonly authGoogleStrategyOutboundPort: AuthGoogleStrategyOutboundPort,
   ) {
     super({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_HOST,
+      clientID:
+        '709696078484-6gtqt51vusii3ag8uaih73lerdflvp47.apps.googleusercontent.com',
+      clientSecret: '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',
+      callbackURL: '/user/login/google',
       scope: ['email', 'profile'],
     });
   }
-
   async validate(
     accessToken: string,
     refreshToken: string,
@@ -38,8 +38,10 @@ export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     };
     // 회원 여부확인 후 반환, 없으면 가입후 반환
     try {
-      const tofinduser = { email: user.email, AuthMethod: GOOGLE };
-      const userId = this.authGoogleStrategyOutboundPort.findUser(tofinduser);
+      const tofinduser = { email: user.email, authMethod: GOOGLE };
+      const userId = await this.authGoogleStrategyOutboundPort.findUser(
+        tofinduser,
+      );
       return done(null, {
         userId: userId,
       });
