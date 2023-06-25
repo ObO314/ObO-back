@@ -121,8 +121,8 @@ export class UserController {
 
   //------------------------------------------------------------
 
+  @Get('login/:method')
   @UseGuards(DynamicAuthGuard)
-  @Post('login/:method')
   async login(
     // 이 로그인 로직에서는 토큰만 발급. 검증은 가드에서 함.
     @Req() // 가드를 통과하고 넘어오는 user 정보
