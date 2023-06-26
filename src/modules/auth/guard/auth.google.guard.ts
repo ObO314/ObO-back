@@ -15,6 +15,7 @@ export class AuthGoogleGuard extends AuthGuard('google') {
 
     // const { code } = request.body;
     request.body = { ...request.body, code: code };
+    console.log(code)
 
     return super.canActivate(context);
   }
