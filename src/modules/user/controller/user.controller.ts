@@ -121,12 +121,34 @@ export class UserController {
 
   //------------------------------------------------------------
 
+  // 로컬로그인은 post
+  @Post('login/local')
+  @UseGuards(DynamicAuthGuard)
+  async loginLocal(
+    @Req()
+    req: Request,
+    @Res()
+    res: Response,
+  ): Promise<UserLoginInboundPortOutputDto> {
+    const userLoginInboundPortInput = req.user as UserLoginInboundPortInputDto;
+    return pipe(
+      userLoginInboundPortInput,
+      (input) => this.userLoginInboundPort.login(input),
+      tap((accessToken) =>
+        res.setHeader('Authorization', 'Bearer ' + accessToken),
+      ),
+      tap((accessToken) => res.json(accessToken)),
+    );
+  }
+
+  //------------------------------------------------------------
+
+  //소셜로그인은 Get
   @Get('login/:method')
   @UseGuards(DynamicAuthGuard)
-  async login(
-    // 이 로그인 로직에서는 토큰만 발급. 검증은 가드에서 함.
-    @Req() // 가드를 통과하고 넘어오는 user 정보
-    req: Request, // user.userId만 추출하면 됨
+  async loginSocial(
+    @Req()
+    req: Request,
     @Res()
     res: Response,
   ): Promise<UserLoginInboundPortOutputDto> {

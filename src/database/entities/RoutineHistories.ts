@@ -1,10 +1,15 @@
-import { Entity, ManyToOne, OptionalProps, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Entity,
+  ManyToOne,
+  OptionalProps,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 import { Routines } from './Routines';
 import { Users } from './Users';
 
 @Entity()
 export class RoutineHistories {
-
   [OptionalProps]?: 'isActive';
 
   @ManyToOne({ entity: () => Routines, fieldName: 'routine', primary: true })
@@ -24,5 +29,4 @@ export class RoutineHistories {
 
   @Property({ default: true })
   isActive: boolean = true;
-
 }
