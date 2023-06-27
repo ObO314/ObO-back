@@ -144,8 +144,8 @@ export class UserController {
   //------------------------------------------------------------
 
   //소셜로그인은 Get
-  @Get('login/:method')
   @UseGuards(DynamicAuthGuard)
+  @Get('login/:method')
   async loginSocial(
     @Req()
     req: Request,
