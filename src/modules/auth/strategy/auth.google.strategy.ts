@@ -21,7 +21,7 @@ export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientID:
         '709696078484-6gtqt51vusii3ag8uaih73lerdflvp47.apps.googleusercontent.com',
       clientSecret: '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',
-      callbackURL: process.env.GOOGLE_CALLBACK,
+      callbackURL: 'http://ec2-13-209-7-29.ap-northeast-2.compute.amazonaws.com:3000/user/login/google',
       scope: ['email', 'profile'],
     });
   }
