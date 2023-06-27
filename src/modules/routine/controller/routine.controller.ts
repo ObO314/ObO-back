@@ -52,7 +52,7 @@ export class RoutineController {
       userId: req.user,
       ...body,
     };
-    return this.routineReadByDateInboundPort.readByDate(params);
+    return await this.routineReadByDateInboundPort.readByDate(params);
   }
 
   @Get('updateById')
