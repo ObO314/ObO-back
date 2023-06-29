@@ -13,7 +13,7 @@ export class AuthJwtGuard extends AuthGuard('jwt') implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
     const newAccessToken = request.user.newAccessToken;
-    const userId = request.user.userId;
+    const userId: string = request.user.userId;
 
     if (newAccessToken) {
       response.setHeader('Authorization', `Bearer ${newAccessToken}`);

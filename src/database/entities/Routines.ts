@@ -13,7 +13,7 @@ export class Routines {
   @Property({ length: 50 })
   name!: string;
 
-  @Property({ length: 200 })
-  description!: string;
+  @Property({ length: 200, nullable: true })
+  description?: string;
 
 }
