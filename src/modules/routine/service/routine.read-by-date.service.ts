@@ -5,42 +5,42 @@ import {
   RoutineReadByDateInboundPortOutputDto,
 } from '../inbound-port/routine.read-by-date.inbound-port';
 import {
-  ROUTINE_READ_BY_USER_AND_DATE_OUTBOUND_PORT,
-  RoutineReadByUserAndDateOutboundPort,
-} from '../outbound-port/routine.read-by-user-and-date.outbound-port';
+  ROUTINE_READ_BY_DATE_OUTBOUND_PORT,
+  RoutineReadByDateOutboundPort,
+} from '../outbound-port/routine.read-by-date.outbound-port';
 import {
   concurrent,
   filter,
+  flat,
+  flatMap,
   map,
   pipe,
-  tap,
   toArray,
   toAsync,
 } from '@fxts/core';
 import {
-  ROUTINE_READ_BY_ID_AND_DATE_OUTBOUND_PORT,
-  RoutineReadByIdAndDateOutboundPort,
-} from '../outbound-port/routine.read-by-id-and-date.outbound-port';
-import { RoutineHistories } from 'src/database/entities/RoutineHistories';
+  ROUTINE_READ_RECORD_BY_DATE_OUTBOUND_PORT,
+  RoutineReadRecordByDateOutboundPort,
+} from '../outbound-port/routine.read-record-by-date.outbound-port';
 
 export class RoutineReadByDateService implements RoutineReadByDateInboundPort {
   constructor(
-    @Inject(ROUTINE_READ_BY_USER_AND_DATE_OUTBOUND_PORT)
-    private readonly routineReadByUserAndDateOutboundPort: RoutineReadByUserAndDateOutboundPort,
-    @Inject(ROUTINE_READ_BY_ID_AND_DATE_OUTBOUND_PORT)
-    private readonly routineReadByIdAndDateOutboundPort: RoutineReadByIdAndDateOutboundPort,
+    @Inject(ROUTINE_READ_BY_DATE_OUTBOUND_PORT)
+    private readonly routineReadByDateOutboundPort: RoutineReadByDateOutboundPort,
+    @Inject(ROUTINE_READ_RECORD_BY_DATE_OUTBOUND_PORT)
+    private readonly routineReadRecordByDateOutboundPort: RoutineReadRecordByDateOutboundPort,
   ) {}
-  async readByDate(
+  async execute(
     params: RoutineReadByDateInboundPortInputDto,
   ): Promise<RoutineReadByDateInboundPortOutputDto> {
-    // 유저와 날짜 기준으로 추려오기
     //
-    const userRoutines =
-      await this.routineReadByUserAndDateOutboundPort.readByDate(params);
-
     return await pipe(
-      userRoutines,
+      [params],
       toAsync,
+      map((param) => {
+        return this.routineReadByDateOutboundPort.readByDate(param);
+      }),
+      flat,
       filter((routine) => routine.is_active == true),
       map(async (userRoutine) => {
         return {
@@ -49,13 +49,12 @@ export class RoutineReadByDateService implements RoutineReadByDateInboundPort {
           startTime: userRoutine.start_time,
           endTime: userRoutine.end_time,
           description: userRoutine.description,
-          done: await this.routineReadByIdAndDateOutboundPort.execute({
+          done: await this.routineReadRecordByDateOutboundPort.execute({
             routineId: userRoutine.routine,
             date: params.date,
           }),
         };
       }),
-      concurrent(10),
       toArray,
     );
   }

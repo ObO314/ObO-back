@@ -3,18 +3,26 @@ import { Routines } from 'src/database/entities/Routines';
 export type RoutineCreateInboundPortInputDto = {
   userId: string;
   name: string;
-  description: string;
+  description?: string;
   startTime: string;
   endTime: string;
 };
 
-export type RoutineCreateInboundPortOutputDto = Routines;
+export type RoutineCreateInboundPortOutputDto = {
+  userId: string;
+  routineId: string;
+  name: string;
+  description?: string;
+  startTime: string;
+  endTime: string;
+  isActive: boolean;
+};
 
 export const ROUTINE_CREATE_INBOUND_PORT =
   'ROUTINE_CREATE_INBOUND_PORT' as const;
 
 export interface RoutineCreateInboundPort {
-  create(
+  execute(
     params: RoutineCreateInboundPortInputDto,
   ): Promise<RoutineCreateInboundPortOutputDto>;
 }
