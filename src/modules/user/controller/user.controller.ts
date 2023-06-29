@@ -24,8 +24,10 @@ import {
   Get,
   UseInterceptors,
   UploadedFile,
+  Param,
+  Query,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Request, Response, query } from 'express';
 import {
   USER_LOGIN_INBOUND_PORT,
   UserLoginInboundPort,
@@ -174,10 +176,24 @@ export class UserController {
   }
 
   //------------------------------------------------------------
-
+  @UseGuards(AuthJwtGuard)
   @Get('read')
-  async read(@Body() userReadInboundPortInputDto: UserReadInboundPortInputDto) {
-    return await this.userReadInboundPort.read(userReadInboundPortInputDto);
+  async read(
+    @Req()
+    req: Request,
+  ) {
+    const params: UserReadInboundPortInputDto = { userId: req.user as string };
+    return await this.userReadInboundPort.read(params);
+  }
+
+  @UseGuards(AuthJwtGuard)
+  @Get('readById')
+  async readById(
+    @Query('userId')
+    query,
+  ) {
+    const params: UserReadInboundPortInputDto = { userId: query };
+    return await this.userReadInboundPort.read(params);
   }
 
   //------------------------------------------------------------

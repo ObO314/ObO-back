@@ -26,7 +26,7 @@ import {
   UserSignUpSocialOutboundPortInputDto,
   UserSignUpSocialOutboundPortOutputDto,
 } from '../outbound-port/user.sign-up-social.outbound-port';
-import { filter, pipe, tap, toAsync } from '@fxts/core';
+import { pipe, tap, toAsync } from '@fxts/core';
 import {
   userLogoutOutboundPort,
   userLogoutOutboundPortInputDto,
