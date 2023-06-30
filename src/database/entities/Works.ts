@@ -1,5 +1,6 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { Circles } from './Circles';
+import { WorkPriority } from './WorkPriority';
 
 @Entity()
 export class Works {
@@ -21,5 +22,8 @@ export class Works {
 
   @Property({ length: 255 })
   description!: string;
+
+  @ManyToOne({ entity: () => WorkPriority, fieldName: 'priority' })
+  priority!: WorkPriority;
 
 }

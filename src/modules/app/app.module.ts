@@ -9,6 +9,7 @@ import { TodoModule } from '../todo/todo.module';
 import { RoutineModule } from '../routine/routine.module';
 import { HashtagsModule } from '../hashtags/hashtags.module';
 import { ReadmeModule } from '../readme/readme.module';
+import { CircleManagementModule } from '../circle/management/circle.management.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ReadmeModule } from '../readme/readme.module';
     RoutineModule,
     HashtagsModule,
     ReadmeModule,
+    CircleManagementModule,
   ],
   controllers: [AppController],
   providers: [AppService],
