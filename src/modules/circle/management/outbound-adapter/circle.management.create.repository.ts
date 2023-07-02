@@ -8,7 +8,7 @@ import { Circles } from 'src/database/entities/Circles';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class circleManagementCreateRepository
+export class CircleManagementCreateRepository
   implements CircleManagementCreateOutboundPort
 {
   constructor(private readonly em: EntityManager) {}

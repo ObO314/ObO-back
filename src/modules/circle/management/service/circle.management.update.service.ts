@@ -19,7 +19,7 @@ import {
 } from '../outbound-port/circle.management.update.outbound-port';
 import { filter, head, map, pipe, toAsync } from '@fxts/core';
 
-export class CircleManagementReadService
+export class CircleManagementUpdateService
   implements CircleManagementUpdateInboundPort
 {
   constructor(
@@ -47,7 +47,6 @@ export class CircleManagementReadService
       ),
       map(({ params, foundCircle }) =>
         this.circleManagementUpdateOutboundPort.execute({
-          ...foundCircle,
           ...params,
         }),
       ),

@@ -9,7 +9,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class circleManagementDeleteRepository
+export class CircleManagementDeleteRepository
   implements CircleManagementDeleteOutboundPort
 {
   constructor(private readonly em: EntityManager) {}

@@ -8,7 +8,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class circleManagementReadRepository
+export class CircleManagementReadRepository
   implements CircleManagementReadOutboundPort
 {
   constructor(private readonly em: EntityManager) {}

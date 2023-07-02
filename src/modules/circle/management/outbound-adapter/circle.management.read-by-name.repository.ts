@@ -13,7 +13,7 @@ import {
 } from '../outbound-port/circle.management.read-by-name.outbound-port';
 
 @Injectable()
-export class circleManagementReadByNameRepository
+export class CircleManagementReadByNameRepository
   implements CircleManagementReadByNameOutboundPort
 {
   constructor(private readonly em: EntityManager) {}

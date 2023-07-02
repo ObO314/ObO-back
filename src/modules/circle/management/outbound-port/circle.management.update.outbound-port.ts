@@ -1,6 +1,13 @@
 import { Circles } from 'src/database/entities/Circles';
 
-export type CircleManagementUpdateOutboundPortInputDto = Circles;
+export type CircleManagementUpdateOutboundPortInputDto = {
+  circleId: string;
+  name?: string;
+  description?: string;
+  profileImg?: string;
+  rules?: string;
+  isOpen?: boolean;
+};
 
 export type CircleManagementUpdateOutboundPortOutputDto = Circles;
 
