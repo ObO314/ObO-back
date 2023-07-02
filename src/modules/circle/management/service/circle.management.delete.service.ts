@@ -5,7 +5,6 @@ import {
   CircleManagementDeleteInboundPortInputDto,
   CircleManagementDeleteInboundPortOutputDto,
 } from '../inbound-port/circle.management.delete.inbound-port';
-import { Circles } from 'src/database/entities/Circles';
 import { filter, head, map, pipe, toAsync } from '@fxts/core';
 import {
   CIRCLE_MANAGEMENT_DELETE_OUTBOUND_PORT,
@@ -30,26 +29,25 @@ export class CircleManagementDeleteService
   ): Promise<CircleManagementDeleteInboundPortOutputDto> {
     // 삭제하는 사람이 그 서클의 주인인가?
     // 서클에 남은 인원이 본인혼자 인가?
-    return (
-      await pipe(
-        [params],
-        toAsync,
-        filter(async (params) => {
-          const foundCircle =
-            await this.circleManagementReadOutboundPort.execute({
-              circleId: params.circle,
-            });
-          return (
-            params.user == foundCircle.owner.id && foundCircle.members == '1'
-          );
-        }),
-      ),
-      map((toDeleteCircle) =>
+    return await pipe(
+      [params],
+      toAsync,
+      map(async (params) => {
+        return {
+          ...params,
+          circle: await this.circleManagementReadOutboundPort.execute({
+            circleId: params.circle,
+          }),
+        };
+      }),
+      filter((params) => params.circle.members == '1'),
+      filter((params) => params.user == params.circle.owner.id),
+      map((params) =>
         this.circleManagementDeleteOutboundPort.execute({
-          circleId: toDeleteCircle.circle,
+          circleId: params.circle.id,
         }),
       ),
-      head
+      head,
     );
   }
 }
