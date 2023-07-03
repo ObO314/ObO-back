@@ -20,6 +20,8 @@ import { CircleManagementReadByNameRepository } from './outbound-adapter/circle.
 import { CircleManagementUpdateRepository } from './outbound-adapter/circle.management.update.repository';
 import { CIRCLE_MANAGEMENT_READ_BY_NAME_OUTBOUND_PORT } from './outbound-port/circle.management.read-by-name.outbound-port';
 import { CIRCLE_MANAGEMENT_UPDATE_OUTBOUND_PORT } from './outbound-port/circle.management.update.outbound-port';
+import { CircleManagementCreateMemberRepository } from './outbound-adapter/circle.management.create-member.repository';
+import { CIRCLE_MANAGEMENT_CREATE_MEMBER_OUTBOUND_PORT } from './outbound-port/circle.management.create-member.outbound-port';
 
 @Module({
   imports: [],
@@ -69,6 +71,10 @@ import { CIRCLE_MANAGEMENT_UPDATE_OUTBOUND_PORT } from './outbound-port/circle.m
     {
       provide: CIRCLE_MANAGEMENT_UPDATE_OUTBOUND_PORT,
       useClass: CircleManagementUpdateRepository,
+    },
+    {
+      provide: CIRCLE_MANAGEMENT_CREATE_MEMBER_OUTBOUND_PORT,
+      useClass: CircleManagementCreateMemberRepository,
     },
   ],
 })

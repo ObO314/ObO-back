@@ -20,6 +20,7 @@ import { Readme } from './database/entities/Readme';
 import { RefreshTokens } from './database/entities/RefreshTokens';
 import { RoutineHistories } from 'src/database/entities/RoutineHistories';
 import { RoutineRecords } from 'src/database/entities/RoutineRecords';
+import { CircleApplication } from './database/entities/CircleApplication';
 
 export const config: Options = {
   entities: [
@@ -30,6 +31,7 @@ export const config: Options = {
     BlogPost,
     BlogPostComments,
     Circles,
+    CircleApplication,
     Works,
     CommunityAnonymous,
     CommunityAnonymousComments,

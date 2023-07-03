@@ -1,4 +1,8 @@
-import { pipe } from '@fxts/core';
+import {
+  CIRCLE_MANAGEMENT_CREATE_MEMBER_OUTBOUND_PORT,
+  CircleManagementCreateMemberOutboundPort,
+} from './../outbound-port/circle.management.create-member.outbound-port';
+import { head, map, pipe, tap, toAsync } from '@fxts/core';
 import {
   CircleManagementCreateInboundPort,
   CircleManagementCreateInboundPortInputDto,
@@ -17,13 +21,32 @@ export class CircleManagementCreateService
   constructor(
     @Inject(CIRCLE_MANAGEMENT_CREATE_OUTBOUND_PORT)
     private readonly circleManagementCreateOutboundPort: CircleManagementCreateOutboundPort,
+    @Inject(CIRCLE_MANAGEMENT_CREATE_MEMBER_OUTBOUND_PORT)
+    private readonly circleManagementCreateMemberOutboundPort: CircleManagementCreateMemberOutboundPort,
   ) {}
   async execute(
     params: CircleManagementCreateInboundPortInputDto,
   ): Promise<CircleManagementCreateInboundPortOutputDto> {
-    return this.circleManagementCreateOutboundPort.execute({
-      ...params,
-      creationDate: generateDate(),
-    });
+    // 서클을 만든사람을 유저리스트에 등급을 포함하여 생성해야 함.
+
+    return await pipe(
+      [params],
+      toAsync,
+      map((params) =>
+        this.circleManagementCreateOutboundPort.execute({
+          ...params,
+          creationDate: generateDate(),
+        }),
+      ),
+      map((params) => {
+        this.circleManagementCreateMemberOutboundPort.execute({
+          userId: params.owner.id,
+          circleId: params.id,
+          role: '1',
+        });
+        return params;
+      }),
+      head,
+    );
   }
 }
