@@ -4,6 +4,7 @@ import { Users } from './Users';
 
 @Entity()
 export class RoutineHistories {
+
   @ManyToOne({ entity: () => Routines, fieldName: 'routine', primary: true })
   routine!: Routines;
 
@@ -21,4 +22,5 @@ export class RoutineHistories {
 
   @Property()
   isActive!: boolean;
+
 }
