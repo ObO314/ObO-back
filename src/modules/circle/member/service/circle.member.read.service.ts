@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import {
   CircleMemberReadInboundPort,
   CircleMemberReadInboundPortInputDto,
@@ -10,14 +10,14 @@ import {
 } from '../outbound-port/circle.member.read.outbound-port';
 import {
   CIRCLE_MEMBER_FIND_OUTBOUND_PORT,
-  CircleMemeberFindOutboundPort,
+  CircleMemberFindOutboundPort,
 } from '../outbound-port/circle.member.find.outbound-port';
 import { filter, head, map, pipe, toAsync } from '@fxts/core';
 
 export class CircleMemberReadService implements CircleMemberReadInboundPort {
   constructor(
     @Inject(CIRCLE_MEMBER_FIND_OUTBOUND_PORT)
-    private readonly circleMemberFindOutboundPort: CircleMemeberFindOutboundPort,
+    private readonly circleMemberFindOutboundPort: CircleMemberFindOutboundPort,
     @Inject(CIRCLE_MEMBER_READ_OUTBOUND_PORT)
     private readonly circleMemberReadOutboundPort: CircleMemberReadOutboundPort,
   ) {}
@@ -31,7 +31,16 @@ export class CircleMemberReadService implements CircleMemberReadInboundPort {
     return await pipe(
       [params],
       toAsync,
-      filter((params) => this.circleMemberFindOutboundPort.execute(params)),
+      filter(async (params) => {
+        const circleMember = await this.circleMemberFindOutboundPort.execute(
+          params,
+        );
+        if (!circleMember) {
+          throw new HttpException('권한이 없습니다.', HttpStatus.BAD_REQUEST);
+        } else {
+          return true;
+        }
+      }),
       map((params) =>
         this.circleMemberReadOutboundPort.execute({
           circleId: params.circleId,

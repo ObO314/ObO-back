@@ -4,7 +4,7 @@ import { UsersCircles } from 'src/database/entities/UsersCircles';
 export type CircleManagementCreateMemberOutboundPortInputDto = {
   userId: string;
   circleId: string;
-  role: string;
+  grade: string;
 };
 
 export type CircleManagementCreateMemberOutboundPortOutputDto = UsersCircles;

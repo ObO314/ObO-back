@@ -1,12 +1,12 @@
 import { Entity, ManyToOne, OptionalProps } from '@mikro-orm/core';
-import { CircleRoles } from './CircleRoles';
+import { CircleGrades } from './CircleGrades';
 import { Circles } from './Circles';
 import { Users } from './Users';
 
 @Entity()
 export class UsersCircles {
 
-  [OptionalProps]?: 'role';
+  [OptionalProps]?: 'grade';
 
   @ManyToOne({ entity: () => Users, fieldName: 'user', onUpdateIntegrity: 'cascade', onDelete: 'cascade', primary: true })
   user!: Users;
@@ -14,7 +14,7 @@ export class UsersCircles {
   @ManyToOne({ entity: () => Circles, fieldName: 'circle', onUpdateIntegrity: 'cascade', onDelete: 'cascade', primary: true })
   circle!: Circles;
 
-  @ManyToOne({ entity: () => CircleRoles, fieldName: 'role', defaultRaw: `3` })
-  role!: CircleRoles;
+  @ManyToOne({ entity: () => CircleGrades, fieldName: 'grade', defaultRaw: `3` })
+  grade!: CircleGrades;
 
 }

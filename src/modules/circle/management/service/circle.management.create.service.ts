@@ -42,7 +42,7 @@ export class CircleManagementCreateService
         this.circleManagementCreateMemberOutboundPort.execute({
           userId: params.owner.id,
           circleId: params.id,
-          role: '1',
+          grade: '1',
         });
         return params;
       }),
