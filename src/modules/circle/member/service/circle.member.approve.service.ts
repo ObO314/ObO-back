@@ -49,18 +49,19 @@ export class CircleMemberApproveService
       [params],
       toAsync,
       filter(async (params) => {
-        const userGrade = Number(
-          (
-            await this.circleMemberFindOutboundPort.execute({
-              userId: params.userId,
-              circleId: params.circleId,
-            })
-          ).grade.id,
-        );
-        if (userGrade >= 3) {
-          throw new HttpException('권한이 없습니다.', HttpStatus.BAD_REQUEST);
-        } else {
+        if (
+          Number(
+            (
+              await this.circleMemberFindOutboundPort.execute({
+                userId: params.userId,
+                circleId: params.circleId,
+              })
+            ).grade.id,
+          ) <= 2
+        ) {
           return true;
+        } else {
+          throw new HttpException('권한이 없습니다.', HttpStatus.BAD_REQUEST);
         }
       }),
       map(

@@ -50,29 +50,29 @@ export class CircleMemberApplyService implements CircleMemberApplyInboundPort {
       [params],
       toAsync,
       filter(async (params) => {
-        const result = await this.circleMemberFindOutboundPort.execute(params);
-        if (result) {
+        if (await this.circleMemberFindOutboundPort.execute(params)) {
+          return true;
+        } else {
           throw new HttpException(
             '이미 가입한 서클입니다.',
             HttpStatus.BAD_REQUEST,
           );
-        } else {
-          return !result;
         }
       }),
       filter(async (params) => {
-        const result = (
-          await this.circleMemberReadCircleOutboundPort.execute({
-            circleId: params.circleId,
-          })
-        ).isOpen;
-        if (!result) {
+        if (
+          (
+            await this.circleMemberReadCircleOutboundPort.execute({
+              circleId: params.circleId,
+            })
+          ).isOpen
+        ) {
+          return true;
+        } else {
           throw new HttpException(
             '이 서클은 현재 모집 중이 아닙니다.',
             HttpStatus.BAD_REQUEST,
           );
-        } else {
-          return result;
         }
       }),
       map((params) => this.circleMemberApplyOutboundPort.execute(params)),

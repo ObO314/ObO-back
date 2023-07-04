@@ -32,13 +32,10 @@ export class CircleMemberReadService implements CircleMemberReadInboundPort {
       [params],
       toAsync,
       filter(async (params) => {
-        const circleMember = await this.circleMemberFindOutboundPort.execute(
-          params,
-        );
-        if (!circleMember) {
-          throw new HttpException('권한이 없습니다.', HttpStatus.BAD_REQUEST);
-        } else {
+        if (await this.circleMemberFindOutboundPort.execute(params)) {
           return true;
+        } else {
+          throw new HttpException('권한이 없습니다.', HttpStatus.BAD_REQUEST);
         }
       }),
       map((params) =>
