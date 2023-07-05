@@ -11,6 +11,7 @@ import { HashtagsModule } from '../hashtags/hashtags.module';
 import { ReadmeModule } from '../readme/readme.module';
 import { CircleManagementModule } from '../circle/management/circle.management.module';
 import { CircleMemberModule } from '../circle/member/circle.member.module';
+import { WorkModule } from '../work/work.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CircleMemberModule } from '../circle/member/circle.member.module';
     ReadmeModule,
     CircleManagementModule,
     CircleMemberModule,
+    WorkModule,
   ],
   controllers: [AppController],
   providers: [AppService],
