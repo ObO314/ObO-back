@@ -2,6 +2,7 @@ import { Works } from 'src/database/entities/Works';
 
 export type WorkReadOutboundPortInputDto = {
   workId: string;
+  circleId: string;
 };
 
 export type WorkReadOutboundPortOutputDto = Works;

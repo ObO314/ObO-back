@@ -37,6 +37,7 @@ export class WorkDeleteService implements WorkDeleteInboundPort {
       filter(async (params) => {
         const work = await this.workReadOutboundPort.execute({
           workId: params.workId,
+          circleId: params.circleId,
         });
         if (
           work.creator.id == params.userId ||

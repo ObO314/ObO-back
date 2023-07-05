@@ -4,8 +4,8 @@ export type WorkCreateOutboundPortInputDto = {
   circleId: string;
   userId: string;
   name: string;
-  startDate: string;
-  endDate: string;
+  startTime: Date;
+  endTime: Date;
   description: string;
   priority: string;
 };

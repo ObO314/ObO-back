@@ -3,8 +3,8 @@ import { Works } from 'src/database/entities/Works';
 export type WorkUpdateOutboundPortInputDto = {
   workId: string;
   name?: string;
-  startDate?: string;
-  endDate?: string;
+  startTime?: Date;
+  endTime?: Date;
   description?: string;
   priority?: string;
 };

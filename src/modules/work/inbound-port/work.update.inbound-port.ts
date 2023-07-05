@@ -5,8 +5,8 @@ export type WorkUpdateInboundPortInputDto = {
   circleId: string;
   workId: string;
   name?: string;
-  startDate?: string;
-  endDate?: string;
+  startTime?: Date;
+  endTime?: Date;
   description?: string;
   priority?: string;
 };

@@ -33,6 +33,7 @@ export class WorkUpdateService implements WorkUpdateInboundPort {
           (
             await this.workReadInboundPort.execute({
               workId: params.workId,
+              circleId: params.circleId,
             })
           ).creator.id == params.userId
         ) {

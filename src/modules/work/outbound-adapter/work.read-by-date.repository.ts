@@ -18,8 +18,8 @@ export class WorkReadByDateRepository implements WorkReadByDateOutboundPort {
     return await this.em.find(Works, {
       circle: params.circleId,
       $or: [
-        { startDate: { $gte: params.startDate, $lte: params.endDate } },
-        { endDate: { $gte: params.startDate, $lte: params.endDate } },
+        { startTime: { $gte: params.startTime, $lte: params.endTime } },
+        { endTime: { $gte: params.startTime, $lte: params.endTime } },
       ],
     });
   }

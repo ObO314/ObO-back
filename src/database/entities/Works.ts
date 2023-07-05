@@ -15,11 +15,11 @@ export class Works {
   @Property({ length: 50 })
   name!: string;
 
-  @Property({ columnType: 'date' })
-  startDate!: string;
+  @Property({ length: 6 })
+  startTime!: Date;
 
-  @Property({ columnType: 'date' })
-  endDate!: string;
+  @Property({ fieldName: 'end_Time', length: 6 })
+  endTime!: Date;
 
   @Property({ length: 255 })
   description!: string;
@@ -29,5 +29,8 @@ export class Works {
 
   @ManyToOne({ entity: () => Users, fieldName: 'creator' })
   creator!: Users;
+
+  @Property({ columnType: 'int8' })
+  targets!: string;
 
 }

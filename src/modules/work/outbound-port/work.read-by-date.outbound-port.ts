@@ -2,8 +2,8 @@ import { Works } from 'src/database/entities/Works';
 
 export type WorkReadByDateOutboundPortInputDto = {
   circleId: string;
-  startDate: string;
-  endDate: string;
+  startTime: Date;
+  endTime: Date;
 };
 
 export type WorkReadByDateOutboundPortOutputDto = Array<Works>;

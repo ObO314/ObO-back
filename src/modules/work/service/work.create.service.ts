@@ -14,6 +14,10 @@ import {
 } from '../outbound-port/work.find-member.outbound-port';
 import { filter, head, map, pipe, toAsync } from '@fxts/core';
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
+import {
+  WORK_READ_CIRCLE_OUTBOUND_PORT,
+  WorkReadCircleOutboundPort,
+} from '../outbound-port/work.read-circle.outbound-port';
 
 export class WorkCreateService implements WorkCreateInboundPort {
   constructor(
@@ -21,6 +25,8 @@ export class WorkCreateService implements WorkCreateInboundPort {
     private readonly workCreateOutboundPort: WorkCreateOutboundPort,
     @Inject(WORK_FIND_MEMBER_OUTBOUND_PORT)
     private readonly workFindMemberOutboundPort: WorkFindMemberOutboundPort,
+    @Inject(WORK_READ_CIRCLE_OUTBOUND_PORT)
+    private readonly workReadCircleOutboundPort: WorkReadCircleOutboundPort,
   ) {}
 
   async execute(
@@ -47,6 +53,16 @@ export class WorkCreateService implements WorkCreateInboundPort {
             HttpStatus.BAD_REQUEST,
           );
         }
+      }),
+      map(async (params) => {
+        return {
+          ...params,
+          targets: (
+            await this.workReadCircleOutboundPort.execute({
+              circleId: params.circleId,
+            })
+          ).members,
+        };
       }),
       map((params) => this.workCreateOutboundPort.execute(params)),
       head,

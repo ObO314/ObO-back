@@ -1,4 +1,4 @@
-import { filter, head, map, pipe, toAsync } from '@fxts/core';
+import { filter, head, map, pipe, toArray, toAsync } from '@fxts/core';
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import {
   WORK_FIND_MEMBER_OUTBOUND_PORT,
@@ -9,37 +9,44 @@ import {
   WorkReadByDateOutboundPort,
 } from '../outbound-port/work.read-by-date.outbound-port';
 import {
-  WorkReadInboundPort,
-  WorkReadInboundPortInputDto,
-  WorkReadInboundPortOutputDto,
-} from '../inbound-port/work.read.inbound-port';
+  WorkReadByDateInboundPort,
+  WorkReadByDateInboundPortInputDto,
+  WorkReadByDateInboundPortOutputDto,
+} from '../inbound-port/work.read-by-date.inbound-port';
 import {
-  WORK_READ_OUTBOUND_PORT,
-  WorkReadOutboundPort,
-} from '../outbound-port/work.read.outbound-port';
+  WORK_READ_RECORD_OUTBOUND_PORT,
+  WorkReadRecordOutboundPort,
+} from '../outbound-port/work.read-record.outbound-port';
 import {
   WORK_READ_RECORDS_OUTBOUND_PORT,
   WorkReadRecordsOutboundPort,
 } from '../outbound-port/work.read-records.outbound-port';
 
-export class WorkReadService implements WorkReadInboundPort {
+export class WorkReadByDateService implements WorkReadByDateInboundPort {
   constructor(
     @Inject(WORK_FIND_MEMBER_OUTBOUND_PORT)
     private readonly workFindMemberOutboundPort: WorkFindMemberOutboundPort,
-    @Inject(WORK_READ_OUTBOUND_PORT)
-    private readonly workReadOutboundPort: WorkReadOutboundPort,
+    @Inject(WORK_READ_BY_DATE_OUTBOUND_PORT)
+    private readonly workReadByDateOutboundPort: WorkReadByDateOutboundPort,
+    @Inject(WORK_READ_RECORD_OUTBOUND_PORT)
+    private readonly workReadRecordOutboundPort: WorkReadRecordOutboundPort,
     @Inject(WORK_READ_RECORDS_OUTBOUND_PORT)
     private readonly workReadRecordsOutboundPort: WorkReadRecordsOutboundPort,
   ) {}
 
   async execute(
-    params: WorkReadInboundPortInputDto,
-  ): Promise<WorkReadInboundPortOutputDto> {
-    return await pipe(
+    params: WorkReadByDateInboundPortInputDto,
+  ): Promise<WorkReadByDateInboundPortOutputDto> {
+    const works = await pipe(
       [params],
       toAsync,
       filter(async (params) => {
-        if (await this.workFindMemberOutboundPort.execute(params)) {
+        if (
+          await this.workFindMemberOutboundPort.execute({
+            circleId: params.circleId,
+            userId: params.userId,
+          })
+        ) {
           return true;
         } else {
           throw new HttpException(
@@ -48,7 +55,13 @@ export class WorkReadService implements WorkReadInboundPort {
           );
         }
       }),
-      map((params) => this.workReadOutboundPort.execute(params)),
+      map((params) => this.workReadByDateOutboundPort.execute(params)),
+      head,
+    );
+
+    return await pipe(
+      works,
+      toAsync,
       map(async (work) => {
         return {
           ...work,
@@ -59,9 +72,14 @@ export class WorkReadService implements WorkReadInboundPort {
                 circleId: work.circle.id,
               }),
             ) / BigInt(work.targets),
+          done: this.workReadRecordOutboundPort.execute({
+            circleId: work.circle.id,
+            workId: work.id,
+            userId: params.userId,
+          }),
         };
       }),
-      head,
+      toArray,
     );
   }
 }

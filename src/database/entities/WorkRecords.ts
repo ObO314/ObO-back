@@ -1,17 +1,18 @@
-import { Entity, ManyToOne, PrimaryKey } from '@mikro-orm/core';
+import { Entity, ManyToOne } from '@mikro-orm/core';
+import { Circles } from './Circles';
 import { Users } from './Users';
 import { Works } from './Works';
 
 @Entity()
 export class WorkRecords {
 
-  @ManyToOne({ entity: () => Works, fieldName: 'work', primary: true })
+  @ManyToOne({ entity: () => Works, fieldName: 'work' })
   work!: Works;
 
-  @ManyToOne({ entity: () => Users, fieldName: 'user', primary: true })
+  @ManyToOne({ entity: () => Users, fieldName: 'user' })
   user!: Users;
 
-  @PrimaryKey()
-  date!: string;
+  @ManyToOne({ entity: () => Circles, fieldName: 'circle' })
+  circle!: Circles;
 
 }
