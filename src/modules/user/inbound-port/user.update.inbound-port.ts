@@ -2,6 +2,7 @@ export type UserUpdateInboundPortInputDto = {
   userId: string;
   nickname: string;
   profileImg?: string;
+  password?: string;
 };
 
 export type UserUpdateInboundPortOutputDto = {
@@ -9,15 +10,12 @@ export type UserUpdateInboundPortOutputDto = {
   email: string;
   nickname: string;
   profileImg?: string;
-  progressRoutine: number;
-  progressTodo: number;
-  progressWork: number;
 };
 
 export const USER_UPDATE_INBOUND_PORT = 'USER_UPDATE_INBOUND_PORT' as const;
 
 export interface UserUpdateInboundPort {
-  update(
+  execute(
     params: UserUpdateInboundPortInputDto,
   ): Promise<UserUpdateInboundPortOutputDto>;
 }

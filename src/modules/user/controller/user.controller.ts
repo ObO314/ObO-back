@@ -35,12 +35,11 @@ import {
   UserLoginInboundPortOutputDto,
 } from '../inbound-port/user.login.inbound-port';
 import {
-  USER_SIGN_UP_LOCAL_INBOUND_PORT,
-  UserSignUpLocalInboundPort,
-  UserSignUpLocalInboundPortInputDto,
-  UserSignUpLocalInboundPortOutputDto,
-} from '../inbound-port/user.sign-up-local.inbound-port';
-import { AuthLocalGuard } from 'src/modules/auth/guard/auth.local.guard';
+  USER_SIGN_UP_INBOUND_PORT,
+  UserSignUpInboundPort,
+  UserSignUpInboundPortInputDto,
+  UserSignUpInboundPortOutputDto,
+} from '../inbound-port/user.sign-up.inbound-port';
 import { DynamicAuthGuard } from 'src/modules/auth/guard/auth.dynamic.guard';
 import {
   USER_READ_INBOUND_PORT,
@@ -50,12 +49,6 @@ import {
 import { UserUpdateInboundPortInputDto } from '../inbound-port/user.update.inbound-port';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import * as dotenv from 'dotenv';
-import {
-  UserSignUpSocialInboundPort,
-  UserSignUpSocialInboundPortInputDto,
-  UserSignUpSocialInboundPortOutputDto,
-} from '../inbound-port/user.sign-up-social.inbound-port';
-import { USER_SIGN_UP_SOCIAL_INBOUND_PORT } from '../inbound-port/user.sign-up-social.inbound-port';
 import { LOCAL } from 'src/modules/auth/strategy/auth.local.strategy';
 
 dotenv.config();
@@ -72,11 +65,8 @@ interface RequestGuardGiven extends Request {
 @Controller('user')
 export class UserController {
   constructor(
-    @Inject(USER_SIGN_UP_LOCAL_INBOUND_PORT)
-    private readonly userSignUpLocalInboundPort: UserSignUpLocalInboundPort,
-
-    @Inject(USER_SIGN_UP_SOCIAL_INBOUND_PORT)
-    private readonly UserSignUpSocialInboundPort: UserSignUpSocialInboundPort,
+    @Inject(USER_SIGN_UP_INBOUND_PORT)
+    private readonly userSignUpLocalInboundPort: UserSignUpInboundPort,
 
     @Inject(USER_LOGIN_INBOUND_PORT)
     private readonly userLoginInboundPort: UserLoginInboundPort,
@@ -97,29 +87,13 @@ export class UserController {
   async signUpLocal(
     @Body()
     body: any,
-  ): Promise<UserSignUpLocalInboundPortOutputDto> {
-    const params: UserSignUpLocalInboundPortInputDto = {
+  ): Promise<UserSignUpInboundPortOutputDto> {
+    const params: UserSignUpInboundPortInputDto = {
       ...body,
       authMethod: LOCAL,
     };
-    return this.userSignUpLocalInboundPort.signUpLocal(params);
+    return this.userSignUpLocalInboundPort.execute(params);
   }
-
-  //------------------------------------------------------------
-
-  // @UseGuards(DynamicAuthGuard)
-  // @Post('signUp/:method')
-  // async signUpSocial(
-  //   @Req()
-  //   req: RequestGuardGiven,
-  // ): Promise<UserSignUpSocialInboundPortOutputDto> {
-  //   const params: UserSignUpSocialInboundPortInputDto = {
-  //     email: req.user.email,
-  //     nickname: req.user.nickname,
-  //     authMethod: req.user.authMethod,
-  //   };
-  //   return this.UserSignUpSocialInboundPort.signUpSocial(params);
-  // }
 
   //------------------------------------------------------------
 
@@ -135,7 +109,7 @@ export class UserController {
     const userLoginInboundPortInput = req.user as UserLoginInboundPortInputDto;
     return pipe(
       userLoginInboundPortInput,
-      (input) => this.userLoginInboundPort.login(input),
+      (input) => this.userLoginInboundPort.execute(input),
       tap((accessToken) =>
         res.setHeader('Authorization', 'Bearer ' + accessToken),
       ),
@@ -157,13 +131,15 @@ export class UserController {
     const userLoginInboundPortInput = req.user as UserLoginInboundPortInputDto;
     return pipe(
       userLoginInboundPortInput,
-      (input) => this.userLoginInboundPort.login(input),
+      (input) => this.userLoginInboundPort.execute(input),
       tap((accessToken) =>
         res.setHeader('Authorization', 'Bearer ' + accessToken),
       ),
       tap((accessToken) => res.json(accessToken)),
     );
   }
+
+  //------------------------------------------------------------
 
   @UseGuards(AuthJwtGuard)
   @Post('logout')
@@ -172,7 +148,7 @@ export class UserController {
     req: Request,
   ): Promise<userLogoutInboundPortOutputDto> {
     const userId = { userId: req.user } as userLogoutInboundPortInputDto;
-    return await this.userLogoutInboundPort.logout(userId);
+    return await this.userLogoutInboundPort.execute(userId);
   }
 
   //------------------------------------------------------------
@@ -183,8 +159,10 @@ export class UserController {
     req: Request,
   ) {
     const params: UserReadInboundPortInputDto = { userId: req.user as string };
-    return await this.userReadInboundPort.read(params);
+    return await this.userReadInboundPort.execute(params);
   }
+
+  //------------------------------------------------------------
 
   @UseGuards(AuthJwtGuard)
   @Get('readById')
@@ -193,7 +171,7 @@ export class UserController {
     query,
   ) {
     const params: UserReadInboundPortInputDto = { userId: query };
-    return await this.userReadInboundPort.read(params);
+    return await this.userReadInboundPort.execute(params);
   }
 
   //------------------------------------------------------------
@@ -230,6 +208,6 @@ export class UserController {
       nickname: body.nickname,
       profileImg: image ? image.location : process.env.PRODUCT_DEFAULT_IMAGE,
     };
-    return await this.userUpdateInboundPort.update(params);
+    return await this.userUpdateInboundPort.execute(params);
   }
 }

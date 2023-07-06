@@ -24,7 +24,7 @@
     "schema:update": "mikro-orm schema:update --config=mikro-orm.test.config.ts"
   },
   "dependencies": {
-    "@fxts/core": "^0.14.0",
+    "@fxts/core": "^0.17.0",
     "@mikro-orm/core": "^5.7.12",
     "@mikro-orm/knex": "^5.7.12",
     "@mikro-orm/migrations": "^5.7.12",

@@ -1,6 +1,13 @@
 import { Users } from '../../../database/entities/Users';
 import { JwtService } from '@nestjs/jwt';
-import { Inject, Injectable, Req, Res } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { ExtractJwt, Strategy as StrategyJWT } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import {
@@ -41,6 +48,12 @@ export class JwtStrategy
         const foundUserToken = await this.em.findOne(RefreshTokens, {
           user: userId,
         });
+        if (!foundUserToken) {
+          throw new HttpException(
+            '다시 로그인하여 주십시오.',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
         const savedUser = foundUserToken.user.id;
         const savedToken = foundUserToken.token;
 
