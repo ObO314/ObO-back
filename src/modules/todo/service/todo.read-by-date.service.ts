@@ -15,9 +15,9 @@ export class TodoReadByDateService implements TodoReadByDateInboundPort {
     private readonly todoReadOutbountPort: TodoReadByDateOutboundPort,
   ) {}
 
-  async readByDate(
+  async execute(
     params: TodoReadByDateInboundPortInputDto,
   ): Promise<TodoReadByDateInboundPortOutputDto> {
-    return this.todoReadOutbountPort.readByDate(params);
+    return await this.todoReadOutbountPort.execute(params);
   }
 }

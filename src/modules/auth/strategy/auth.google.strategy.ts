@@ -1,4 +1,13 @@
-import { filter, map, pipe, take, toArray, toAsync } from '@fxts/core';
+import {
+  filter,
+  isNull,
+  map,
+  pipe,
+  take,
+  throwIf,
+  toArray,
+  toAsync,
+} from '@fxts/core';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
@@ -36,21 +45,24 @@ export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
       authMethod: GOOGLE,
     };
     // 회원 여부확인 후 반환, 없으면 가입후 반환
-    try {
-      const tofinduser = { email: user.email, authMethod: GOOGLE };
-      const userId = await this.authGoogleStrategyOutboundPort.findUser(
-        tofinduser,
-      );
-      return done(null, {
-        userId: userId,
-      });
-    } catch (err) {
-      if (err.message == '계정이 존재하지 않습니다.') {
-        const newUser = await this.authGoogleStrategyOutboundPort.signUp(user);
-        return done(null, {
-          userId: newUser.id,
-        });
-      }
-    }
+
+    return await pipe(
+      { email: user.email, authMethod: GOOGLE },
+      async (params) =>
+        await this.authGoogleStrategyOutboundPort.findUser(params),
+      throwIf(
+        (user) => isNull(user),
+        () => {
+          throw new HttpException(
+            '계정이 존재하지 않습니다.',
+            HttpStatus.BAD_REQUEST,
+          );
+        },
+      ),
+      (user) =>
+        done(null, {
+          userId: user.id,
+        }),
+    );
   }
 }

@@ -21,13 +21,6 @@ import {
   CircleMemberFindOutboundPort,
   CircleMemberFindOutboundPortInputDto,
 } from '../outbound-port/circle.member.find.outbound-port';
-import { executeAndThrowError } from 'src/utilities/executeThrowError';
-import {
-  check,
-  ensure,
-  finalResult,
-  handleResult,
-} from 'src/utilities/setResultOrError';
 
 export class CircleMemberApplyService implements CircleMemberApplyInboundPort {
   constructor(

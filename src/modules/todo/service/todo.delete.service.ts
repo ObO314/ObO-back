@@ -15,9 +15,9 @@ export class TodoDeleteService implements TodoDeleteINboundPort {
     private readonly todoDeleteOutboundPort: TodoDeleteOutboundPort,
   ) {}
 
-  async delete(
+  async execute(
     params: TodoDeleteInboundPortInputDto,
   ): Promise<TodoDeleteInboundPortOutputDto> {
-    return await this.todoDeleteOutboundPort.delete(params);
+    return await this.todoDeleteOutboundPort.execute(params);
   }
 }

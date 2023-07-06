@@ -18,10 +18,12 @@ import * as bcrypt from 'bcrypt';
 import {
   filter,
   flatMap,
+  head,
   map,
   pipe,
   take,
   tap,
+  throwIf,
   toArray,
   toAsync,
 } from '@fxts/core';
@@ -30,7 +32,6 @@ import {
   AuthLocalStrategyOutboundPort,
   AuthLocalStrategyOutboundPortInputDto,
 } from '../outbound-port/auth.local.strategy.outbound-port';
-import { executeOrThrowError } from '../../../utilities/executeThrowError';
 
 export const LOCAL = 'LOCAL' as const;
 
@@ -49,29 +50,32 @@ export class AuthLocalStrategy
     email: AuthLocalStrategyInboundPortInputEmailDto,
     password: AuthLocalStrategyInboundPortInputPasswordDto,
   ): Promise<AuthLocalStrategyInboundPortOutputDto> {
-    //
-    const checkPasswordOrError = executeOrThrowError(
-      bcrypt.compare,
-      '비밀번호가 틀렸습니다.',
+    return await pipe(
+      [{ email, password, authMethod: LOCAL }],
+      toAsync,
+      map(async (params) => {
+        return {
+          user: await this.authLocalStrategyOutboundPort.findUser({
+            email: params.email,
+            authMethod: params.authMethod,
+          }),
+          params: params,
+        };
+      }),
+      filter(async ({ user, params }) => {
+        if (await bcrypt.compare(params.password, user.password)) {
+          return true;
+        } else {
+          throw new HttpException(
+            '비밀번호가 틀렸습니다.',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+      }),
+      map(({ user, params }) => {
+        return { userId: user.id };
+      }),
+      head,
     );
-    //
-    try {
-      const user = { email: email, authMethod: LOCAL };
-      const userId = (
-        await pipe(
-          [user],
-          toAsync,
-          map((user) => this.authLocalStrategyOutboundPort.findUser(user)),
-          filter(
-            async (user) => await checkPasswordOrError(password, user.password),
-          ),
-          take(1),
-          toArray,
-        )
-      )[0];
-      return { userId: userId.id };
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-    }
   }
 }

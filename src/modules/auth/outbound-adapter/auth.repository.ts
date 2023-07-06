@@ -14,7 +14,6 @@ import {
   AuthLocalStrategyOutboundPortOutputDto,
 } from '../outbound-port/auth.local.strategy.outbound-port';
 import { Users } from 'src/database/entities/Users';
-import { executeOrThrowError } from 'src/utilities/executeThrowError';
 import { AuthGoogleStrategyOutboundSignUpPortInputDto } from '../outbound-port/auth.google.strategy.outbound-port';
 
 @Injectable()
@@ -24,10 +23,7 @@ export class AuthRepository implements AuthLocalStrategyOutboundPort {
   async findUser(
     params: AuthLocalStrategyOutboundPortInputDto,
   ): Promise<AuthLocalStrategyOutboundPortOutputDto> {
-    return (await executeOrThrowError(
-      (params) => this.em.findOne(Users, params),
-      '계정이 존재하지 않습니다.',
-    )(params)) as any;
+    return await this.em.findOne(Users, params);
   }
 
   async signUp(
