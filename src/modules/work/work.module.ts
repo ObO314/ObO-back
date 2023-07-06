@@ -51,12 +51,12 @@ import { WorkReadRecordsRepository } from './outbound-adapter/work.read-records.
       useClass: WorkCreateService,
     },
     {
-      provide: WORK_DELETE_RECORD_INBOUND_PORT,
-      useClass: WorkDeleteRecordService,
-    },
-    {
       provide: WORK_DELETE_INBOUND_PORT,
       useClass: WorkDeleteService,
+    },
+    {
+      provide: WORK_DELETE_RECORD_INBOUND_PORT,
+      useClass: WorkDeleteRecordService,
     },
     {
       provide: WORK_READ_BY_DATE_INBOUND_PORT,
@@ -72,22 +72,21 @@ import { WorkReadRecordsRepository } from './outbound-adapter/work.read-records.
     },
 
     //--- outbound ---
-
-    {
-      provide: WORK_CREATE_RECORD_OUTBOUND_PORT,
-      useClass: WorkCreateRecordRepository,
-    },
     {
       provide: WORK_CREATE_OUTBOUND_PORT,
       useClass: WorkCreateRepository,
     },
     {
-      provide: WORK_DELETE_RECORD_OUTBOUND_PORT,
-      useClass: WorkDeleteRecordRepository,
+      provide: WORK_CREATE_RECORD_OUTBOUND_PORT,
+      useClass: WorkCreateRecordRepository,
     },
     {
       provide: WORK_DELETE_OUTBOUND_PORT,
       useClass: WorkDeleteRepository,
+    },
+    {
+      provide: WORK_DELETE_RECORD_OUTBOUND_PORT,
+      useClass: WorkDeleteRecordRepository,
     },
     {
       provide: WORK_FIND_MEMBER_OUTBOUND_PORT,

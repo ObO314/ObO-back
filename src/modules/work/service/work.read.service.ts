@@ -38,8 +38,19 @@ export class WorkReadService implements WorkReadInboundPort {
     return await pipe(
       [params],
       toAsync,
-      filter(async (params) => {
-        if (await this.workFindMemberOutboundPort.execute(params)) {
+      map(async (params) => {
+        return {
+          params: params,
+          work: await this.workReadOutboundPort.execute(params),
+        };
+      }),
+      filter(async ({ params, work }) => {
+        if (
+          await this.workFindMemberOutboundPort.execute({
+            circleId: work.circle.id,
+            userId: params.userId,
+          })
+        ) {
           return true;
         } else {
           throw new HttpException(
@@ -48,17 +59,16 @@ export class WorkReadService implements WorkReadInboundPort {
           );
         }
       }),
-      map((params) => this.workReadOutboundPort.execute(params)),
-      map(async (work) => {
+      map(async ({ work }) => {
         return {
           ...work,
           Progress:
-            BigInt(
+            Number(
               await this.workReadRecordsOutboundPort.execute({
                 workId: work.id,
                 circleId: work.circle.id,
               }),
-            ) / BigInt(work.targets),
+            ) / Number(work.targets),
         };
       }),
       head,

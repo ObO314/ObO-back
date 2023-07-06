@@ -14,6 +14,8 @@ export class WorkCreateRepository implements WorkCreateOutboundPort {
   async execute(
     params: WorkCreateOutboundPortInputDto,
   ): Promise<WorkCreateOutboundPortOutputDto> {
+    console.log('create');
+
     const newWork = this.em.create(Works, {
       ...params,
       circle: params.circleId,

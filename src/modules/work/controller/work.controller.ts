@@ -34,11 +34,12 @@ import {
 import { Request } from 'express';
 import { group } from 'console';
 import {
+  WORK_CREATE_RECORD_INBOUND_PORT,
   WorkCreateRecordInboundPort,
   WorkCreateRecordInboundPortInputDto,
 } from '../inbound-port/work.create-record.inbound-port';
-import { WORK_CREATE_RECORD_OUTBOUND_PORT } from '../outbound-port/work.create-record.outbound-port';
 import {
+  WORK_DELETE_RECORD_INBOUND_PORT,
   WorkDeleteRecordInboundPort,
   WorkDeleteRecordInboundPortInputDto,
 } from '../inbound-port/work.delete-record.inbound-port';
@@ -52,13 +53,13 @@ import {
 @Controller('work')
 export class WorkController {
   constructor(
-    @Inject(WORK_CREATE_RECORD_OUTBOUND_PORT)
+    @Inject(WORK_CREATE_RECORD_INBOUND_PORT)
     private readonly workCreateRecordInboundPort: WorkCreateRecordInboundPort,
     @Inject(WORK_CREATE_INBOUND_PORT)
     private readonly workCreateInboundPort: WorkCreateInboundPort,
     @Inject(WORK_DELETE_INBOUND_PORT)
     private readonly workDeleteInboundPort: WorkDeleteInboundPort,
-    @Inject(WORK_DELETE_INBOUND_PORT)
+    @Inject(WORK_DELETE_RECORD_INBOUND_PORT)
     private readonly workDeleteRecordInboundPort: WorkDeleteRecordInboundPort,
     @Inject(WORK_READ_BY_DATE_INBOUND_PORT)
     private readonly workReadByDateInboundPort: WorkReadByDateInboundPort,

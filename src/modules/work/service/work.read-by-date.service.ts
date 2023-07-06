@@ -63,20 +63,28 @@ export class WorkReadByDateService implements WorkReadByDateInboundPort {
       works,
       toAsync,
       map(async (work) => {
+        console.log(
+          await this.workReadRecordsOutboundPort.execute({
+            workId: work.id,
+            circleId: work.circle.id,
+          }),
+        );
+        console.log(work.targets);
         return {
           ...work,
-          Progress:
-            BigInt(
+          progress: (
+            Number(
               await this.workReadRecordsOutboundPort.execute({
                 workId: work.id,
                 circleId: work.circle.id,
               }),
-            ) / BigInt(work.targets),
-          done: this.workReadRecordOutboundPort.execute({
+            ) / Number(work.targets)
+          ).toFixed(3),
+          done: !!(await this.workReadRecordOutboundPort.execute({
             circleId: work.circle.id,
             workId: work.id,
             userId: params.userId,
-          }),
+          })),
         };
       }),
       toArray,

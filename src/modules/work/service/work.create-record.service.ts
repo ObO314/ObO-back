@@ -6,7 +6,6 @@ import {
   WorkCreateRecordInboundPortInputDto,
   WorkCreateRecordInboundPortOutputDto,
 } from '../inbound-port/work.create-record.inbound-port';
-import { WorkRecords } from 'src/database/entities/WorkRecords';
 import {
   WORK_CREATE_RECORD_OUTBOUND_PORT,
   WorkCreateRecordOutboundPort,
@@ -15,7 +14,6 @@ import {
   WORK_FIND_MEMBER_OUTBOUND_PORT,
   WorkFindMemberOutboundPort,
 } from '../outbound-port/work.find-member.outbound-port';
-
 export class WorkCreateRecordService implements WorkCreateRecordInboundPort {
   constructor(
     @Inject(WORK_CREATE_RECORD_OUTBOUND_PORT)

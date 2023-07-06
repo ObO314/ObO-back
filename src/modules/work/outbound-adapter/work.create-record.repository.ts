@@ -17,8 +17,12 @@ export class WorkCreateRecordRepository
   async execute(
     params: WorkCreateRecordOutboundPortInputDto,
   ): Promise<WorkCreateRecordOutboundPortOutputDto> {
-    const newWorkRecord = this.em.create(WorkRecords, params);
-    await this.em.persistAndFlush(newWorkRecord);
+    const newWorkRecord = this.em.upsert(WorkRecords, {
+      work: params.workId,
+      circle: params.circleId,
+      user: params.userId,
+    });
+    await this.em.flush();
     return newWorkRecord;
   }
 }

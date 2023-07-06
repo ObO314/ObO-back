@@ -21,6 +21,8 @@ import { RefreshTokens } from './database/entities/RefreshTokens';
 import { RoutineHistories } from 'src/database/entities/RoutineHistories';
 import { RoutineRecords } from 'src/database/entities/RoutineRecords';
 import { CircleApplication } from './database/entities/CircleApplication';
+import { WorkRecords } from './database/entities/WorkRecords';
+import { WorkPriority } from './database/entities/WorkPriority';
 
 export const config: Options = {
   entities: [
@@ -33,6 +35,8 @@ export const config: Options = {
     Circles,
     CircleApplication,
     Works,
+    WorkRecords,
+    WorkPriority,
     CommunityAnonymous,
     CommunityAnonymousComments,
     CommunityQuestion,
