@@ -7,15 +7,12 @@ export type UserReadInboundPortOutputDto = {
   email: string;
   nickname: string;
   profileImg: string;
-  progressRoutine: number;
-  progressTodo: number;
-  progressWork: number;
 };
 
 export const USER_READ_INBOUND_PORT = 'USER_READ_INBOUND_PORT' as const;
 
 export interface UserReadInboundPort {
-  read(
+  execute(
     params: UserReadInboundPortInputDto,
   ): Promise<UserReadInboundPortOutputDto>;
 }
