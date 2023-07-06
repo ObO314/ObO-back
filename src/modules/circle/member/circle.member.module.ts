@@ -24,6 +24,14 @@ import { CIRCLE_MEMBER_READ_OUTBOUND_PORT } from './outbound-port/circle.member.
 import { CircleMemberReadRepository } from './outbound-adapter/circle.member.read.repository';
 import { CIRCLE_MEMBER_UPDATE_CIRCLE_OUTBOUND_PORT } from './outbound-port/circle.member.update-circle.outbound-port';
 import { CircleMemberUpdateCircleRepository } from './outbound-adapter/circle.member.update-circle.repository';
+import { CIRCLE_MEMBER_BANISH_INBOUND_PORT } from './inbound-port/circle.member.banish.inbound-port';
+import { CircleMemberBanishService } from './service/circle.member.banish.service';
+import { CIRCLE_MEMBER_GRADE_INBOUND_PORT } from './inbound-port/circle.member.grade.inbound-port';
+import { CircleMemberGradeService } from './service/circle.member.grade.service';
+import { CircleMemberBanishRepository } from './outbound-adapter/circle.member.banish.repository';
+import { CIRCLE_MEMBER_BANISH_OUTBOUND_PORT } from './outbound-port/circle.member.banish.outbount-port';
+import { CIRCLE_MEMBER_UPDATE_OUTBOUND_PORT } from './outbound-port/circle.member.update.outbound-port';
+import { CircleMemberUpdateRepository } from './outbound-adapter/circle.member.update.repository';
 
 @Module({
   imports: [],
@@ -36,12 +44,20 @@ import { CircleMemberUpdateCircleRepository } from './outbound-adapter/circle.me
       useClass: CircleMemberApplyService,
     },
     {
-      provide: CIRCLE_MEMBER_READ_APPLICATIONS_INBOUND_PORT,
-      useClass: CircleMemberReadApplicationsService,
-    },
-    {
       provide: CIRCLE_MEMBER_APPROVE_INBOUND_PORT,
       useClass: CircleMemberApproveService,
+    },
+    {
+      provide: CIRCLE_MEMBER_BANISH_INBOUND_PORT,
+      useClass: CircleMemberBanishService,
+    },
+    {
+      provide: CIRCLE_MEMBER_GRADE_INBOUND_PORT,
+      useClass: CircleMemberGradeService,
+    },
+    {
+      provide: CIRCLE_MEMBER_READ_APPLICATIONS_INBOUND_PORT,
+      useClass: CircleMemberReadApplicationsService,
     },
     {
       provide: CIRCLE_MEMBER_READ_INBOUND_PORT,
@@ -53,6 +69,10 @@ import { CircleMemberUpdateCircleRepository } from './outbound-adapter/circle.me
     {
       provide: CIRCLE_MEMBER_APPLY_OUTBOUND_PORT,
       useClass: CircleMemberApplyRepository,
+    },
+    {
+      provide: CIRCLE_MEMBER_BANISH_OUTBOUND_PORT,
+      useClass: CircleMemberBanishRepository,
     },
     {
       provide: CIRCLE_MEMBER_CREATE_OUTBOUND_PORT,
@@ -81,6 +101,10 @@ import { CircleMemberUpdateCircleRepository } from './outbound-adapter/circle.me
     {
       provide: CIRCLE_MEMBER_UPDATE_CIRCLE_OUTBOUND_PORT,
       useClass: CircleMemberUpdateCircleRepository,
+    },
+    {
+      provide: CIRCLE_MEMBER_UPDATE_OUTBOUND_PORT,
+      useClass: CircleMemberUpdateRepository,
     },
   ],
 })

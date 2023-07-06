@@ -70,8 +70,10 @@ export class TodoRepository
     const content = { user, ...rest };
     const condition = {
       user: content.user,
-      startTime: { $gte: content.startTime, $lte: content.endTime },
-      endTime: { $gte: content.startTime, $lte: content.endTime },
+      $or: [
+        { startTime: { $gte: content.startTime, $lte: content.endTime } },
+        { endTime: { $gte: content.startTime, $lte: content.endTime } },
+      ],
     };
 
     return await pipe(condition, (condition) => em.find(Todos, condition));

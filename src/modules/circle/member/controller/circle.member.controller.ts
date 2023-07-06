@@ -1,6 +1,11 @@
 import {
+  CIRCLE_MEMBER_BANISH_INBOUND_PORT,
+  CircleMemberBanishInboundPort,
+} from './../inbound-port/circle.member.banish.inbound-port';
+import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Post,
@@ -30,6 +35,12 @@ import {
   CircleMemberReadInboundPort,
   CircleMemberReadInboundPortInputDto,
 } from '../inbound-port/circle.member.read.inbound-port';
+import { CircleMemberBanishInboundPortInputDto } from '../inbound-port/circle.member.banish.inbound-port';
+import {
+  CIRCLE_MEMBER_GRADE_INBOUND_PORT,
+  CircleMemberGradeInboundPort,
+  CircleMemberGradeInboundPortInputDto,
+} from '../inbound-port/circle.member.grade.inbound-port';
 
 @UseGuards(AuthJwtGuard)
 @Controller('circle/member')
@@ -43,6 +54,10 @@ export class CircleMemberController {
     private readonly circleMemberApproveInboundPort: CircleMemberApproveInboundPort,
     @Inject(CIRCLE_MEMBER_READ_INBOUND_PORT)
     private readonly circleMemberReadInboundPort: CircleMemberReadInboundPort,
+    @Inject(CIRCLE_MEMBER_BANISH_INBOUND_PORT)
+    private readonly circleMemberBanishInboundPort: CircleMemberBanishInboundPort,
+    @Inject(CIRCLE_MEMBER_GRADE_INBOUND_PORT)
+    private readonly circleMemberGradeInboundPort: CircleMemberGradeInboundPort,
   ) {}
 
   @Post('apply')
@@ -71,6 +86,34 @@ export class CircleMemberController {
       ...body,
     };
     return await this.circleMemberApproveInboundPort.execute(params);
+  }
+
+  @Delete('banish')
+  async banish(
+    @Req()
+    req: Request,
+    @Body()
+    body: any,
+  ) {
+    const params: CircleMemberBanishInboundPortInputDto = {
+      userId: req.user as string,
+      ...body,
+    };
+    return await this.circleMemberBanishInboundPort.execute(params);
+  }
+
+  @Post('grade')
+  async grade(
+    @Req()
+    req: Request,
+    @Body()
+    body: any,
+  ) {
+    const params: CircleMemberGradeInboundPortInputDto = {
+      userId: req.user as string,
+      ...body,
+    };
+    return await this.circleMemberGradeInboundPort.execute(params);
   }
 
   @Get('readApplications')

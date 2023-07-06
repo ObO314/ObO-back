@@ -19,7 +19,7 @@ export class CircleManagementCreateMemberRepository
     const newMember = await this.em.create(UsersCircles, {
       user: params.userId,
       circle: params.circleId,
-      role: params.role,
+      grade: params.grade,
     });
     await this.em.persistAndFlush(newMember);
     return newMember;

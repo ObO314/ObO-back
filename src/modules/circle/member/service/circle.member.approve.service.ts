@@ -6,20 +6,20 @@ import {
 } from '../inbound-port/circle.member.approve.inbound-port';
 import {
   CIRCLE_MEMBER_FIND_OUTBOUND_PORT,
-  CircleMemeberFindOutboundPort,
+  CircleMemberFindOutboundPort,
 } from '../outbound-port/circle.member.find.outbound-port';
-import { Inject } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import {
   CIRCLE_MEMBER_CREATE_OUTBOUND_PORT,
   CircleMemberCreateOutboundPort,
 } from '../outbound-port/circle.member.create.outbound-port';
 import {
   CIRCLE_MEMBER_DELETE_APPLICATION_OUTBOUND_PORT,
-  CircleMemeberDeleteApplicationOutboundPort,
+  CircleMemberDeleteApplicationOutboundPort,
 } from '../outbound-port/circle.member.delete-application.outbound-port';
 import {
   CIRCLE_MEMBER_UPDATE_CIRCLE_OUTBOUND_PORT,
-  CircleMemeberUpdateCircleOutboundPort,
+  CircleMemberUpdateCircleOutboundPort,
 } from '../outbound-port/circle.member.update-circle.outbound-port';
 
 import { filter, head, map, pipe, toAsync } from '@fxts/core';
@@ -29,13 +29,13 @@ export class CircleMemberApproveService
 {
   constructor(
     @Inject(CIRCLE_MEMBER_FIND_OUTBOUND_PORT)
-    private readonly circleMemberFindOutboundPort: CircleMemeberFindOutboundPort,
+    private readonly circleMemberFindOutboundPort: CircleMemberFindOutboundPort,
     @Inject(CIRCLE_MEMBER_CREATE_OUTBOUND_PORT)
     private readonly circleMemberCreateOutboundPort: CircleMemberCreateOutboundPort,
     @Inject(CIRCLE_MEMBER_DELETE_APPLICATION_OUTBOUND_PORT)
-    private readonly circleMemeberDeleteApplicationOutboundPort: CircleMemeberDeleteApplicationOutboundPort,
+    private readonly circleMemberDeleteApplicationOutboundPort: CircleMemberDeleteApplicationOutboundPort,
     @Inject(CIRCLE_MEMBER_UPDATE_CIRCLE_OUTBOUND_PORT)
-    private readonly circleMemeberUpdateCircleOutboundPort: CircleMemeberUpdateCircleOutboundPort,
+    private readonly circleMemberUpdateCircleOutboundPort: CircleMemberUpdateCircleOutboundPort,
   ) {}
 
   async execute(
@@ -49,17 +49,20 @@ export class CircleMemberApproveService
       [params],
       toAsync,
       filter(async (params) => {
-        console.log(params);
-        return (
+        if (
           Number(
             (
               await this.circleMemberFindOutboundPort.execute({
                 userId: params.userId,
                 circleId: params.circleId,
               })
-            ).role.id,
+            ).grade.id,
           ) <= 2
-        );
+        ) {
+          return true;
+        } else {
+          throw new HttpException('권한이 없습니다.', HttpStatus.BAD_REQUEST);
+        }
       }),
       map(
         async (params) =>
@@ -69,16 +72,16 @@ export class CircleMemberApproveService
           }),
       ),
       map(async (params) => {
-        this.circleMemeberUpdateCircleOutboundPort.execute({
-          circleId: (await params).circle.id,
-          member: 1,
+        this.circleMemberUpdateCircleOutboundPort.execute({
+          circleId: params.circle.id,
+          members: 1,
         });
         return params;
       }),
       map(async (params) =>
-        this.circleMemeberDeleteApplicationOutboundPort.execute({
-          circleId: (await params).circle.id,
-          userId: (await params).user.id,
+        this.circleMemberDeleteApplicationOutboundPort.execute({
+          circleId: params.circle.id,
+          userId: params.user.id,
         }),
       ),
       head,

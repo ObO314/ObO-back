@@ -2,17 +2,17 @@ import { Circles } from 'src/database/entities/Circles';
 import { Users } from 'src/database/entities/Users';
 import { UsersCircles } from 'src/database/entities/UsersCircles';
 
-export type CircleMemeberUpdateCircleOutboundPortInputDto = {
+export type CircleMemberUpdateCircleOutboundPortInputDto = {
   circleId: string;
-  member: number;
+  members: number;
 };
-export type CircleMemeberUpdateCircleOutboundPortOutputDto = Circles;
+export type CircleMemberUpdateCircleOutboundPortOutputDto = Circles;
 
 export const CIRCLE_MEMBER_UPDATE_CIRCLE_OUTBOUND_PORT =
   'CIRCLE_MEMBER_UPDATE_CIRCLE_OUTBOUND_PORT' as const;
 
-export interface CircleMemeberUpdateCircleOutboundPort {
+export interface CircleMemberUpdateCircleOutboundPort {
   execute(
-    params: CircleMemeberUpdateCircleOutboundPortInputDto,
-  ): Promise<CircleMemeberUpdateCircleOutboundPortOutputDto>;
+    params: CircleMemberUpdateCircleOutboundPortInputDto,
+  ): Promise<CircleMemberUpdateCircleOutboundPortOutputDto>;
 }

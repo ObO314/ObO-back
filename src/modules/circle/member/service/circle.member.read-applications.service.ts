@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import {
   CircleMemberReadApplicationsInboundPort,
   CircleMemberReadApplicationsInboundPortInputDto,
@@ -12,7 +12,7 @@ import {
 } from '../outbound-port/circle.member.read-applications.outbound-port';
 import {
   CIRCLE_MEMBER_FIND_OUTBOUND_PORT,
-  CircleMemeberFindOutboundPort,
+  CircleMemberFindOutboundPort,
 } from '../outbound-port/circle.member.find.outbound-port';
 
 export class CircleMemberReadApplicationsService
@@ -20,7 +20,7 @@ export class CircleMemberReadApplicationsService
 {
   constructor(
     @Inject(CIRCLE_MEMBER_FIND_OUTBOUND_PORT)
-    private readonly circleMemberFindOutboundPort: CircleMemeberFindOutboundPort,
+    private readonly circleMemberFindOutboundPort: CircleMemberFindOutboundPort,
     @Inject(CIRCLE_MEMBER_READ_APPLICATIONS_OUTBOUND_PORT)
     private readonly circleMemberReadApplicationsOutboundPort: CircleMemberReadApplicationsOutboundPort,
   ) {}
@@ -35,13 +35,22 @@ export class CircleMemberReadApplicationsService
     return await pipe(
       [params],
       toAsync,
-      filter(async (params) =>
-        Number(
-          (
-            await this.circleMemberFindOutboundPort.execute(params)
-          ).role.id,
-        ),
-      ),
+      filter(async (params) => {
+        if (
+          Number(
+            (
+              await this.circleMemberFindOutboundPort.execute({
+                userId: params.userId,
+                circleId: params.circleId,
+              })
+            ).grade.id,
+          ) <= 2
+        ) {
+          return true;
+        } else {
+          throw new HttpException('권한이 없습니다.', HttpStatus.BAD_REQUEST);
+        }
+      }),
       map((params) =>
         this.circleMemberReadApplicationsOutboundPort.execute(params),
       ),

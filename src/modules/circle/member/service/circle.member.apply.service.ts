@@ -18,8 +18,8 @@ import {
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import {
   CIRCLE_MEMBER_FIND_OUTBOUND_PORT,
-  CircleMemeberFindOutboundPort,
-  CircleMemeberFindOutboundPortInputDto,
+  CircleMemberFindOutboundPort,
+  CircleMemberFindOutboundPortInputDto,
 } from '../outbound-port/circle.member.find.outbound-port';
 import { executeAndThrowError } from 'src/utilities/executeThrowError';
 import {
@@ -32,11 +32,11 @@ import {
 export class CircleMemberApplyService implements CircleMemberApplyInboundPort {
   constructor(
     @Inject(CIRCLE_MEMBER_FIND_OUTBOUND_PORT)
-    private readonly circleMemeberFindOutboundPort: CircleMemeberFindOutboundPort,
+    private readonly circleMemberFindOutboundPort: CircleMemberFindOutboundPort,
     @Inject(CIRCLE_MEMBER_READ_CIRCLE_OUTBOUND_PORT)
-    private readonly circleMemeberReadCircleOutboundPort: CircleMemberReadCircleOutboundPort,
+    private readonly circleMemberReadCircleOutboundPort: CircleMemberReadCircleOutboundPort,
     @Inject(CIRCLE_MEMBER_APPLY_OUTBOUND_PORT)
-    private readonly circleMemeberApplyOutboundPort: CircleMemberApplyOutboundPort,
+    private readonly circleMemberApplyOutboundPort: CircleMemberApplyOutboundPort,
   ) {}
 
   async execute(
@@ -50,32 +50,32 @@ export class CircleMemberApplyService implements CircleMemberApplyInboundPort {
       [params],
       toAsync,
       filter(async (params) => {
-        const result = await this.circleMemeberFindOutboundPort.execute(params);
-        if (result) {
+        if (await this.circleMemberFindOutboundPort.execute(params)) {
+          return true;
+        } else {
           throw new HttpException(
             '이미 가입한 서클입니다.',
             HttpStatus.BAD_REQUEST,
           );
-        } else {
-          return !result;
         }
       }),
       filter(async (params) => {
-        const result = (
-          await this.circleMemeberReadCircleOutboundPort.execute({
-            circleId: params.circleId,
-          })
-        ).isOpen;
-        if (!result) {
+        if (
+          (
+            await this.circleMemberReadCircleOutboundPort.execute({
+              circleId: params.circleId,
+            })
+          ).isOpen
+        ) {
+          return true;
+        } else {
           throw new HttpException(
             '이 서클은 현재 모집 중이 아닙니다.',
             HttpStatus.BAD_REQUEST,
           );
-        } else {
-          return result;
         }
       }),
-      map((params) => this.circleMemeberApplyOutboundPort.execute(params)),
+      map((params) => this.circleMemberApplyOutboundPort.execute(params)),
       head,
     );
   }
