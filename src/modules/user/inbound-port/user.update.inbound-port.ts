@@ -1,6 +1,6 @@
 export type UserUpdateInboundPortInputDto = {
   userId: string;
-  nickname: string;
+  nickname?: string;
   profileImg?: string;
   password?: string;
 };

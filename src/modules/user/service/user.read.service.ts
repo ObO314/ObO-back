@@ -39,10 +39,10 @@ export class UserReadService implements UserReadInboundPort {
           );
         }
       }),
-      map((user) => {
+      map(({ id, ...user }) => {
         return {
           ...user,
-          userId: user.id,
+          userId: id,
           profileImg: user.profileImg || process.env.USER_DEFAULT_IMAGE,
         };
       }),

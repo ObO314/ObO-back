@@ -39,19 +39,4 @@ export class Users {
 
   @Property({ nullable: true })
   authMethod: string;
-
-  @ManyToMany({
-    entity: () => Circles,
-    pivotTable: 'circle_application',
-    joinColumn: 'user',
-    inverseJoinColumn: 'circle',
-  })
-  circleApplication = new Collection<Circles>(this);
-
-  @ManyToMany({
-    entity: () => Hashtags,
-    joinColumn: 'user',
-    inverseJoinColumn: 'hashtag',
-  })
-  hashtags = new Collection<Hashtags>(this);
 }
