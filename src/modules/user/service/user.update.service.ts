@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import {
   UserUpdateInboundPort,
   UserUpdateInboundPortInputDto,
@@ -16,8 +17,6 @@ import {
 
 export class UserUpdateService implements UserUpdateInboundPort {
   constructor(
-    @Inject(USER_READ_OUTBOUND_PORT)
-    private readonly userReadOutboundPort: UserReadOutboundPort,
     @Inject(USER_UPDATE_OUTBOUND_PORT)
     private readonly userUpdateOutboundPort: UserUpdateOutboundPort,
   ) {}
@@ -25,19 +24,22 @@ export class UserUpdateService implements UserUpdateInboundPort {
   async execute(
     params: UserUpdateInboundPortInputDto,
   ): Promise<UserUpdateInboundPortOutputDto> {
-    // 유저 아이디로 검색하여 수정
-    // 그리고 유저정보 반환
-
     return await pipe(
       [params],
       toAsync,
+      map(async (params) => {
+        if (params.password) {
+          params.password = await bcrypt.hash(params.password, 10);
+        }
+        return params;
+      }),
       map((params) => this.userUpdateOutboundPort.execute(params)),
       map((user) => {
         return {
           userId: user.id,
           email: user.email,
           nickname: user.nickname,
-          profileImg: user.profileImg || process.env.USER_DEFAULT_IMAGE,
+          profileImg: user.profileImg,
         };
       }),
       head,

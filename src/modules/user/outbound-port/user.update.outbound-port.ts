@@ -2,7 +2,7 @@ import { Users } from 'src/database/entities/Users';
 
 export type UserUpdateOutboundPortInputDto = {
   userId: string;
-  nickname: string;
+  nickname?: string;
   profileImg?: string;
   password?: string;
 };
