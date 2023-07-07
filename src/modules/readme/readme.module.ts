@@ -3,7 +3,6 @@ import { ReadmeController } from './controller/readme.controller';
 import { Module } from '@nestjs/common';
 import { README_READ_INBOUND_PORT } from './inbound-port/readme.read.inbound-port';
 import { README_READ_OUTBOUND_PORT } from './outbound-port/readme.read.outbound-port';
-import { ReadmeRepository } from './outbound-adapter/readme.repository';
 import { ReadmeReadService } from './service/readme.read.service';
 import { README_UPDATE_INBOUND_PORT } from './inbound-port/readme.update.inbound-port';
 import { README_UPDATE_OUTBOUND_PORT } from './outbound-port/readme.update.outbound-port';
@@ -11,9 +10,12 @@ import { ReadmeUpdateService } from './service/readme.update.service';
 import { README_DELETE_INBOUND_PORT } from './inbound-port/readme.delete.inbound-port';
 import { README_DELETE_OUTBOUND_PORT } from './outbound-port/readme.delete.outbound-port';
 import { ReadmeDeleteService } from './service/readme.delete.service';
+import { ReadmeReadRepository } from './outbound-adapter/readme.read.repository';
+import { ReadmeUpdateRepository } from './outbound-adapter/readme.update.repository';
+import { ReadmeDeleteRepository } from './outbound-adapter/readme.delete.repository';
 
 @Module({
-  imports: [PassportModule],
+  imports: [],
   controllers: [ReadmeController],
   providers: [
     {
@@ -21,26 +23,25 @@ import { ReadmeDeleteService } from './service/readme.delete.service';
       useClass: ReadmeReadService,
     },
     {
-      provide: README_READ_OUTBOUND_PORT,
-      useClass: ReadmeRepository,
-    },
-
-    {
       provide: README_UPDATE_INBOUND_PORT,
       useClass: ReadmeUpdateService,
     },
     {
-      provide: README_UPDATE_OUTBOUND_PORT,
-      useClass: ReadmeRepository,
-    },
-
-    {
       provide: README_DELETE_INBOUND_PORT,
       useClass: ReadmeDeleteService,
     },
+
+    {
+      provide: README_READ_OUTBOUND_PORT,
+      useClass: ReadmeReadRepository,
+    },
+    {
+      provide: README_UPDATE_OUTBOUND_PORT,
+      useClass: ReadmeUpdateRepository,
+    },
     {
       provide: README_DELETE_OUTBOUND_PORT,
-      useClass: ReadmeRepository,
+      useClass: ReadmeDeleteRepository,
     },
   ],
 })

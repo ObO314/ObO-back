@@ -18,6 +18,6 @@ export class ReadmeReadService implements ReadmeReadInboundPort {
   read(
     params: ReadmeReadInboundPortInputDto,
   ): Promise<ReadmeReadInboundPortOutputDto> {
-    return this.readmeReadOutboundport.read(params);
+    return this.readmeReadOutboundport.execute(params);
   }
 }
