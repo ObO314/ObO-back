@@ -6,10 +6,10 @@ import { Users } from 'src/database/entities/Users';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { HashtagsUserRepository } from './hashtags.user.repository';
 import { Hashtags } from 'src/database/entities/Hashtags';
-import { HashtagsCreateOutboundPortOutputDto } from '../outbound-port/hashtags.create.outbound-port';
+import { HashtagsCreateOutboundPortOutputDto } from '../../outbound-port/hashtag.create.outbound-port';
 import { UsersHashtags } from 'src/database/entities/usersHashtags';
-import { HashtagsUserReadOutboundPortOutputDto } from '../outbound-port/hashtags.user-read.outbound-port';
-import { HashtagsUserDeleteOutboundPortOutputDto } from '../outbound-port/hashtags.user-delete.outbound-port';
+import { HashtagsUserReadOutboundPortOutputDto } from '../../outbound-port/hashtag.read-users-hashtags.outbound-port';
+import { HashtagsUserDeleteOutboundPortOutputDto } from '../../outbound-port/hashtag.delete-users-hashtags.outbound-port';
 
 dotenv.config();
 
