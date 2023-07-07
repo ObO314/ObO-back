@@ -1,6 +1,13 @@
 import { Users } from '../../../database/entities/Users';
 import { JwtService } from '@nestjs/jwt';
-import { Inject, Injectable, Req, Res } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { ExtractJwt, Strategy as StrategyJWT } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import {
@@ -10,19 +17,26 @@ import {
   AuthJwtValidateInboundPortInputDto,
   AuthJwtValidateInboundPortOutputDto,
 } from '../inbound-port/auth.jwt.strategy.inbound-port';
-import { EntityManager } from '@mikro-orm/knex';
-import { RefreshTokens } from 'src/database/entities/RefreshTokens';
-import { Request, Response } from 'express';
+import {
+  AUTH_FIND_REFRESH_TOKEN_OUTBOUND_PORT,
+  AuthFindRefreshTokenOutboundPort,
+} from '../outbound-port/auth.find-refresh-token.outbound-port';
+import {
+  AUTH_SAVE_REFRESH_TOKEN_OUTBOUND_PORT,
+  AuthSaveRefreshTokenOutboundPort,
+} from '../outbound-port/auth.save-refresh-token.outbound-port';
 
 @Injectable()
-// implements AuthJwtInboundPort
-export class JwtStrategy
+export class AuthJwtStrategy
   extends PassportStrategy(StrategyJWT)
   implements AuthJwtInboundPort
 {
   constructor(
+    @Inject(AUTH_FIND_REFRESH_TOKEN_OUTBOUND_PORT)
+    private readonly authFindRefreshTokenOutboundPort: AuthFindRefreshTokenOutboundPort,
+    @Inject(AUTH_SAVE_REFRESH_TOKEN_OUTBOUND_PORT)
+    private readonly authSaveRefreshTokenOutboundPort: AuthSaveRefreshTokenOutboundPort,
     private jwtService: JwtService,
-    private readonly em: EntityManager,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -38,9 +52,16 @@ export class JwtStrategy
       case 'ACCESS':
         return { undefined, userId };
       case 'REFRESH':
-        const foundUserToken = await this.em.findOne(RefreshTokens, {
-          user: userId,
-        });
+        const foundUserToken =
+          await this.authFindRefreshTokenOutboundPort.execute({
+            userId: userId,
+          });
+        if (!foundUserToken) {
+          throw new HttpException(
+            '다시 로그인하여 주십시오.',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
         const savedUser = foundUserToken.user.id;
         const savedToken = foundUserToken.token;
 
@@ -72,7 +93,10 @@ export class JwtStrategy
       { userId: userId, tokenType: 'REFRESH' },
       { expiresIn: '14d' },
     );
-    this.em.upsert(RefreshTokens, { user: userId, token: refreshToken });
+    this.authSaveRefreshTokenOutboundPort.execute({
+      userId: userId,
+      token: refreshToken,
+    });
     const tokens = { accessToken, refreshToken };
 
     return tokens;

@@ -15,7 +15,7 @@ export const TODO_READ_BY_DATE_OUTBOUND_PORT =
   'TODO_READ_BY_DATE_OUTBOUND_PORT' as const;
 
 export interface TodoReadByDateOutboundPort {
-  readByDate(
+  execute(
     params: TodoReadByDateOutboundPortInputDto,
   ): Promise<TodoReadByDateOutboundPortOutputDto>;
 }

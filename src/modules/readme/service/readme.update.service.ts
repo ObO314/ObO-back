@@ -18,6 +18,6 @@ export class ReadmeUpdateService implements ReadmeUpdateInboundPort {
   async update(
     params: ReadmeUpdateInboundPortInputDto,
   ): Promise<ReadmeUpdateInboundPortOutputDto> {
-    return this.readmeUpdateOutboundPort.update(params);
+    return this.readmeUpdateOutboundPort.execute(params);
   }
 }

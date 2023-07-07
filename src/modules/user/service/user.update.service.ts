@@ -1,9 +1,15 @@
-import { Inject } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import {
   UserUpdateInboundPort,
   UserUpdateInboundPortInputDto,
   UserUpdateInboundPortOutputDto,
 } from '../inbound-port/user.update.inbound-port';
+import { filter, head, map, pipe, toAsync } from '@fxts/core';
+import {
+  USER_READ_OUTBOUND_PORT,
+  UserReadOutboundPort,
+} from '../outbound-port/user.read.outbound-port';
 import {
   USER_UPDATE_OUTBOUND_PORT,
   UserUpdateOutboundPort,
@@ -15,9 +21,28 @@ export class UserUpdateService implements UserUpdateInboundPort {
     private readonly userUpdateOutboundPort: UserUpdateOutboundPort,
   ) {}
 
-  async update(
+  async execute(
     params: UserUpdateInboundPortInputDto,
   ): Promise<UserUpdateInboundPortOutputDto> {
-    return await this.userUpdateOutboundPort.update(params);
+    return await pipe(
+      [params],
+      toAsync,
+      map(async (params) => {
+        if (params.password) {
+          params.password = await bcrypt.hash(params.password, 10);
+        }
+        return params;
+      }),
+      map((params) => this.userUpdateOutboundPort.execute(params)),
+      map((user) => {
+        return {
+          userId: user.id,
+          email: user.email,
+          nickname: user.nickname,
+          profileImg: user.profileImg,
+        };
+      }),
+      head,
+    );
   }
 }

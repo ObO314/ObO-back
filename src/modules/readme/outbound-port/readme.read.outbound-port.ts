@@ -10,7 +10,7 @@ export type ReadmeReadOutboundPortOutputDto = {
 export const README_READ_OUTBOUND_PORT = 'README_READ_OUTBOUND_PORT' as const;
 
 export interface ReadmeReadOutboundPort {
-  read(
+  execute(
     params: ReadmeReadOutboundPortInputDto,
   ): Promise<ReadmeReadOutboundPortOutputDto>;
 }

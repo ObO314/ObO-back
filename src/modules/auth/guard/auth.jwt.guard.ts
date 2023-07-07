@@ -1,7 +1,5 @@
-import { JwtStrategy } from 'src/modules/auth/strategy/auth.jwt.strategy';
 import { AuthGuard } from '@nestjs/passport';
 import { CanActivate, ExecutionContext } from '@nestjs/common';
-import { Observable } from 'rxjs';
 
 export class AuthJwtGuard extends AuthGuard('jwt') implements CanActivate {
   constructor() {

@@ -11,7 +11,7 @@ export type TodoDeleteInboundPortOutputDto = Todos;
 export const TODO_DELETE_INBOUND_PORT = 'TODO_DELETE_INBOUND_PORT' as const;
 
 export interface TodoDeleteINboundPort {
-  delete(
+  execute(
     params: TodoDeleteInboundPortInputDto,
   ): Promise<TodoDeleteInboundPortOutputDto>;
 }
