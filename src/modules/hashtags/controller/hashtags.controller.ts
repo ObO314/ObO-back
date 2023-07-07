@@ -9,57 +9,59 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthJwtGuard } from 'src/modules/auth/guard/auth.jwt.guard';
-import {
-  HASHTAGS_USER_CREATE_INBOUND_PORT,
-  HashtagsUserCreateInboundPort,
-  HashtagsUserCreateInboundPortInputDto,
-} from '../inbound-port/hashtags.user-create.inbound-port';
-import {
-  HASHTAGS_USER_READ_INBOUND_PORT,
-  HashtagsUserReadInboundPort,
-} from '../inbound-port/hashtags.user-read.inbound-port';
-import {
-  HASHTAGS_USER_DELETE_INBOUND_PORT,
-  HashtagsUserDeleteInboundPort,
-} from '../inbound-port/hashtags.user-delete.inbound-port';
 import { Request } from 'express';
+import {
+  HASHTAG_CREATE_USERS_HASHTAGS_INBOUND_PORT,
+  HashtagCreateUsersHashtagsInboundPort,
+  HashtagCreateUsersHashtagsInboundPortInputDto,
+} from '../inbound-port/hashtag.users-hashtags-create.inbound-port';
+import {
+  HASHTAG_DELETE_USERS_HASHTAGS_INBOUND_PORT,
+  HashtagDeleteUsersHashtagsInboundPort,
+  HashtagDeleteUsersHashtagsInboundPortInputDto,
+} from '../inbound-port/hashtag.users-hashtags-delete.inbound-port';
+import {
+  HASHTAG_READ_USERS_HASHTAGS_INBOUND_PORT,
+  HashtagReadUsersHashtagsInboundPort,
+  HashtagReadUsersHashtagsInboundPortInputDto,
+} from '../inbound-port/hashtag.users-hashtags-read.inbound-port';
 
 @UseGuards(AuthJwtGuard)
 @Controller('hashtag')
 export class HashtagsController {
   constructor(
-    @Inject(HASHTAGS_USER_CREATE_INBOUND_PORT)
-    private readonly hashtagsUserCreateInboundport: HashtagsUserCreateInboundPort,
-    @Inject(HASHTAGS_USER_READ_INBOUND_PORT)
-    private readonly hashtagsUserReadInboundPort: HashtagsUserReadInboundPort,
-    @Inject(HASHTAGS_USER_DELETE_INBOUND_PORT)
-    private readonly hashtagsUserDeleteInboundPort: HashtagsUserDeleteInboundPort,
+    @Inject(HASHTAG_CREATE_USERS_HASHTAGS_INBOUND_PORT)
+    private readonly hashtagCreateUsersHashtagsInboundPort: HashtagCreateUsersHashtagsInboundPort,
+    @Inject(HASHTAG_DELETE_USERS_HASHTAGS_INBOUND_PORT)
+    private readonly hashtagDeleteUsersHashtagsInboundPort: HashtagDeleteUsersHashtagsInboundPort,
+    @Inject(HASHTAG_READ_USERS_HASHTAGS_INBOUND_PORT)
+    private readonly hashtagReadUsersHashtagsInboundPort: HashtagReadUsersHashtagsInboundPort,
   ) {}
 
   @Post('userCreate')
   async create(@Req() req: Request, @Body() body: any) {
-    const params: HashtagsUserCreateInboundPortInputDto = {
-      userId: req.user,
+    const params: HashtagCreateUsersHashtagsInboundPortInputDto = {
+      userId: req.user as string,
       ...body,
     };
-    return this.hashtagsUserCreateInboundport.create(params);
+    return this.hashtagCreateUsersHashtagsInboundPort.execute(params);
   }
 
   @Get('userRead')
   async read(@Req() req: Request, @Body() body: any) {
-    const params = {
+    const params: HashtagReadUsersHashtagsInboundPortInputDto = {
       userId: req.user,
       ...body,
     };
-    return this.hashtagsUserReadInboundPort.read(params);
+    return this.hashtagReadUsersHashtagsInboundPort.execute(params);
   }
 
   @Delete('userDelete')
   async delete(@Req() req: Request, @Body() body: any) {
-    const params = {
+    const params: HashtagDeleteUsersHashtagsInboundPortInputDto = {
       userId: req.user,
       ...body,
     };
-    return this.hashtagsUserDeleteInboundPort.delete(params);
+    return this.hashtagDeleteUsersHashtagsInboundPort.execute(params);
   }
 }

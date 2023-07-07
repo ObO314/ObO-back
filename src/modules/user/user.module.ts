@@ -16,7 +16,7 @@ import { UserReadService } from './service/user.read.service';
 import { UserUpdateService } from './service/user.update.service';
 import { UserSignUpService } from './service/user.sign-up.service';
 import { UserLogoutService } from './service/user.logout.service';
-import { JwtStrategy } from '../auth/strategy/auth.jwt.strategy';
+import { AuthJwtStrategy } from '../auth/strategy/auth.jwt.strategy';
 import { UserCreateRepository } from './outbound-adapter/user.create.repository';
 import { UserDeleteRefreshTokenRepository } from './outbound-adapter/user.delete-refresh-token.repository';
 import { UserReadRepository } from './outbound-adapter/user.read.repository';
@@ -51,7 +51,7 @@ import { UserUpdateRepository } from './outbound-adapter/user.update.repository'
     //--- outbound ---
     {
       provide: USER_CREATE_TOKENS_OUTBOUND_PORT,
-      useClass: JwtStrategy,
+      useClass: AuthJwtStrategy,
     },
     {
       provide: USER_CREATE_OUTBOUND_PORT,

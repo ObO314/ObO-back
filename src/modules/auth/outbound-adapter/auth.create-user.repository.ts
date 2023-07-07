@@ -2,18 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/knex';
 import { Users } from 'src/database/entities/Users';
 import {
-  AuthFindUserOutboundPort,
-  AuthFindUserOutboundPortInputDto,
-  AuthFindUserOutboundPortOutputDto,
-} from '../outbound-port/auth.find-user.outbound-port';
+  AuthCreateUserOutboundPort,
+  AuthCreateUserOutboundPortInputDto,
+  AuthCreateUserOutboundPortOutputDto,
+} from '../outbound-port/auth.create-user.outbound-port';
 
 @Injectable()
-export class AuthFindUserRepository implements AuthFindUserOutboundPort {
+export class AuthCreateUserRepository implements AuthCreateUserOutboundPort {
   constructor(private readonly em: EntityManager) {}
 
   async execute(
-    params: AuthFindUserOutboundPortInputDto,
-  ): Promise<AuthFindUserOutboundPortOutputDto> {
+    params: AuthCreateUserOutboundPortInputDto,
+  ): Promise<AuthCreateUserOutboundPortOutputDto> {
     const newUser = this.em.create(Users, params);
     await this.em.persistAndFlush(newUser);
     return newUser;

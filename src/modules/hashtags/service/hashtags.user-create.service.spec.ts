@@ -1,10 +1,10 @@
-import { HashtagsUserCreateInboundPortInputDto } from '../inbound-port/hashtags.user-create.inbound-port';
+import { HashtagsUserCreateInboundPortInputDto } from '../inbound-port/hashtag.users-hashtags-create.inbound-port';
 import {
   HashtagsCreateOutboundPort,
   HashtagsCreateOutboundPortInputDto,
   HashtagsCreateOutboundPortOutputDto,
-} from '../outbound-port/hashtags.create.outbound-port';
-import { HashtagsUserCreateService } from './hashtags.user-create.service';
+} from '../outbound-port/hashtag.create.outbound-port';
+import { HashtagsUserCreateService } from './hashtag.users-hashtags-create.service';
 
 class MockHashtagsCreateOutboundPort implements HashtagsCreateOutboundPort {
   constructor(private readonly params: HashtagsCreateOutboundPortOutputDto) {}
