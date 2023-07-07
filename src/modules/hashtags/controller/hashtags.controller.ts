@@ -5,6 +5,7 @@ import {
   Get,
   Inject,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -48,10 +49,9 @@ export class HashtagsController {
   }
 
   @Get('userRead')
-  async read(@Req() req: Request, @Body() body: any) {
+  async read(@Req() req: Request) {
     const params: HashtagReadUsersHashtagsInboundPortInputDto = {
-      userId: req.user,
-      ...body,
+      userId: req.user as string,
     };
     return this.hashtagReadUsersHashtagsInboundPort.execute(params);
   }

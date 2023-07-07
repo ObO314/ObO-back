@@ -17,6 +17,6 @@ export class ReadmeDeleteService implements ReadmeDeleteInboundPort {
   delete(
     params: ReadmeDeleteInboundPortInputDto,
   ): Promise<ReadmeDeleteInboundPortOutputDto> {
-    return this.readmeDeleteOutboundPort.delete(params);
+    return this.readmeDeleteOutboundPort.execute(params);
   }
 }
