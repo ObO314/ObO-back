@@ -20,7 +20,7 @@ export type TodoCreateOutboundPortOutputDto = Todos;
 export const TODO_CREATE_OUTBOUND_PORT = 'TODO_CREATE_OUTBOUND_PORT' as const;
 
 export interface TodoCreateOutboundPort {
-  create(
+  execute(
     params: TodoCreateOutboundPortInputDto,
   ): Promise<TodoCreateOutboundPortOutputDto>;
 }

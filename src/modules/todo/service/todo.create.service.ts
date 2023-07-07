@@ -15,9 +15,12 @@ export class TodoCreateService implements TodoCreateInboundPort {
     private readonly todoCreateOutboundPort: TodoCreateOutboundPort,
   ) {}
 
-  async create(
+  async execute(
     params: TodoCreateInboundPortInputDto,
   ): Promise<TodoCreateInboundPortOutputDto> {
-    return await this.todoCreateOutboundPort.create(params);
+    return await this.todoCreateOutboundPort.execute({
+      ...params,
+      userId: params.userId,
+    });
   }
 }
