@@ -76,17 +76,6 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 Nest is [MIT licensed](LICENSE).
 
-
-## 📸 CHANNEL
-
----
-
-- **GitHub** : https://github.com/LYUHIT
-- **Velog** : https://velog.io/@uiseok0514
-- **Youtube** : [youtube.com/@blackRabbitTech](https://www.youtube.com/@blackRabbitTech/videos)
-
-## 🗂️ PROJECTS
-
 ---
 
 # OBO - 일정관리 웹 서비스
