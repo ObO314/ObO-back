@@ -27,8 +27,6 @@ export class CircleManagementCreateService
   async execute(
     params: CircleManagementCreateInboundPortInputDto,
   ): Promise<CircleManagementCreateInboundPortOutputDto> {
-    // 서클을 만든사람을 유저리스트에 등급을 포함하여 생성해야 함.
-
     return await pipe(
       [params],
       toAsync,

@@ -78,7 +78,6 @@ describe('UserUpdateRepository Spec', () => {
       id: '1',
       email: 'testUserLocal@obo.com',
       nickname: 'UpdatedNickname',
-      profileImg: null,
       password: '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
       authMethod: 'LOCAL',
     });
@@ -99,7 +98,7 @@ describe('UserUpdateRepository Spec', () => {
     expect(result).toEqual({
       id: '1',
       email: 'testUserLocal@obo.com',
-      nickname: 'UpdatedNickname',
+      nickname: 'localTester',
       profileImg:
         'https://obo-s3.s3.ap-northeast-2.amazonaws.com/obo-user-profile/1686223996746_ObO.profile.jpg',
       password: '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
@@ -122,8 +121,7 @@ describe('UserUpdateRepository Spec', () => {
     expect(result).toEqual({
       id: '1',
       email: 'testUserLocal@obo.com',
-      nickname: 'UpdatedNickname',
-      profileImg: null,
+      nickname: 'localTester',
       password:
         '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjaguNewPassWord',
       authMethod: 'LOCAL',

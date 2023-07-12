@@ -15,9 +15,10 @@ export class TodoUpdateRepository implements TodoUpdateOutboundPort {
   async execute(
     params: TodoUpdateOutboundPortInputDto,
   ): Promise<TodoUpdateOutboundPortOutputDto> {
+    const { todoId, ...rest } = params;
     const updatedTodo = await this.em.upsert(Todos, {
-      ...params,
-      id: params.todoId,
+      id: todoId,
+      ...rest,
     });
     await this.em.flush();
     return updatedTodo;

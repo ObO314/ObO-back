@@ -77,7 +77,6 @@ describe('UserReadRepository Spec', () => {
       id: '1',
       email: 'testUserLocal@obo.com',
       nickname: 'localTester',
-      profileImg: null,
       password: '$2b$10$zGoIND0XuFXnCA/.cx1zT.df5Vf9364wGspjCM2/r2rexktKvjagu',
       authMethod: 'LOCAL',
     });
@@ -87,7 +86,7 @@ describe('UserReadRepository Spec', () => {
 
   test('유저조회(id) : 존재하지 않는 유저의 검색', async () => {
     const params = {
-      id: '1',
+      id: '0',
     };
 
     const result: UserReadOutboundPortOutputDto =
@@ -110,7 +109,6 @@ describe('UserReadRepository Spec', () => {
       id: '2',
       email: 'testUserGoogle@obo.com',
       nickname: 'GoogleTester',
-      profileImg: null,
       password: null,
       authMethod: 'GOOGLE',
     });

@@ -54,9 +54,11 @@ describe('UserCreateRepository Spec', () => {
       await userCreateRepository.execute(params);
 
     expect(result).toEqual({
-      userId: '123',
+      id: '123',
       email: 'createLocalTester@obo.com',
       nickname: 'oboNewbie',
+      password: '1q2w3e4r',
+      authMethod: 'LOCAL',
     });
   });
 
@@ -75,9 +77,11 @@ describe('UserCreateRepository Spec', () => {
       await userCreateRepository.execute(params);
 
     expect(result).toEqual({
-      userId: '123',
+      id: '123',
       email: 'createSocialTester@obo.com',
       nickname: 'oboNewbie',
+      password: null,
+      authMethod: 'GOOGLE',
     });
   });
 

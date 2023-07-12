@@ -14,9 +14,10 @@ export class UserUpdateRepository implements UserUpdateOutboundPort {
   async execute(
     params: UserUpdateOutboundPortInputDto,
   ): Promise<UserUpdateOutboundPortOutputDto> {
+    const { userId, ...toupdates } = params;
     const updatedUser = await this.em.upsert(Users, {
-      ...params,
-      id: params.userId,
+      id: userId,
+      ...toupdates,
     });
     await this.em.flush();
     return updatedUser;

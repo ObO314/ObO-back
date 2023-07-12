@@ -77,6 +77,11 @@ export class AuthJwtStrategy
             { expiresIn: '30m' },
           );
           return { newAccessToken, userId };
+        } else {
+          throw new HttpException(
+            '비정상적인 접근입니다.',
+            HttpStatus.BAD_REQUEST,
+          );
         }
     }
   }

@@ -14,11 +14,16 @@ export class TodoCreateRepository implements TodoCreateOutboundPort {
   async execute(
     params: TodoCreateOutboundPortInputDto,
   ): Promise<TodoCreateOutboundPortOutputDto> {
+    const { userId, ...rest } = params;
     const newTodo = this.em.create(Todos, {
-      ...params,
-      user: params.userId,
+      user: userId,
+      ...rest,
     });
     await this.em.persistAndFlush(newTodo);
-    return newTodo;
+    return {
+      ...newTodo,
+      todoId: newTodo.id,
+      userId: newTodo.user.id,
+    };
   }
 }
